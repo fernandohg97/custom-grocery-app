@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <header><%- include('../partials/header'); %></header>
+
+    <main class="container" style="margin-top: 8em">
+      <div class="row justify-content-center">
+        <div class="card bg-warning text-center w-75">
+          <div class="card-body">
+            <h3 class="card-title" style="margin-bottom: 0.5em">
+              Ups! Ocurrió un error 😕
+            </h3>
+            <p class="card-text welcome-description">
+              Pero no te preocupes, solicita ayuda con alguien de nuestros
+              colaboradores.
+            </p>
+            <div class="d-grid gap-2 col-6 mx-auto">
+              <a
+                href="/"
+                class="btn btn-dark"
+                style="font-size: 16px; margin-top: 1em"
+                >Regresar al inicio</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer><%- include('../partials/footer'); %></footer>
+  </body>
+</html>

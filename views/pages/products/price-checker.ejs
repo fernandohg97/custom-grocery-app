@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <link rel="stylesheet" href="/stylesheets/product.css" />
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+
+    <main class="container mt-5">
+        <%- include('../../partials/home-btn'); %>
+      <div class="row justify-content-center mt-5">
+        <div class="card text-center border-primary w-75">
+          <div class="card-header">
+            Hola! Yo te puedo ayudar a encontrar el precio de un producto.
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">Ingresa el código de barras.</h4>
+            <p class="card-text">...</p>
+            <form
+              action="/products/one"
+              method="GET"
+              class="needs-validation mt-5 mb-1"
+              novalidate
+            >
+              <div class="mx-auto w-75">
+                <input
+                  type="text"
+                  name="searchFilter"
+                  class="form-control"
+                  id="searchProductInput"
+                  aria-describedby="searchProductHelp"
+                  required
+                  placeholder="Ingresa o escanea el codigo de barras"
+                />
+                <div class="invalid-feedback text-start">
+                  Por favor debes ingresar un codigo de barras o SKU correcto. Pregunta a alguien de nosotros.
+                </div>
+              </div>
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary" id="searchProductUrl"> 
+                  Buscar precio
+                </button>
+              </div>
+            </form>
+            <!-- <a
+              href="/products/one"
+              class="btn btn-primary"
+              id="searchProductUrl"
+            >
+              Buscar precio
+            </a> -->
+
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer><%- include('../../partials/footer'); %></footer>
+    <script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function () {
+        "use strict";
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll(".needs-validation");
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener(
+            "submit",
+            function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              form.classList.add("was-validated");
+            },
+            false
+          );
+        });
+      })();
+    </script>
+    <script>
+      // let pageSize = 1;
+      // let skipCount = 0;
+      // let searchProductUrlBtn = document.getElementById("searchProductUrl");
+      // let href;
+      // let changeSearchProduct = (e) => {
+      //   let val = e.target.value;
+      //   href = searchProductUrlBtn.href;
+      //   href = href.concat(
+      //     `?pageSize=${pageSize}&skipCount=${skipCount}&searchFilter=${val}`
+      //   );
+      //   console.log(href);
+      //   // let searchValue = document.getElementById('searchProductInput').;
+      //   // console.log(searchValue);
+      // };
+      // let searchProductInput = document.getElementById("searchProductInput");
+      // searchProductInput.addEventListener("input", changeSearchProduct);
+      // searchProductUrlBtn.addEventListener("click", (e) => {
+      //   e.target.href = href;
+      // });
+    </script>
+  </body>
+</html>

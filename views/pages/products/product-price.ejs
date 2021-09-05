@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <link rel="stylesheet" href="/stylesheets/products/product-price.css" />
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+    <div class="container product-price">
+      <div class="row text-center py-4">
+        <div class="jumbotron">
+          <% if (product && product != undefined) { %>
+          <h1><%= product.name %></h1>
+          <p><%= product.barcode.match(/((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i) ? 'SKU: ' + product.sku : 'Código de barras: ' + product.barcode %></p>
+          <div class="col-6">
+            <h2>
+              Precio: <%= product.product_outlets.length && product.product_outlets[0].price_inc_tax ? new Intl.NumberFormat('es-MX', {style: 'currency', currency:
+              'MXN'}).format(product.product_outlets[0].price_inc_tax) : '0' %>
+            </h2>
+          </div>
+          <div class="col-6">
+            <h2>
+              Costo: <%= product.product_outlets.length && product.product_outlets[0].cost_price ? new Intl.NumberFormat('es-MX', {style: 'currency', currency:
+              'MXN'}).format(product.product_outlets[0].cost_price) : '0' %>
+            </h2>
+          </div>
+
+          <div class="row justify-content-center row-cols-auto text-center mt-5">
+            <div class="col">
+              <a href="/products/price" class="btn btn-primary"
+                >Buscar otro precio</a
+              >
+            </div>
+            <div class="col">
+              <a
+                href="/products/<%= product.id %>"
+                class="btn btn-light"
+                >Editar producto</a
+              >
+            </div>
+            <form action="/products/<%= product.id %>?_method=DELETE" method="POST">
+              <button
+              type="submit"
+              class="btn btn-danger"
+              >Eliminar producto</button
+            >
+            </form>
+          </div>
+
+          <% } else { %>
+          <h3>No encontramos el producto: <%= criteria %>😔</h3>
+          <a
+            href="/products/price"
+            class="btn btn-light"
+            style="font-size: 16px; margin-top: 1em"
+            >Intentar de nuevo</a
+          >
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <footer><%- include('../../partials/footer'); %></footer>
+  </body>
+</html>

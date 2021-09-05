@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <link rel="stylesheet" href="/stylesheets/products/product-types.css" />
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+    <div class="container product-types mt-5">
+          <%- include('../../partials/back'); %>
+      <div class="row mb-4">
+        <p class="h4"><%= totalCount %> Departamentos</p>
+      </div>
+      <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-5">
+        <% if (productTypes) { %> <% productTypes.map(type => { %>
+        <div class="col">
+          <div class="card h-100">
+            <a href="/products/types/top/<%= type.id %>" class="stretched-link text-decoration-none">
+              <img
+                src="https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                class="card-img-top"
+                alt="Product type image"
+              />
+              <div class="card-body text-dark">
+                <h5 class="card-title"><%= type.name %></h5>
+                <p class="card-text">
+                  <%= type.description ? type.description : 'N/a' %>
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <% }) %> <% } else { %>
+        <div class="col">
+          <div class="card h-100">
+            <img src="..." class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">
+                This card has supporting text below as a natural lead-in to
+                additional content.
+              </p>
+            </div>
+            <div class="card-footer">
+              <small class="text-muted">Last updated 3 mins ago</small>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <footer><%- include('../../partials/footer'); %></footer>
+  </body>
+</html>
