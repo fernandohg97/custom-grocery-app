@@ -17,7 +17,9 @@
           Creado: <%= product.created_date_time %>
         </p>
       </div>
-      <form action="/products/<%= product.id %>" method="POST" class="row g-3 border" id="editProductForm">
+      <div class="g-3 border row">
+      <form action="/products/<%= product.id %>" method="POST" id="editProductForm">
+        <div class="row">
         <div class="col-12 mb-0">
           <p class="h5">Informacion General</p>
         </div>
@@ -206,12 +208,23 @@
          <p>Sin inventario</p>
        </div>
        <% } %>
-        <div class="col-12 mb-4">
-          <button type="submit" class="btn btn-primary">
+      </div>
+      </form>
+      <div class="row justify-content-start row-cols-auto text-center">
+        <div class="col mb-4">
+          <button type="submit" form="editProductForm" class="btn btn-primary">
             Actualizar producto
           </button>
         </div>
-      </form>
+        <form action="/products/<%= product.id %>?_method=DELETE" method="POST" class="col mb-4">
+          <button
+          type="submit"
+          class="btn btn-danger"
+          >Eliminar producto</button
+        >
+        </form>
+      </div>
+    </div>
     </div>
 
     <footer><%- include('../../partials/footer'); %></footer>

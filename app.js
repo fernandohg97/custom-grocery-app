@@ -22,12 +22,12 @@ app.use(session({
   cookie: { secure: false },
   unset: 'destroy'
 }))
-app.use(expressLayouts)
+// app.use(expressLayouts)
 
 // app.set('trust proxy', 1) // trust first proxy
 // Set view engine
 app.set('view engine', 'ejs')
-app.set('layout', './layouts/layout')
+// app.set('layout', './layouts/layout')
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(function (req, res, next) {
