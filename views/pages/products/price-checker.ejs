@@ -2,15 +2,50 @@
 <html lang="en">
   <head>
     <%- include('../../partials/head'); %>
-    <link rel="stylesheet" href="/stylesheets/product.css" />
+    <link rel="stylesheet" href="/stylesheets/products/price-checker.css" />
   </head>
   <body>
     <header><%- include('../../partials/header'); %></header>
 
-    <main class="container mt-5">
+    <main class="container mt-5 mb-5">
         <%- include('../../partials/home-btn'); %>
-      <div class="row justify-content-center mt-5">
-        <div class="card text-center border-primary w-75">
+      <div class="text-center row justify-content-center align-items-center price-checker-row">
+        <div class="col">
+          <p class="title-text text-primary fw-bolder">
+            Verificador de precios
+          </p>
+          <p class="description-text text-secondary">
+            Hola! Yo te puedo ayudar a encontrar el precio de un producto.
+          </p>
+          <p class="subtitle-text">Ingresa el código de barras</p>
+          <form
+              action="/products/one"
+              method="GET"
+              class="needs-validation mt-5 mb-1 product-form"
+              novalidate
+            >
+              <div class="mx-auto w-75">
+                <input
+                  type="text"
+                  name="searchFilter"
+                  class="form-control form-control-lg border border-dark product-price-input"
+                  id="searchProductInput"
+                  aria-describedby="searchProductHelp"
+                  required
+                  placeholder="Ingresa o escanea el codigo de barras"
+                />
+                <div class="invalid-feedback text-start">
+                  Por favor debes ingresar un codigo de barras o SKU correcto. Pregunta a alguien de nosotros.
+                </div>
+              </div>
+              <div class="check-price-btn">
+                <button type="submit" class="btn btn-primary" id="searchProductUrl"> 
+                  Buscar precio
+                </button>
+              </div>
+            </form>
+        </div>
+        <!-- <div class="card text-center border-primary w-75">
           <div class="card-header">
             Hola! Yo te puedo ayudar a encontrar el precio de un producto.
           </div>
@@ -43,20 +78,11 @@
                 </button>
               </div>
             </form>
-            <!-- <a
-              href="/products/one"
-              class="btn btn-primary"
-              id="searchProductUrl"
-            >
-              Buscar precio
-            </a> -->
-
           </div>
-        </div>
+        </div> -->
       </div>
     </main>
 
-    <footer><%- include('../../partials/footer'); %></footer>
     <script>
       // Example starter JavaScript for disabling form submissions if there are invalid fields
       (function () {

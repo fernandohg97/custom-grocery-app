@@ -1,12 +1,44 @@
-.product-price {
-  background: black;
-  color: white;
+/* .product-price {
+  color: black;
   width: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
   top: 50%;
   left: 50%;
   padding: 20px;
-  resize: both;
+  resize: none;
   overflow: auto;
+} */
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 991.98px) { 
+  .product-price-row {
+    margin-top: 5em;
+  }
+  .product-barcode {
+    margin-top: 2em;
+    font-size: 16px;
+  }
+  .product-name {
+    font-size: 50px;
+  }
+  .product-cost, .product-price {
+    font-size: 30px;
+  }
+}
+/* Large devices (laptops, up to) */
+@media (min-width: 992px) {
+  .product-price-row {
+    margin-top: 5em;
+  }
+  .product-barcode {
+    margin-top: 2em;
+    font-size: 16px;
+  }
+  .product-name {
+    font-size: 50px;
+  }
+  .product-cost, .product-price {
+    font-size: 30px;
+  }
 }

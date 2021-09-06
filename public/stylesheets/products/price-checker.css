@@ -1,0 +1,50 @@
+.product-price-input[type=text] {
+  padding-bottom: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 991.98px) { 
+  .price-checker-row {
+    margin-top: 2em;
+  }
+  .description-text {
+    margin-top: 2em;
+    font-size: 16px;
+  }
+  .title-text {
+    font-size: 50px;
+  }
+  .subtitle-text {
+    font-size: 30px;
+  }
+
+  .check-price-btn {
+    margin-top: 2em;
+  }
+  .product-price-input::placeholder {
+    font-size: 14px;
+  }
+}
+/* Large devices (laptops, up to) */
+@media (min-width: 992px) {
+  .price-checker-row {
+    margin-top: 6em;
+  }
+  .description-text {
+    margin-top: 2em;
+    font-size: 22px;
+  }
+  .title-text {
+    font-size: 70px;
+  }
+  .subtitle-text {
+    font-size: 40px;
+    margin-top: 0;
+  }
+
+  .check-price-btn {
+    margin-top: 2em;
+  }
+}

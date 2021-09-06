@@ -2,28 +2,28 @@
 <html lang="en">
   <head>
     <%- include('../../partials/head'); %>
-    <link rel="stylesheet" href="/stylesheets/products/product-price.css" />
+    <link rel="stylesheet" href="/stylesheets/products/edit-product.css" />
   </head>
   <body>
     <header><%- include('../../partials/header'); %></header>
     <div class="container edit-product mt-5">
       <%- include('../../partials/home-btn'); %>
-      <div class="row mb-3">
-        <p class="h4"><%= product.name %></p>
+      <div class="row">
+        <p class="h4 text-primary"><%= product.name %></p>
         <p class="" style="font-size: 12px">
           <%= product.has_variants ? 'Este producto tiene variantes' : 'Este producto no tiene variantes' %>
         </p>
         <p class="" style="font-size: 12px">
-          Creado: <%= product.created_date_time %>
+          Fecha de creación: <%= new Date(product.created_date_time).toDateString() %>
         </p>
       </div>
-      <div class="g-3 border row">
+      <div class="mb-5 border row">
       <form action="/products/<%= product.id %>" method="POST" id="editProductForm">
         <div class="row">
         <div class="col-12 mb-0">
           <p class="h5">Informacion General</p>
         </div>
-        <div class="col-12">
+        <div class="col-12 mb-2">
           <input type="hidden" name="created_date_time" value="<%= product.created_date_time %>">
           <label class="form-label">Nombre</label>
           <input
@@ -57,12 +57,12 @@
           />
         </div>
         <!-- SECCION PRECIOS -->
-        <div class="col-12 mb-0">
+        <div class="col-12 mb-0 g-3">
           <p class="h5">Precios</p>
         </div>
         <% if (product.product_outlets.length > 0) { %>
           <% product.product_outlets.map((outlet, index) => { %>
-        <div class="col-md-4 align-self-end mt-0">
+        <div class="col-12-sm col-md-4 col-lg-4 align-self-end mt-0">
           <label class="form-label">Costo</label>
           <div class="input-group m-0">
             <span class="input-group-text">$</span>
@@ -75,7 +75,7 @@
             />
           </div>
         </div>
-        <div class="col-md-2 align-self-end mt-0">
+        <div class="col-12-sm col-md-4 col-lg-2 align-self-end mt-2">
           <label class="form-label">Margen</label>
           <div class="input-group m-0">
             <input
@@ -88,7 +88,7 @@
           <span class="input-group-text">%</span>
           </div>
         </div>
-        <div class="col-md-2 align-self-end mt-0">
+        <div class="col-12-sm col-md-4 col-lg-2 align-self-end mt-2">
           <label class="form-label">Precio publico (sin. impuesto)</label>
           <div class="input-group m-0">
             <span class="input-group-text">$</span>
@@ -102,7 +102,7 @@
           />
           </div>
         </div>
-        <div class="col-md-2 align-self-end mt-0">
+        <div class="col-12-sm col-md-6 col-lg-2 align-self-end mt-2">
           <label class="form-label">Impuesto</label>
           <select name="product_outlets[<%= index %>][tax_id]" id="productTaxId" class="form-select" aria-label="Current tax">
           <% if (taxes.length > 0) { %>
@@ -126,7 +126,7 @@
             readonly
           /> -->
         </div>
-        <div class="col-md-2 align-self-end mt-0">
+        <div class="col-12-sm col-md-6 col-lg-2 align-self-end mt-2">
           <label class="form-label">Precio público (con. impuesto)</label>
           <div class="input-group m-0">
             <span class="input-group-text">$</span>
@@ -145,17 +145,17 @@
             Sin precios
           </div>
           <% } %>
-        <div class="col-12 mb-0">
+        <div class="col-12 mb-0 g-3">
           <p class="h5">Inventario</p>
           <p class="text-primary">Controlar numero de piezas de este producto.</p>
         </div>
-        <div class="col-6">
+        <div class="col-sm-12 col-md-6 mb-2">
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
             <label class="form-check-label" for="flexSwitchCheckDefault">Quieres controlar el inventario de este producto?</label>
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-12-sm col-md-6 mb-4">
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
             <label class="form-check-label" for="flexCheckDefault">
@@ -167,7 +167,7 @@
         <!-- Inventory Outlets -->
         <% if (product.product_outlets.length > 0) { %>
           <% product.product_outlets.map((outlet, index) => { %>
-            <div class="col-4">
+            <div class="col-12-sm col-md-4 align-self-end">
               <input type="hidden" name="product_outlets[<%= index %>][inventory_to_receive]" value="<%= outlet.inventory_to_receive %>">
               <input type="hidden" name="product_outlets[<%= index %>][reserved_inventory]" value="<%= outlet.reserved_inventory %>">
               <input type="hidden" name="product_outlets[<%= index %>][visible_or_not]" value="<%= outlet.visible_or_not %>">
@@ -178,25 +178,25 @@
                 <input type="text" readonly class="form-control-plaintext fw-bold" id="" name="product_outlets[<%= index %>][outlet_name]" value="<%= outlet.outlet_name %>">
               </div>
             </div>
-            <div class="col-2">
+            <div class="col-12-sm col-md-2 align-self-end">
               <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Cantidad en mano</label>
                 <input type="text" class="form-control" id="" name="product_outlets[<%= index %>][on_hand_inventory]" value="<%= outlet.on_hand_inventory %>">
               </div>
             </div>
-            <div class="col-2">
+            <div class="col-12-sm col-md-2 align-self-end">
               <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Disponible en tienda</label>
                 <input type="text" class="form-control" id="" name="product_outlets[<%= index %>][available_inventory]" value="<%= outlet.available_inventory %>">
               </div>
             </div>
-            <div class="col-2">
+            <div class="col-12-sm col-md-2 align-self-end">
               <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Minimo</label>
                 <input type="text" class="form-control" id="" name="product_outlets[<%= index %>][reorder_level]" value="<%= outlet.reorder_level %>">
               </div>
             </div>
-            <div class="col-2">
+            <div class="col-12-sm col-md-2 align-self-end">
               <div class="mb-3">
                 <label for="exampleFormControlInput1" class="form-label">Cantidad a pedir</label>
                 <input type="text" class="form-control" id="" name="product_outlets[<%= index %>][reorder_qty]" value="<%= outlet.reorder_qty %>">
@@ -210,7 +210,7 @@
        <% } %>
       </div>
       </form>
-      <div class="row justify-content-start row-cols-auto text-center">
+      <div class="row justify-content-start row-cols-auto text-center mt-4">
         <div class="col mb-4">
           <button type="submit" form="editProductForm" class="btn btn-primary">
             Actualizar producto
@@ -227,7 +227,6 @@
     </div>
     </div>
 
-    <footer><%- include('../../partials/footer'); %></footer>
     <script src="/javascripts/calculatePrices.js"></script>
   </body>
 </html>
