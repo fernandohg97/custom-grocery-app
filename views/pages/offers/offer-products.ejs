@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <link rel="stylesheet" href="/stylesheets/products.css" />
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+    <div class="container products mt-5">
+          <%- include('../../partials/back'); %>
+      <% if (products.length > 0) { %>
+      <div class="row mb-4">
+        <p class="h4"><%= products.length %> Productos</p>
+      </div>
+        <% products.map(product => { %>
+          <div class="row justify-content-center">
+          <div class="card mb-3 w-50">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="<%= product.primary_image %>" class="card-img mx-0" alt="...">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h3 class="card-title text-primary"><%= product.name %></h3>
+                  <p class="card-text h6">Precio original: <%= product.product_outlets[0].price_inc_tax %></p>
+                  <p class="card-text h6 text-danger">Precio oferta: <%= product.product_outlets[0].price_inc_tax - (product.product_outlets[0].price_inc_tax * discount) %></p>
+                  <p class="card-text"><small class="text-muted"><%= product.primary_image %></small></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        <% }) %>
+        <% } else { %>
+          <h5>No products found!</h5>
+          <% } %>
+    </div>
+
+    <footer><%- include('../../partials/footer'); %></footer>
+  </body>
+</html>

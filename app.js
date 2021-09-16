@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, '/public')))
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: true,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: { secure: false },
   unset: 'destroy'
 }))
@@ -48,7 +48,8 @@ app.use('/offers', offerRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404))
+  if (!req.session || !req.session.accessToken) return next(createError(401, 'No se encontró ninguna sesión. Por favor inicia sesión para ingresar.'))
+  return next(createError(404, 'No encontramos el recurso que buscas.'))
 })
 
 // error handler
@@ -56,12 +57,12 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
+
   // render the error page
-  console.log(err)
-  // console.log(err)
   // return res.status(err.status || 500)
   return res.render('pages/error', {
-    message: err.message
+    errMessage: err.message,
+    statusCode: err.status
   })
 })
 

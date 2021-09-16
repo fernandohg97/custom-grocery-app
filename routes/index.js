@@ -11,16 +11,15 @@ router.get('/', function (req, res, next) {
 })
 
 router.get('/product', (req, res, next) => {
-  res.render('pages/product')
+  return res.render('pages/product')
 })
 
 router.get('/welcome', async (req, res, next) => {
-  if (!req.session) return next({ err: 'No session Found!' })
+  if (!req.session || !req.session.accessToken) return next()
   // const { token } = req.query
 
   // const url = 'https://api.hikeup.com/api/v1/users/get_all'
   // const options = { headers: { Accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-
   return res.render('pages/welcome', { message: undefined })
 })
 
@@ -31,10 +30,12 @@ router.get('/auth', (req, res, next) => {
 
 router.get('/logout', (req, res, next) => {
   console.log(req.session.accessToken)
-  req.session.destroy()
-  res.clearCookie('connect.sid')
-  // req.session = null
-  return res.redirect('/')
+  req.session.destroy(err => {
+    if (err) return next(err)
+    res.clearCookie('connect.sid', { path: '/', domain: 'localhost' })
+    // req.session = null
+    return res.redirect('/')
+  })
 })
 
 router.get('/callback', (req, res, next) => {
