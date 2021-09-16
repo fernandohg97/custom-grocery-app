@@ -9,6 +9,7 @@ const updateProductUrl = 'https://api.hikeup.com/api/v1/products/create'
 const deleteProductUrl = 'https://api.hikeup.com/api/v1/products/delete'
 const taxesUrl = 'https://api.hikeup.com/api/v1/taxes/get_all'
 const axios = require('axios').default
+const createError = require('http-errors')
 
 class Product {
   static async oneProductBySku (req, res, next) {
@@ -198,7 +199,7 @@ class Product {
     let { pageSize, skipCount } = req.query
 
     if (!pageSize || !skipCount) {
-      pageSize = 1
+      pageSize = 0
       skipCount = 0
     }
 
@@ -206,12 +207,17 @@ class Product {
     const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
 
     try {
+      // Call API to get all products
       const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&skip_count=${skipCount}`, opts)
       const products = data.data
 
-      console.log(products)
+      if (!products.items.length) return next(createError(404, 'No se encontraron productos.'))
+
       return res.status(200).send(products)
     } catch (error) {
+      const { response } = error
+      console.log(response.data.error)
+      if (response.status === 400) return next(createError(400, 'Peticion incorrecta'))
       return next(error)
     }
   }
