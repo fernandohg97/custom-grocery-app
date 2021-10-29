@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router()
 const axios = require('axios').default
 const url = require('url')
+const configVars = require('../config/config.vars')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -25,7 +26,7 @@ router.get('/welcome', async (req, res, next) => {
 
 router.get('/auth', (req, res, next) => {
   if (req.session.accessToken) return res.redirect('/welcome')
-  res.redirect(`https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&scope=all`)
+  res.redirect(`https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${configVars.client_id}&redirect_uri=${configVars.redirect_uri}&scope=all`)
 })
 
 router.get('/logout', (req, res, next) => {
@@ -46,9 +47,9 @@ router.get('/callback', (req, res, next) => {
 
   const params = new url.URLSearchParams({
     code: requestToken,
-    client_id: process.env.CLIENT_ID,
-    client_secret: process.env.CLIENT_SECRET,
-    redirect_uri: process.env.REDIRECT_URI,
+    client_id: configVars.client_id,
+    client_secret: configVars.client_secret,
+    redirect_uri: configVars.redirect_uri,
     grant_type: 'authorization_code'
   })
   // const body = JSON.stringify({

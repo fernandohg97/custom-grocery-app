@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="card-footer text-dark">
-            Mensaje del servidor: <%= errMessage ? errMessage : 'n/a' %> | Error: <%= statusCode ? statusCode : 'n/a' %>
+            Mensaje del servidor: <%= error.message %> | Código: <%= error.status %>
           </div>
         </div>
       </div>

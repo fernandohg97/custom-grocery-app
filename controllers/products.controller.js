@@ -17,7 +17,7 @@ class Product {
 
     // In case query params are not sent
     if (!pageSize || !skipCount) {
-      pageSize = 1
+      pageSize = 100
       skipCount = 0
     }
 
@@ -29,10 +29,11 @@ class Product {
       const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&Skip_count=${skipCount}&Filter=${searchFilter}`, opts)
       // Get the product
       const product = data.data.items[0]
-      console.log(product)
+      // console.log(data)
 
       // Successfully render product price view
       return res.render('pages/products/product-price', { product: product, criteria: searchFilter })
+      // return res.send(data.data)
     } catch (error) {
       return next(error)
     }
@@ -199,24 +200,26 @@ class Product {
     let { pageSize, skipCount } = req.query
 
     if (!pageSize || !skipCount) {
-      pageSize = 0
+      pageSize = 50
       skipCount = 0
     }
 
     // Options for this request
     const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-
+    console.log(opts)
     try {
       // Call API to get all products
-      const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&skip_count=${skipCount}`, opts)
+      const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&skip_count=${skipCount}&Sorting=created_date_time`, opts)
+      // console.log(data)
       const products = data.data
 
       if (!products.items.length) return next(createError(404, 'No se encontraron productos.'))
 
       return res.status(200).send(products)
     } catch (error) {
+      console.log(error)
       const { response } = error
-      console.log(response.data.error)
+      console.log(response)
       if (response.status === 400) return next(createError(400, 'Peticion incorrecta'))
       return next(error)
     }

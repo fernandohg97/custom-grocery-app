@@ -4,10 +4,12 @@ const productCtrl = require('../controllers/products.controller')
 const validateProduct = require('../middlewares/productValidation')
 
 // Route Views
-productRouter.get('/price', (req, res) => res.render('pages/products/price-checker'))
-
 /* GET all cost and retail price for all products. */
 productRouter.get('/', productCtrl.allProducts)
+
+// Get product price checker view
+productRouter.get('/price', (req, res) => res.render('pages/products/price-checker'))
+
 // Get one product retail price, barcode and name
 productRouter.get('/one', productCtrl.oneProductBySku)
 // Get all product types

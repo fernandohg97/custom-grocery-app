@@ -7,6 +7,8 @@ const logger = require('morgan')
 const session = require('express-session')
 const app = express()
 const methodOverride = require('method-override')
+const configVars = require('./config/config.vars')
+
 require('dotenv').config()
 
 app.use(methodOverride('_method'))
@@ -57,12 +59,11 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
-
+  // console.log(err)
   // render the error page
   // return res.status(err.status || 500)
   return res.render('pages/error', {
-    errMessage: err.message,
-    statusCode: err.status
+    error: err
   })
 })
 
