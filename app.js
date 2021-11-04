@@ -7,7 +7,6 @@ const logger = require('morgan')
 const session = require('express-session')
 const app = express()
 const methodOverride = require('method-override')
-const configVars = require('./config/config.vars')
 
 require('dotenv').config()
 
@@ -43,9 +42,11 @@ app.use(function (req, res, next) {
 const indexRouter = require('./routes/index')
 const productRouter = require('./routes/products.route')
 const offerRouter = require('./routes/offers.route')
+const salesRouter = require('./routes/sales.route')
 
 app.use('/', indexRouter)
 app.use('/products', productRouter)
+app.use('/sales', salesRouter)
 app.use('/offers', offerRouter)
 
 // catch 404 and forward to error handler
