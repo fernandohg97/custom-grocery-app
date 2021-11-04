@@ -1,9 +1,19 @@
 <div class="row">
   <p class="text-center text-muted">&copy; Copyright 2020 The Awesome People</p>
 </div>
+<!-- <script src="https://cdn.metroui.org.ua/v4.3.2/js/metro.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
 <!-- Go to previous page script -->
 <script>
   function goBack() {
     window.history.back();
+  }
+
+  function setSalesDateFilter() {
+    let date = new Date();
+    let month = (date.getMonth() + 1) < 10 ? '0'.concat(date.getMonth() + 1) : date.getMonth() + 1
+    let day = date.getDate() < 10 ? '0'.concat(date.getDate()) : date.getDate()
+    let currentDate = [date.getFullYear(), month, day].join('-');
+    return currentDate;
   }
 </script>

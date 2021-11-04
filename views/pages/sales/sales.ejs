@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <!-- <link rel="stylesheet" href="/stylesheets/sales/sales.css" /> -->
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+    <div class="container all-sales mb-5">
+      <%- include('../../partials/back'); %>
+      <div class="row mb-3">
+        <div class="col-sm-4">
+          <p class="h4"><span id="total-sales-found" class="badge bg-success"><%= totalCount %></span> Ventas</p>
+          <div>
+              <label for="searchSaleInput" class="form-label">Busca un registro</label>
+              <input type="text" name="searchSaleInput" class="form-control" id="searchSaleInput" placeholder="Ingresa # de venta, fecha, total, etc">
+          </div>
+        </div>
+        <!-- DATE FILTER INPUT -->
+        <form 
+          action="/sales"
+          method="GET"
+          class="sales-form col-sm-8 align-self-end"
+          novalidate
+          >
+          <div class="row">
+            <div class="col-sm-4">
+              <label for="date-filter" class="form-label">Fecha inicio</label>
+              <input id="date-filter-start" name="fromDate" type="date" class="form-control sales-filter-date" aria-label="date-filter">
+              <!-- <div class="general-info-invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                Por favor ingresa una fecha correcta.
+              </div> -->
+            </div>
+            <div class="col-sm-4">
+              <label for="date-filter" class="form-label">Fecha fin</label>
+              <input id="date-filter-end" name="toDate" type="date" class="form-control sales-filter-date" aria-label="date-filter">
+            </div>
+            <div class="col-sm-2 align-self-end">
+              <button type="submit" class="btn btn-primary" id="searchSalesDate"> 
+                Buscar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <table class="table table-sm table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col"># Venta</th>
+            <th scope="col">Transaccion</th>
+            <th scope="col">Caja</th>
+            <th scope="col">Descuento</th>
+            <th scope="col">Monto Total</th>
+            <th scope="col">Cierre</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% if (sales.length) { %> <% sales.map(sale => { %>
+          <tr>
+            <th scope="row"><%= sale.number ? sale.number : 'n/a' %></th>
+            <td><%= new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'medium' }).format(new Date(sale.transactionDate)) %></td>
+            <td><%= sale.registerName %></td>
+            <td><%= new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(sale.totalDiscount) %></td>
+            <td><%= new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(sale.netAmount) %></td>
+            <td><%= new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'medium' }).format(new Date(sale.finalizeDate)) %></td>
+          </tr>
+          <% }) %> 
+          <% } else { %> 
+          <div class="alert alert-secondary" role="alert">
+            Ups, no encontramos ventas!
+          </div>
+        <% } %>
+        </tbody>
+      </table>
+      <%- include('../../partials/pagination', { resultsPerPage, currentPage, numPages}); %>
+    </div>
+    <footer><%- include('../../partials/footer'); %></footer>
+    <script>
+      document.getElementById('date-filter-start').value = setSalesDateFilter();
+      document.getElementById('date-filter-end').value = setSalesDateFilter();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <!-- <link rel="stylesheet" href="/stylesheets/products/products.css" /> -->
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+    <div class="container all-products mb-5">
+      <%- include('../../partials/back'); %>
+      <div class="row mb-4">
+        <p class="h4"><%= totalCount %> Productos</p>
+      </div>
+      <table class="table table-sm table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Codigo de barras</th>
+            <th scope="col">Variantes</th>
+            <th scope="col">Precio</th>
+            <th scope="col">Creado</th>
+            <th scope="col">Actualizado</th>
+            <th scope="col">Activo</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% if (products.length) { %> <% products.map(product => { %>
+          <tr>
+            <th scope="row"><%= product.name ? product.name : 'n/a' %></th>
+            <td><%= product.barcode %></td>
+            <td><%= product.has_variants %></td>
+            <td><%= new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(product.product_outlets[0].price_inc_tax) %></td>
+            <td><%= new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(product.created_date_time)) %></td>
+            <td><%= new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(product.last_modified)) %></td>
+            <td> 
+                <span class="<%= product.isActive ? 'badge bg-primary' : 'badge bg-secondary' %>"><%= product.isActive %></span>
+            </td>
+          </tr>
+          <% }) %> 
+          <% } else { %> 
+          <div class="alert alert-secondary" role="alert">
+            Ups, no encontramos los productos!
+          </div>
+        <% } %>
+        </tbody>
+      </table>
+      <%- include('../../partials/pagination'); %>
+    </div>
+    <footer><%- include('../../partials/footer'); %></footer>
+  </body>
+</html>
