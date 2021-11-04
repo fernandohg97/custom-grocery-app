@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 const isDevelopment = (process.env.NODE_ENV === 'development')
-console.log(process.env.NODE_ENV)
+
 if (isDevelopment) {
   module.exports = {
     client_id: process.env.DEV_CLIENT_ID,
