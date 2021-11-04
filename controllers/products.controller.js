@@ -200,22 +200,27 @@ class Product {
     let { pageSize, skipCount } = req.query
 
     if (!pageSize || !skipCount) {
-      pageSize = 50
+      pageSize = 100
       skipCount = 0
     }
 
     // Options for this request
     const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-    console.log(opts)
+
     try {
       // Call API to get all products
-      const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&skip_count=${skipCount}&Sorting=created_date_time`, opts)
+      const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&skip_count=${skipCount}&Sorting=last_modified`, opts)
       // console.log(data)
       const products = data.data
 
-      if (!products.items.length) return next(createError(404, 'No se encontraron productos.'))
+      // if (!products.items.length) return next(createError(404, 'No se encontraron productos.'))
 
-      return res.status(200).send(products)
+      // return res.status(200).send({
+      //   products: products.items,
+      //   totalCount: products.items.length
+      // })
+
+      return res.render('pages/products/products', { products: products.items, totalCount: products.items.length })
     } catch (error) {
       console.log(error)
       const { response } = error
