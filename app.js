@@ -7,6 +7,7 @@ const logger = require('morgan')
 const session = require('express-session')
 const app = express()
 const methodOverride = require('method-override')
+const favicon = require('serve-favicon')
 require('dotenv').config()
 
 app.use(methodOverride('_method'))
@@ -15,6 +16,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '/public')))
+app.use(favicon(path.join(__dirname, 'public/images', 'favicon.ico')))
+
 app.use(session({
   secret: process.env.SECRET_KEY,
   resave: true,

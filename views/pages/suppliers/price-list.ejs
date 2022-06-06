@@ -15,6 +15,9 @@
   <body>
     <header><%- include('../../partials/header'); %></header>
     <div class="container mt-3 product-list mb-5">
+      <% if (successMessage.length > 0) { %> 
+        <%- include('../../partials/successMessage'); %>
+      <% } %>
       <% if (supplierName !== undefined && supplierName.length > 0) { %>
 
       <%- include('../../partials/home-btn'); %>
@@ -24,13 +27,17 @@
           <p id="total-products" class="fw-bold text-primary" style="font-size: 14px;"></p>
         </div>
         <div class="col-2">
-            <button class="btn btn-primary" type="button" onclick="updateProductData()">
+          <form action="/suppliers/sheets/update-product-data" method="GET" onsubmit="loadingSpinner()">
+            <input type="hidden" name="supplierId" value="<%= supplierId %>">
+            <input type="hidden" name="supplierName" value="<%= supplierName %>">
+            <button class="btn btn-primary" type="submit">
               Actualizar datos
               <span id="loading-update-product-data" class="spinner-grow spinner-grow-sm d-none" role="status" aria-hidden="true"></span>
             </button>
+          </form>
         </div>
       </div>
-      <div id="loading-price-list" class="loading-spinner loading-add-cost-review d-flex justify-content-center align-items-center text-center d-none">
+      <div id="loading-price-list" class="mt-2 loading-spinner loading-add-cost-review d-flex justify-content-center align-items-center text-center d-none">
         <div>
           <div class="spinner-grow mb-1" style="width: 3rem; height: 3rem;" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -78,8 +85,11 @@
 
     <!-- Javascript code -->
     <script>
+      const nodeEnv = '<%= process.env.NODE_ENV %>'
+      console.log(nodeEnv)
       const supplierId = '<%- supplierId %>'
       const supplierName = '<%- supplierName %>'
+      // console.log(Boolean(redirect))
       const apiUrl = '<%= process.env.LOCAL_API_URL %>'
       const getAllProductsUrl = 'https://api.hikeup.com/api/v1/products/get_all'
       const pageSize = 1000
@@ -101,7 +111,6 @@
           }
         })
         const products = await response.json()
-        console.log(products)
 
         const filterProducts = products.items.reduce((names, product) => {
           if (!product.has_variants) {
@@ -176,18 +185,21 @@
         loadingSpinner.classList.add('d-none')
       }
 
-      async function updateProductData(e) {
+      async function loadingSpinner(e) {
         const loadingSpinner = document.getElementById('loading-update-product-data')
         loadingSpinner.classList.remove('d-none')
-        const response = await fetch(`${apiUrl}/suppliers/sheets/update-product-data?supplierId=${supplierId}&supplierName=${supplierName}`)
-        console.log(response)
-        if (!response.ok) {
-          return alert('Ocurrio un error!')
+        const success = '<%- successMessage %>'
+        if (success.length > 0) {
+          loadingSpinner.classList.add('d-none')
         }
-        const data = await response.json()
-        loadingSpinner.classList.add('d-none')
+        // const response = await fetch(`${apiUrl}/suppliers/sheets/update-product-data?supplierId=${supplierId}&supplierName=${supplierName}`)
+        // console.log(response)
+        // if (!response.ok) {
+        //   return alert('Ocurrio un error!')
+        // }
+        // const data = await response.json()
 
-        alert(`Mensaje: ${data.message}`)
+        // alert(`Mensaje: ${data.message}`)
 
       }
     </script>

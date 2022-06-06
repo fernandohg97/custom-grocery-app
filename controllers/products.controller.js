@@ -147,7 +147,7 @@ class Product {
       // console.log(req.body)
       console.log(productEdited)
       // return res.send(req.body)
-      return res.render('pages/welcome', { message: `${name} se actualizo correctamente!` })
+      return res.render('pages/welcome', { successMessage: `${name} se actualizo correctamente!` })
     } catch (error) {
       return next(error)
     }
@@ -162,7 +162,7 @@ class Product {
     try {
       await axios.delete(`${deleteProductUrl}/${id}`, opts)
 
-      return res.render('pages/welcome', { message: `Producto con ID: ${id} eliminado satisfactoriamente!` })
+      return res.render('pages/welcome', { successMessage: `Producto con ID: ${id} eliminado satisfactoriamente!` })
     } catch (error) {
       return next(error)
     }

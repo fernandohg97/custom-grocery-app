@@ -48,7 +48,7 @@ class Supplier {
       return res.render('pages/suppliers/price-list', {
         supplierName,
         supplierId,
-        token: req.session.accessToken
+        successMessage: '',
       })
       // // Call API to get all products
       // const data = await axios.get(`${Supplier.getAllProductsUrl}?page_size=${res.locals.resultsPerPage}&Skip_count=${res.locals.skipCount}&sorting=${sorting}&supplierIds=${supplierId}`, opts)
@@ -162,7 +162,11 @@ class Supplier {
       // Read rows from spreadsheet
       const response = await googleSheets.spreadsheets.values.update(options);
 
-      return res.status(201).send({message: `Se actualizaron ${response.data.updatedRows} productos exitosamente!`, sheetData: response.data})
+      return res.render('pages/suppliers/price-list', {
+        supplierName,
+        supplierId,
+        successMessage: `Se actualizaron ${response.data.updatedRows} productos exitosamente!`, 
+      })
     } catch (error) {
       console.log(error)
       const { response } = error
