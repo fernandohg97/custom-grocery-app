@@ -12,7 +12,15 @@
             <%- include('../partials/successMessage'); %>
           </div>
           <% } %>
-          <div class="row gy-5 mt-5 align-items-start row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <!-- TITULO DE MENU -->
+          <div class="row">
+            <div class="col">
+              <h1 class="title-menu">bienvenido
+                <span class="text-uppercase text-primary" style="font-size: 12px;">&nbsp;(modo prueba)</span></h1>
+              <p class="fs-6">Tener un buen control, registro y administración de nuestro trabajo nos permite ser más efectivos.</p>
+            </div>
+          </div>
+          <div class="row gy-4 mt-1 align-items-start row-cols-1 row-cols-md-2 row-cols-lg-3">
             <div class="col">
               <div class="card text-center border-primary h-100 card-container">
                 <div class="card-body">
@@ -20,6 +28,17 @@
                   <p class="card-text welcome-description">Bienvenido</p>
                   <div class="d-grid gap-2 link-card-btn">
                     <a href="/products/price" class="btn btn-primary">Buscar precio</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-center border-primary h-100 card-container">
+                <div class="card-body">
+                  <h4 class="card-title">Listas de precios</h4>
+                  <p class="card-text welcome-description">Bienvenido</p>
+                  <div class="d-grid gap-2 link-card-btn">
+                    <a href="/suppliers" class="btn btn-primary">Ver listas</a>
                   </div>
                 </div>
               </div>
@@ -36,28 +55,17 @@
               </div>
             </div>
             <div class="col">
-              <div class="card text-center border-primary h-100 card-container">
-                <div class="card-body">
-                  <h4 class="card-title">Productos antiguos</h4>
-                  <p class="card-text welcome-description">Bienvenido</p>
-                  <div class="d-grid gap-2 link-card-btn">
-                    <a href="/products" class="btn btn-primary">Ver productos</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card text-center border-primary h-100 card-container">
+              <div class="card text-center border-secondary h-100 card-container">
                 <div class="card-body">
                   <h4 class="card-title">Ofertas</h4>
-                  <p class="card-text welcome-description">Bienvenido</p>
+                  <p class="card-text welcome-description">No disponible</p>
                   <div class="d-grid gap-2 link-card-btn">
-                    <a href="/offers" class="btn btn-primary">Ver ofertas activas</a>
+                    <a href="/offers" class="btn btn-primary pe-none bg-secondary border-0" tabindex="-1" aria-disabled="true">Ver ofertas activas</a>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <!-- <div class="col">
               <div class="card text-center border-primary h-100 card-container">
                 <div class="card-body">
                   <h4 class="card-title">Las ventas</h4>
@@ -78,9 +86,10 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
       </div>
+      <footer><%- include('../partials/footer'); %></footer>
 
   </body>
 </html>

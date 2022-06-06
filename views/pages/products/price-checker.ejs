@@ -7,7 +7,7 @@
   <body>
     <header><%- include('../../partials/header'); %></header>
 
-    <main class="container mt-5 mb-5">
+    <main class="container mt-3 mb-5">
         <%- include('../../partials/home-btn'); %>
       <div class="text-center row justify-content-center align-items-center price-checker-row">
         <div class="col">
@@ -32,9 +32,9 @@
                   id="searchProductInput"
                   aria-describedby="searchProductHelp"
                   required
-                  placeholder="Ingresa o escanea el codigo de barras"
+                  placeholder="Ingresa el nombre o escanea el código de barras"
                 />
-                <div class="invalid-feedback text-start">
+                <div class="invalid-feedback text-start fs-6">
                   Por favor debes ingresar un codigo de barras o SKU correcto. Pregunta a alguien de nosotros.
                 </div>
               </div>
@@ -129,5 +129,8 @@
       //   e.target.href = href;
       // });
     </script>
+
+    <footer><%- include('../../partials/footer'); %></footer>
+
   </body>
 </html>

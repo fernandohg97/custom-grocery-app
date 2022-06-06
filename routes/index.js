@@ -33,7 +33,8 @@ router.get('/logout', (req, res, next) => {
   console.log(req.session.accessToken)
   req.session.destroy(err => {
     if (err) return next(err)
-    res.clearCookie('connect.sid', { path: '/', domain: 'localhost' })
+    res.clearCookie('auth')
+    // res.clearCookie('connect.sid', { path: '/', domain: 'localhost' })
     // req.session = null
     return res.redirect('/')
   })
@@ -52,11 +53,6 @@ router.get('/callback', (req, res, next) => {
     redirect_uri: configVars.redirect_uri,
     grant_type: 'authorization_code'
   })
-  // const body = JSON.stringify({
-  //   client_id: process.env.CLIENT_ID,
-  //   client_secret: process.env.CLIENT_SECRET,
-  //   code: requestToken
-  // })
 
   const opts = { headers: { accept: 'application/x-www-form-urlencoded' } }
 
@@ -65,6 +61,7 @@ router.get('/callback', (req, res, next) => {
     .then(token => {
       console.log(`Token: ${token}`)
       req.session.accessToken = token
+      res.cookie('auth', token, { expires: new Date(Date.now() + 2 * 3600000) })
       return res.redirect('/welcome')
     })
     .catch(err => {

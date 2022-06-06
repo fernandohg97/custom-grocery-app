@@ -43,10 +43,14 @@ const indexRouter = require('./routes/index')
 const productRouter = require('./routes/products.route')
 const offerRouter = require('./routes/offers.route')
 const salesRouter = require('./routes/sales.route')
+const suppliersRouter = require('./routes/suppliers.route')
+const registerClosuresRouter = require('./routes/registerClosures.route')
 
 app.use('/', indexRouter)
 app.use('/products', productRouter)
+app.use('/suppliers', suppliersRouter)
 app.use('/sales', salesRouter)
+app.use('/registers', registerClosuresRouter)
 app.use('/offers', offerRouter)
 
 // catch 404 and forward to error handler

@@ -9,8 +9,9 @@
     <div class="container all-products mb-5">
       <%- include('../../partials/back'); %>
       <div class="row mb-4">
-        <p class="h4"><%= totalCount %> Productos</p>
+        <p class="h4"><span id="total-sales-found" class="badge bg-success"><%= totalCount %></span> Productos</p>
       </div>
+      <% if (products.length) { %>
       <table class="table table-sm table-striped table-hover">
         <thead class="table-dark">
           <tr>
@@ -24,7 +25,7 @@
           </tr>
         </thead>
         <tbody>
-        <% if (products.length) { %> <% products.map(product => { %>
+        <% products.map(product => { %>
           <tr>
             <th scope="row"><%= product.name ? product.name : 'n/a' %></th>
             <td><%= product.barcode %></td>
@@ -37,13 +38,14 @@
             </td>
           </tr>
           <% }) %> 
-          <% } else { %> 
-          <div class="alert alert-secondary" role="alert">
-            Ups, no encontramos los productos!
-          </div>
-        <% } %>
         </tbody>
       </table>
+      <% } else { %> 
+        <div class="alert alert-secondary text-center fs-6" role="alert">
+          Ups, no encontramos los productos!
+        </div>
+      <% } %>
+      <%- include('../../partials/products-pagination', { resultsPerPage, currentPage, numPages}); %>
     </div>
     <footer><%- include('../../partials/footer'); %></footer>
   </body>

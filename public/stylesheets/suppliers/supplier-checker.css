@@ -1,4 +1,4 @@
-.product-price-input[type=text] {
+.supplier-input[type=text] {
   padding-bottom: 10px;
   box-sizing: border-box;
   width: 100%;
@@ -6,7 +6,7 @@
 
 /* Medium devices (tablets, 768px and up) */
 @media (max-width: 991.98px) { 
-  .price-checker-row {
+  .supplier-checker-row {
     margin-top: 2em;
   }
   .description-text {
@@ -20,17 +20,17 @@
     font-size: 28px;
   }
 
-  .check-price-btn {
+  .check-supplier-btn {
     margin-top: 2em;
   }
-  .product-price-input::placeholder {
+  .supplier-input::placeholder {
     font-size: 14px;
   }
 }
 /* Large devices (laptops, up to) */
 @media (min-width: 992px) {
-  .price-checker-row {
-    margin-top: 5em;
+  .supplier-checker-row {
+    margin-top: 4em;
   }
   .description-text {
     margin-top: 1em;
@@ -44,7 +44,7 @@
     margin-top: 0;
   }
 
-  .check-price-btn {
+  .check-supplier-btn {
     margin-top: 2em;
   }
 }
