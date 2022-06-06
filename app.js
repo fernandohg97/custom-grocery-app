@@ -7,7 +7,6 @@ const logger = require('morgan')
 const session = require('express-session')
 const app = express()
 const methodOverride = require('method-override')
-
 require('dotenv').config()
 
 app.use(methodOverride('_method'))

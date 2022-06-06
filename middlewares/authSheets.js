@@ -6,6 +6,5 @@ module.exports = async () => {
     keyFile: 'credentials.json',
     scopes: 'https://www.googleapis.com/auth/spreadsheets'
   })
-
   return await auth.getClient()
 }
