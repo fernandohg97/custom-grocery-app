@@ -147,7 +147,7 @@ class Product {
       // console.log(req.body)
       console.log(productEdited)
       // return res.send(req.body)
-      return res.render('pages/welcome', { successMessage: `${name} se actualizo correctamente!` })
+      return res.render('pages/welcome', { successMessage: `${name} se actualizó correctamente!` })
     } catch (error) {
       return next(error)
     }
@@ -160,7 +160,7 @@ class Product {
     // Set option headers
     const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
     try {
-      await axios.delete(`${deleteProductUrl}/${id}`, opts)
+      await axios.delete(`${Product.deleteProductUrl}/${id}`, opts)
 
       return res.render('pages/welcome', { successMessage: `Producto con ID: ${id} eliminado satisfactoriamente!` })
     } catch (error) {
