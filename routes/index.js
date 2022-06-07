@@ -21,7 +21,7 @@ router.get('/welcome', async (req, res, next) => {
 
   // const url = 'https://api.hikeup.com/api/v1/users/get_all'
   // const options = { headers: { Accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-  return res.render('pages/welcome', { message: undefined })
+  return res.render('pages/welcome', { successMessage: '' })
 })
 
 router.get('/auth', (req, res, next) => {
