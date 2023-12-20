@@ -17,6 +17,7 @@ const { secretKey } = require('./config/config.vars')
 const CURRENT_DIR = path.join(__dirname)
 const MIME_TYPES = ['image/jpeg', 'image/png']
 const netlifyApiUrl = '/.netlify/functions/api'
+const serverless = require('serverless-http')
 // console.log(CURRENT_DIR)
 // console.log(path.join(CURRENT_DIR, 'uploads/receipts'))
 
@@ -128,17 +129,17 @@ const paymentsRouter = require('./routes/payments.route')
 const registerClosuresRouter = require('./routes/registerClosures.route')
 const againstReceiptsRouter = require('./routes/againstReceipts.route')
 
-app.use('/', indexRouter)
-app.use('/purchases', upload.single('comprobante'), purchasesRouter)
-app.use('/against-receipts', againstReceiptsRouter)
-app.use('/money-accounts', moneyAccountsRouter)
-app.use('/suppliers', suppliersRouter)
-app.use('/refunds', refundsRouter)
-app.use('/products', productRouter)
-app.use('/payments', paymentsRouter)
-app.use('/sales', salesRouter)
-app.use('/registers', registerClosuresRouter)
-app.use('/offers', offerRouter)
+app.use(netlifyApiUrl, '/', indexRouter)
+app.use(netlifyApiUrl, '/purchases', upload.single('comprobante'), purchasesRouter)
+app.use(netlifyApiUrl, '/against-receipts', againstReceiptsRouter)
+app.use(netlifyApiUrl, '/money-accounts', moneyAccountsRouter)
+app.use(netlifyApiUrl, '/suppliers', suppliersRouter)
+app.use(netlifyApiUrl, '/refunds', refundsRouter)
+app.use(netlifyApiUrl, '/products', productRouter)
+app.use(netlifyApiUrl, '/payments', paymentsRouter)
+app.use(netlifyApiUrl, '/sales', salesRouter)
+app.use(netlifyApiUrl, '/registers', registerClosuresRouter)
+app.use(netlifyApiUrl, '/offers', offerRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -164,4 +165,4 @@ app.use(function (err, req, res, next) {
   // })
 })
 
-module.exports = app
+module.exports.handler = serverless(app)
