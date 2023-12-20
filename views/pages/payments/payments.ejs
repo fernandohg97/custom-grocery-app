@@ -1,0 +1,648 @@
+<%- include('../../partials/spinner'); %>
+
+<!-- success message -->
+<div id="success-message" class="alert alert-success d-none text-center w-75 fs-6" role="alert"></div>
+<!-- failure message -->
+<div id="failure-message" class="alert alert-danger d-none text-center w-75 fs-6" role="alert"></div>
+
+
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div class="">
+        <h4 class="mb-1 mt-0">Pagos</h4>
+        <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end float-end">
+      <button id="new-payment" type="button" class="btn btn-primary btn-sm">+ Pago</button>
+    </div>
+  </div>
+  
+</div>
+
+
+<!-- Card RESUME stats -->
+<div class="row gx-5 mb-4 text-center">
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col">
+                      <span class="h6 font-semibold text-muted text-sm d-block mb-2">Pagos realizados</span>
+                      <span id="totalCountPayments" class="h3 font-bold mb-0">0</span>
+                  </div>
+              </div>
+              <div id="percentageBalanceProgress" class="mt-2 mb-0">
+                  <!-- <span class="badge badge-pill bg-soft-success text-success me-2">
+                      <i class="bi bi-arrow-up me-1"></i>13%
+                  </span>
+                  <span class="text-nowrap text-xs text-muted">Debes subir!</span> -->
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+        <div class="card-body">
+          <div class="row">
+              <div class="col">
+                  <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total Pagado</span>
+                  <span id="totalAmountPayments" class="h3 font-bold mb-0">0</span>
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+        <div class="card-body">
+          <div class="row">
+              <div class="col">
+                  <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total en efectivo</span>
+                  <span id="totalAmountByEfectivoPayments" class="h3 font-bold mb-0">0</span>
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+        <div class="card-body">
+          <div class="row">
+              <div class="col">
+                  <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total en SPEI</span>
+                  <span id="totalAmountByTransferenciaPayments" class="h3 font-bold mb-0">0</span>
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- TABLE PAGOS -->
+<!-- <div class="table-responsive mb-3"> -->
+  <div class="row justify-content-end text-end mb-1">
+    <div class="col-md-2 text-start">
+      <!-- <div class="input-group input-group-sm date mb-3" data-provide="datepicker">
+        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+        <input style="font-size: 13px;" type="text" class="form-control" id="minCompras" name="minCompras" placeholder="Fecha inicio">
+      </div> -->
+      <label class="text-secondary m-0 p-0 fw-bold" style="font-size: 12px;">Inicio</label>
+      <div class="input-group input-group-sm date" data-provide="datepicker">
+        <span class="input-group-addon input-group-text" id="basic-addon1"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="minPagos" aria-label="minPagos" aria-describedby="basic-addon1">
+      </div>
+    </div>
+    <div class="col-md-2 text-start">
+      <!-- <div class="input-group input-group-sm date mb-3" data-provide="datepicker">
+        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+        <input style="font-size: 13px;" type="text" class="form-control" id="maxCompras" name="maxCompras" placeholder="Fecha fin">
+      </div> -->
+      <label class="text-secondary m-0 p-0 fw-bold" style="font-size: 12px;">Fin</label>
+      <div class="input-group input-group-sm date" data-provide="datepicker">
+        <span class="input-group-addon input-group-text" id="basic-addon2"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="maxPagos" aria-label="maxPagos" aria-describedby="basic-addon2">
+      </div>
+    </div>
+    <!-- button wrapper purchases-->
+    <div class="col-8">
+      <div id="buttons-wrapper-payments" style="margin-bottom: 5px;"></div>
+      <div id="invalid-message-user-check" class="invalid-message-user-check text-end d-none d-block" style="font-size: 12px; color: red;">
+        Por favor selecciona más de 1 pago
+      </div>
+    </div>
+  </div>
+  <table id="allPaymentsTable" class="display compact hover stripe" width="100%" style="font-size: 13px;">
+    <tfoot>
+      <tr>
+        <th colspan="3" class="text-start">Total:</th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+<!-- </div> -->
+
+
+
+
+<%- include('../../partials/scripts'); %>
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  let apiUrl = '<%= process.env.API_URL %>'
+  console.log(apiUrl)
+  console.log(nodeEnv)
+  let allPaymentsData = '<%- jsonResponse %>'
+  allPaymentsData = allPaymentsData.replace(/\s+/g," ")
+
+  let jsonPayments = JSON.parse(allPaymentsData)
+  console.log(jsonPayments)
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+  const AllPaymentsApp = {}
+
+  // on load
+  AllPaymentsApp.onLoad = () => {
+    // loading spinner
+    AllPaymentsApp.loadingSpinner = document.getElementById('loading-spinner-add')
+    AllPaymentsApp.loadingSpinnerMsg = document.getElementById('spinner-add-message')
+    // ---------- APP LOCAL VALUES
+    AllPaymentsApp.DEFAULT_PAYMENT_METHODS = '<%- defaultPaymentMethods %>'
+    AllPaymentsApp.DEFAULT_PAYMENT_METHODS = JSON.parse(AllPaymentsApp.DEFAULT_PAYMENT_METHODS)
+    AllPaymentsApp.DEFAULT_MONEY_ACCOUNTS = '<%- defaultMoneyAccounts %>'
+    AllPaymentsApp.DEFAULT_MONEY_ACCOUNTS = JSON.parse(AllPaymentsApp.DEFAULT_MONEY_ACCOUNTS)
+    // CURRENT VIEW VARS
+    AllPaymentsApp.totalCountPayments = document.getElementById('totalCountPayments')
+    AllPaymentsApp.totalAmountPayments = document.getElementById('totalAmountPayments')
+    AllPaymentsApp.totalAmountByEfectivoPayments = document.getElementById('totalAmountByEfectivoPayments')
+    AllPaymentsApp.totalAmountByTransferenciaPayments = document.getElementById('totalAmountByTransferenciaPayments')
+
+
+    AllPaymentsApp.paymentRecords = undefined
+    $( document ).ready(function() {
+
+      AllPaymentsApp.paymentReceiptResumenWrapper = document.getElementById('paymentReceiptResumenWrapper')
+      AllPaymentsApp.paymentsNotesTableWrapper = document.getElementById('paymentsNotesTableWrapper')
+      AllPaymentsApp.offCanvasPaymentsResumeTitle = document.getElementById('offCanvasPaymentsResumeTitle')
+      AllPaymentsApp.setInitialValues()
+    })
+    // call initial functions
+    AllPaymentsApp.getPaymentsDataTable()
+  }
+
+  AllPaymentsApp.setInitialValues = async () => {
+    AllPaymentsApp.paymentReceiptResumenWrapper.classList.add('d-none')
+    AllPaymentsApp.paymentsNotesTableWrapper.classList.add('d-none')
+
+    // set resume totals
+    AllPaymentsApp.totalCountPayments.textContent = jsonPayments.data.totalCount
+    AllPaymentsApp.totalAmountPayments.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonPayments.data.totalAmountPayed)
+    AllPaymentsApp.totalAmountByEfectivoPayments.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonPayments.data.totalByPaymentMethod.TotalPayedEfectivo)
+    AllPaymentsApp.totalAmountByTransferenciaPayments.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonPayments.data.totalByPaymentMethod.TotalPayedTransferenciaElectronica)
+  }
+
+  // GET PAYMENTS BY NOTE NUMBER -------------------------------------------
+  AllPaymentsApp.fetchPaymentsByFolio = async (folioDePago, isMassive, isAgainstReceipt) => {
+
+    // check if payment is massive, against receipt or regular to fetch api url correctly
+    let response
+    if (isMassive === 'TRUE') {
+      AllPaymentsApp.paymentsNotesTableWrapper.classList.remove('d-none')
+      response = await fetch(`${apiUrl}/payments/massive/${folioDePago}`);
+    } else if (isAgainstReceipt === 'TRUE') {
+      AllPaymentsApp.paymentReceiptResumenWrapper.classList.remove('d-none')
+      response = await fetch(`${apiUrl}/payments/against-receipt/${folioDePago}`);
+    } else if (isMassive === 'FALSE' && isAgainstReceipt === 'FALSE') {
+      AllPaymentsApp.paymentsNotesTableWrapper.classList.remove('d-none')
+      response = await fetch(`${apiUrl}/payments/${folioDePago}`);
+    }
+    const result = await response.json()
+    // console.log(result)
+    if (response.status === 400 || response.status === 404 || response.status >= 500) {
+      return new Error(result.message)
+    }
+    else if (response.status === 201 || response.status === 200) {
+      // console.log(result)
+      return result
+    }
+    // AllPurchasesApp.paymentsByNoteNumber = []
+    // const response = await fetch(`${apiUrl}/purchases/${noteNumber}/with-payments`);
+    // const result = await response.json();
+    // console.log(result)
+    // if (response.status === 400 || response.status === 404 || response.status >= 500) {
+    //   return new Error(result.message)
+    // }
+    // else if (response.status === 201 || response.status === 200) {
+    //   console.log(result)
+    //   return result
+    // }
+  }
+
+
+  // GET PAYMENTS DATA TABLE -------------------
+  // CONSTRUIR TABLA DE PAGOS
+  AllPaymentsApp.getPaymentsDataTable = async () => {
+
+    // DATATABLE ------------
+    let allPaymentsTable = $('#allPaymentsTable').DataTable({
+        responsive: true,
+        fixedHeader: true,
+        // footerCallback: function (row, data, start, end, display) {
+        //     var api = this.api();
+
+        //     // Remove the formatting to get integer data for summation
+        //     var intVal = function (i) {
+        //         // return i
+        //         // return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : Number(i.replace(/[\$,]/g, '') * 1);
+        //         // return isNaN(i) === true ? 0 : typeof i === 'string' ? isNaN(i.replace(/[\$,]/g, '') * 1) : typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+        //         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : typeof i === 'number' ? i : 0;
+
+        //     };
+        //     // console.log(intVal)
+        //     console.log(api.column(3, {page: 'current'}).data())
+        //     // Total over this page
+        //     let pageTotal = api
+        //         .column(2, { page: 'current' })
+        //         .data()
+        //         .reduce(function (a, b) {
+        //           console.log(`Numero: ${intVal(a)}`)
+        //             // a = isNaN(a) === true ? 0 : a
+        //             // b = isNaN(b) === true ? 0 : b
+        //             return intVal(a) + intVal(b);
+        //         });
+        //     console.log(`Total: ${pageTotal}`)
+
+        //     // Update footer
+        //     $(api.column(2).footer()).html(new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(pageTotal));
+        // },
+        headerCallback: function(thead, data, start, end, display) {
+          $(thead).find('th').css('border-bottom', 'none');
+        },
+        paging: true,
+        data: jsonPayments.data.records,
+        stripeClasses: [ 'strip1', 'strip2' ],
+        // TODO: set columns correctly
+        columns: [
+          { data: null, orderable: false, className: 'select-checkbox', defaultContent: '', width: '5%' },
+          { title: 'Folio', data: 'Folio', width: '5%', orderable: false },
+          { title: 'Monto', data: 'Monto', orderable: false, className: 'fw-bold' },
+          { title: 'Fecha de pago', data: 'Fecha de pago', orderable: true, searchable: false },
+          { title: 'Forma de pago', data: 'Forma de pago', orderable: true, searchable: true },
+          { title: 'Cuenta', data: 'Cuenta de dinero', searchable: true, orderable: false, width: '5%', className: 'text-center' },
+          { title: 'Comprobante', data: 'Comprobante', searchable: false, orderable: false, width: '10%', visible: false },
+          { title: 'Usuario', data: 'Usuario', orderable: true, searchable: true, width: '5%', className: 'text-center' },
+          { title: 'Masivo', data: 'Pago masivo', searchable: false, orderable: false, width: '5%', className: 'text-center' },
+          { title: 'Contrarecibo', data: 'Pago contrarecibo', searchable: false, orderable: false, width: '5%', className: 'text-center' },
+          // { title: 'Editar', orderable: false, searchable: false }, // 9
+          // { title: 'Eliminar', orderable: false, searchable: false }
+      ],
+      columnDefs: [
+        { targets: 1, width: "5%", createdCell: function (td, cellData, rowData, row, col) {
+            $(td).css('font-size', '12px')
+          },
+        },
+        { targets: 2, "width": "5%", render: function (data) {
+            const formatNumber = isNaN(data.replace(/[\$,]/g, '') * 1) ? 0 : data.replace(/[\$,]/g, '') * 1;
+            return `${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(formatNumber)}`
+          }
+        },
+        { className: 'text-center', targets: 3, width: "10%", createdCell: function (td, cellData, rowData, row, col) {
+              $(td).css('font-size', '12px')
+            },
+            render: function ( data, type, row, meta ) {
+              // console.log(data)
+              // return data
+              if (data.length > 0) {
+                return type === 'sort' || type === 'display' || type === 'filter' ? (moment(new Date(data)).format("DD MMM YYYY")) : new Date(data)
+              } else return "n/a"
+            }
+          },
+        { targets: 4, width: "15%", className: 'text-center',
+          createdCell: function(td, cellData, rowData, row, col) {
+            $(td).css('font-size', '11px')
+            if ( cellData == 'EFECTIVO' ) {
+              $(td).css('color', '#0e7c61')
+            } else if (cellData == 'TRANSFERENCIA ELECTRONICA') {
+              $(td).css('color', '#0095c2')
+            } else if (cellData == 'TARJETA DE CREDITO') {
+              $(td).css('color', '#6551a1')
+            } else if (cellData == 'TARJETA DE DEBITO') {
+              $(td).css('color', '#399db4')
+            } else if (cellData == 'CHEQUE') {
+              $(td).css('color', '#434343')
+            }
+          }
+        },
+        { className: 'text-center', targets: 7, width: "5%", 
+          createdCell: function (td, cellData, rowData, row, col) {
+              $(td).css('font-size', '11px')
+            }
+          },
+        { targets: [8,9], width: "5%", createdCell: function (td, cellData, rowData, row, col) {
+              $(td).css('font-size', '11px')
+            },
+            createdCell: function(td, cellData, rowData, row, col) {
+              if ( cellData === 'TRUE' ) {
+                $(td).html('<span class="dot dot-payment-indicator-yes"></span>')
+              } else if (cellData === 'FALSE') {
+                $(td).html('<span class="dot dot-payment-indicator-no"></span>')
+              }
+            }
+          },
+        // { targets: 5, render: $.fn.dataTable.render.ellipsis( 10, true ) }
+      ],
+      order: [[3, 'desc']],
+      select: {
+        style: 'os',
+        selector: 'td:first-child'
+      },
+      buttons: [
+        {
+          extend: 'selectAll',
+          text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+          className: 'btn btn-sm btn-dark'
+        },
+        {
+          extend: 'selectNone',
+          text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+          className: 'btn btn-sm btn-dark'
+        },
+        {
+          extend: 'colvis',
+          text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+          // titleAttr: 'Show/Hide',
+          columns: ':not(.noVis)',
+          collectionLayout: 'fixed columns',
+          collectionTitle: 'Seleccionar columnas a ver'
+        },
+        { 
+          extend: 'pdfHtml5',
+          orientation: 'landscape',
+          pageSize: 'LEGAL',
+          messageTop: 'Este documento es informativo.',
+          messageBottom: datetimeExportText,
+          text: '<i class="bi bi-filetype-pdf"></i>', 
+          className: 'btn btn-dark',
+          footer: true,
+          title: 'Lista de pagos',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        { extend: 'copy', 
+          text: '<i class="bi bi-clipboard-check"></i>', 
+          className: 'btn btn-dark',
+          title: 'Lista de pagos',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        // {
+        //   text: '<span style="font-size: 12px;">Enviar selección</span>',
+        //   className: 'btn btn-secondary btn-sm btn-send-purchases',
+        //   action: function (e, dt, node, config) {
+        //     let purchasesSelected = []
+        //     todayPurchasesTable.rows( { selected: true } ).data().each(el => {
+        //       purchasesSelected.push(el)
+        //     })
+        //     // let user = document.getElementById('userCheck').value;
+        //     if (!purchasesSelected.length) {
+        //       document.getElementById('invalid-message-user-check').classList.remove('d-none')
+        //       setTimeout(() => {
+        //         document.getElementById('invalid-message-user-check').classList.add('d-none')
+        //       }, 3000)
+        //     } else {
+        //       console.log(purchasesSelected.length)
+        //       sendEmailPurchasesSelected(purchasesSelected)
+
+        //     }
+        //       // events.prepend( '<div>'+count+' row(s) selected</div>' );
+        //   }
+        // }
+      ],
+      "lengthMenu": [ 10, 20, 40, 60 ],
+      "pageLength": 20,
+      "language": {
+        "buttons": {
+          copyTitle: 'Datos copiados al portapapeles',
+          copySuccess: {
+              _: "%d registros copiados al portapapeles"
+          },
+          colvis: 'Ver/ocultar columnas'
+        },
+        "decimal":        "",
+        "emptyTable":     "No se encontraron datos",
+        "info":           "Mostrando _START_ a _END_ de _TOTAL_ pagos",
+        "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+        "infoFiltered":   "(Busqueda de _MAX_ pagos en total)",
+        "infoPostFix":    "",
+        "thousands":      ",",
+        "lengthMenu":     "Mostrar _MENU_ pagos",
+        "loadingRecords": "Cargando...",
+        "processing":     "",
+        "search":         "Buscar:",
+        "zeroRecords":    "No se encontraron pagos",
+        "paginate": {
+            "first":      "Primero",
+            "last":       "Ultimo",
+            "next":       "Siguiente",
+            "previous":   "Atrás"
+        },
+        "aria": {
+            "sortAscending":  ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        }
+      },
+      // createdRow: function( row, data, dataIndex ) {
+      //   details = data[10].toString()
+      //   if (details.includes('NU') || details.includes('CREDITO NU') || details.includes('TARJETA NU')) {
+      //     $(row).css('background-color', '#E2B6FF');
+      //   }
+      // },
+      drawCallback: function() {
+        $('#allPaymentsTable_paginate ul.pagination').addClass("pagination-sm");
+      }
+    });
+
+  // SHOW OFF CANVAS ACCOUNT TO PAY RESUME DETAILS
+  $('#allPaymentsTable tbody').on('click', 'tr td:nth-child(2)', async function () {
+          // reset off canvas to initial values
+          AllPaymentsApp.setInitialValues()
+
+          var data = allPaymentsTable.row( this ).data();
+          console.log(data)
+          AllPaymentsApp.paymentRecords = await AllPaymentsApp.fetchPaymentsByFolio(data.Folio, data['Pago masivo'], data['Pago contrarecibo'])
+          console.log(AllPaymentsApp.paymentRecords)
+          // GUARD STATEMENT
+          // if (!res) return
+          const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPaymentsResume')
+
+          // Assign initial values to offcanvas
+          AllPaymentsApp.offCanvasPaymentsResumeTitle = document.getElementById('offCanvasPaymentsResumeTitle')
+          AllPaymentsApp.offCanvasPaymentsResumeFolio = document.getElementById('offCanvasPaymentsResumeFolio')
+          AllPaymentsApp.offCanvasPaymentsResumeTotalAmount = document.getElementById('offCanvasPaymentsResumeTotalAmount')
+          AllPaymentsApp.offCanvasPaymentsResumePaymentDate = document.getElementById('offCanvasPaymentsResumePaymentDate')
+          AllPaymentsApp.offCanvasPaymentsResumePaymentMethod = document.getElementById('offCanvasPaymentsResumePaymentMethod')
+          AllPaymentsApp.offCanvasPaymentsResumeRetirementAccount = document.getElementById('offCanvasPaymentsResumeRetirementAccount')
+          AllPaymentsApp.offCanvasPaymentsResumeUser = document.getElementById('offCanvasPaymentsResumeUser')
+
+          AllPaymentsApp.offCanvasPaymentsResumeIsMassive = document.getElementById('offCanvasPaymentsResumeIsMassive')
+          AllPaymentsApp.offCanvasPaymentsResumeIsReceipt = document.getElementById('offCanvasPaymentsResumeIsReceipt')
+          AllPaymentsApp.offCanvasPaymentsResumeIsRegular = document.getElementById('offCanvasPaymentsResumeIsRegular')
+
+          // Assign values
+          // AllPaymentsApp.offCanvasPaymentsResumeTitle.textContent = `Pago realizado a`
+          AllPaymentsApp.offCanvasPaymentsResumeFolio.textContent = data.Folio
+          AllPaymentsApp.offCanvasPaymentsResumeTotalAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(data.Monto.replace(/[\$,]/g, ''))
+          AllPaymentsApp.offCanvasPaymentsResumePaymentDate.textContent = data['Fecha de pago']
+          AllPaymentsApp.offCanvasPaymentsResumePaymentMethod.textContent = data['Forma de pago']
+          AllPaymentsApp.offCanvasPaymentsResumeRetirementAccount.textContent = data['Cuenta de dinero']
+          AllPaymentsApp.offCanvasPaymentsResumeUser.textContent = data.Usuario
+
+          // DISPLAY SECTION BASED IF PAYMENT IS MASSIVE, RECEIPT OR REGULAR
+          if (data['Pago contrarecibo'] === 'TRUE' && data['Pago masivo'] === 'FALSE') {
+            AllPaymentsApp.offCanvasPaymentsResumeIsRegular.classList.add('d-none')
+            AllPaymentsApp.offCanvasPaymentsResumeIsMassive.classList.add('d-none')
+            AllPaymentsApp.offCanvasPaymentsResumeIsReceipt.classList.remove('d-none')
+          
+            AllPaymentsApp.OffCanvasPaymentReceiptCreatedAt = document.getElementById('paymentReceiptCreatedAt')
+            AllPaymentsApp.OffCanvasPaymentReceiptFolio = document.getElementById('paymentReceiptFolio')
+            AllPaymentsApp.OffCanvasPaymentReceiptProvider = document.getElementById('paymentReceiptProvider')
+            AllPaymentsApp.OffCanvasPaymentReceiptQtyNotes = document.getElementById('paymentReceiptQtyNotes')
+            AllPaymentsApp.OffCanvasPaymentReceiptTotalAmount = document.getElementById('paymentReceiptTotalAmount')
+            AllPaymentsApp.OffCanvasPaymentReceiptAuthorize = document.getElementById('paymentReceiptAuthorize')
+            AllPaymentsApp.OffCanvasPaymentReceiptStatus = document.getElementById('paymentReceiptStatus')
+            AllPaymentsApp.OffCanvasPaymentReceiptUser = document.getElementById('paymentReceiptUser')
+            AllPaymentsApp.OffCanvasPaymentReceiptDetails = document.getElementById('paymentReceiptDetails')
+
+            // assign values
+            AllPaymentsApp.offCanvasPaymentsResumeTitle.textContent = AllPaymentsApp.paymentRecords.data.Proveedor
+            AllPaymentsApp.OffCanvasPaymentReceiptCreatedAt.textContent = AllPaymentsApp.paymentRecords.data.Creado
+            AllPaymentsApp.OffCanvasPaymentReceiptFolio.textContent = AllPaymentsApp.paymentRecords.data.Folio
+            AllPaymentsApp.OffCanvasPaymentReceiptProvider.textContent = AllPaymentsApp.paymentRecords.data.Proveedor
+            AllPaymentsApp.OffCanvasPaymentReceiptQtyNotes.textContent = AllPaymentsApp.paymentRecords.data.CantNotas
+            AllPaymentsApp.OffCanvasPaymentReceiptTotalAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(AllPaymentsApp.paymentRecords.data.Total.replace(/[\$,]/g, ''))
+            AllPaymentsApp.OffCanvasPaymentReceiptAuthorize.textContent = AllPaymentsApp.paymentRecords.data.Autorizado
+            AllPaymentsApp.OffCanvasPaymentReceiptStatus.textContent = AllPaymentsApp.paymentRecords.data.Estatus
+            AllPaymentsApp.OffCanvasPaymentReceiptUser.textContent = AllPaymentsApp.paymentRecords.data.Usuario
+            AllPaymentsApp.OffCanvasPaymentReceiptDetails.textContent = AllPaymentsApp.paymentRecords.data.Detalles
+
+          } else if (data['Pago masivo'] === 'TRUE' || (data['Pago masivo'] === 'FALSE' && data['Pago contrarecibo'] === 'FALSE')) {
+            AllPaymentsApp.offCanvasPaymentsResumeTitle.textContent = AllPaymentsApp.paymentRecords[0].Proveedor
+
+            if (data['Pago masivo'] === 'FALSE' && data['Pago contrarecibo'] === 'FALSE') {
+              AllPaymentsApp.offCanvasPaymentsResumeIsRegular.classList.remove('d-none')
+              AllPaymentsApp.offCanvasPaymentsResumeIsMassive.classList.add('d-none')
+              AllPaymentsApp.offCanvasPaymentsResumeIsReceipt.classList.add('d-none')
+            } else {
+              AllPaymentsApp.offCanvasPaymentsResumeIsMassive.classList.remove('d-none')
+              AllPaymentsApp.offCanvasPaymentsResumeIsReceipt.classList.add('d-none')
+              AllPaymentsApp.offCanvasPaymentsResumeIsRegular.classList.add('d-none')
+            }
+            // Get elements from off canvas table
+            let table = document.getElementById("paymentsNotesTable");
+            let paymentsNotesNotFoundMessage = document.getElementById('paymentsNotesNotFoundMessage')
+            let paymentsNotesTotalQuantity = document.getElementById('paymentsNotesTotalQuantity')
+
+            // GUARD STATEMENT
+            if (AllPaymentsApp.paymentRecords instanceof Error) {
+              table.classList.add('d-none')
+              paymentsNotesNotFoundMessage.classList.remove('d-none')
+            } else {
+              // Assign payments data to table in offcanvas
+              paymentsNotesNotFoundMessage.classList.add('d-none')
+              table.classList.remove('d-none')
+
+              let paymentNotesRows = document.getElementById('paymentNotesRows')
+              let templateBox = document.getElementById('notesPaymentRowTemplate')
+              let template = templateBox.content
+
+              // let quantityNotesEl = document.getElementById('quantityNotes');
+              // let totalBalanceToPayEl = document.getElementById('totalBalanceToPay');
+              // let providerToPaySelected = document.getElementById('providerToPaySelected')
+
+              // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
+              paymentNotesRows.innerHTML = ''
+              // $('#payment-invoice-tbody tr').remove()
+              // data.each(element => console.log(element));
+              // let getTotalAmountToPay = data.map(row => {
+              //   let totalAmount = row[6].split('$')[1].trim().split(',').join('');
+              //   totalAmount = totalAmount === '-' ? parseFloat('0.00') : parseFloat(totalAmount);
+              //   return totalAmount
+              // }).reduce((a, b) => parseFloat(a + b), 0);
+              // console.log(getTotalAmountToPay)
+              if (AllPaymentsApp.paymentRecords.length > 0) {
+                AllPaymentsApp.paymentRecords.filter(note => {
+                  // Get the table element in which you want to add row
+                  console.log(note)
+                  // Create a row using the inserRow() method and
+                  // specify the index where you want to add the row
+                  let tr = template.cloneNode(true)
+                  let noNotaCol = tr.querySelector('.noNota')
+                  let proveedorCol = tr.querySelector('.proveedor')
+                  let montoTotalCol = tr.querySelector('.montoTotal')
+                  let fechaRecibidoCol = tr.querySelector('.fechaRecibido')
+                  let estatusCol = tr.querySelector('.estatus')
+                  let tipoCol = tr.querySelector('.tipo')
+                  let usuarioCol = tr.querySelector('.usuario')
+
+                  noNotaCol.textContent = note['No Nota']
+                  proveedorCol.textContent = note.Proveedor
+                  montoTotalCol.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(note['Monto Total'].replace(/[\$,]/g, ''))
+                  fechaRecibidoCol.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(note['Fecha Recibido']))
+                  estatusCol.textContent = note.Estatus
+                  tipoCol.textContent = note.Tipo
+                  usuarioCol.textContent = note.Usuario
+
+                  paymentNotesRows.appendChild(tr)
+                })
+              }
+              paymentsNotesTotalQuantity.textContent = `Cant. de pagos realizados: ${AllPaymentsApp.paymentRecords.length}`
+            }
+          }
+        // CLOSE off canvas
+        bsOffcanvas.show()
+      } );
+
+  // Custom filtering function which will search data in column four between two values
+  $.fn.dataTable.ext.search.push(
+    function( settings, data, dataIndex ) {
+      if (settings.nTable.id !== 'allPaymentsTable') {
+        return true
+      }
+      let min = moment($('#minPagos').val()).isValid() ?
+        new Date( $('#minPagos').val() ).setUTCHours(0,0,0,0) :
+        null;
+
+      let max = moment($('#maxPagos').val()).isValid() ?
+        new Date( $('#maxPagos').val() ).setUTCHours(23,59,59,999):
+        null;
+      console.log('Fecha filtrar')
+      console.log(data)
+      let splitDate = data[3].split(' ')
+
+      let monthSelected
+      for (let prop in months) {
+        if (prop.toString().toLowerCase() === splitDate[1].toString().toLowerCase()) {
+          monthSelected = months[prop]
+          break
+        }
+      }
+      let mon = Number(format_Date(monthSelected)) - 1;
+      let date = new Date(Number(splitDate[2]), Number(mon), Number(splitDate[0])).setUTCHours(23, 59, 59, 999)
+
+      if (
+        ( min === null && max === null ) ||
+        ( min === null && date <= max ) ||
+        ( min <= date && max === null ) ||
+        ( min <= date && date <= max )
+      ) {
+        return true;
+      }
+      return false;
+    }
+  );
+
+  // Refilter the table
+  $('#minPagos, #maxPagos').on('change', function () {
+    // $('#accountsToPayTable').DataTable().draw()
+    allPaymentsTable.draw();
+  });
+
+  allPaymentsTable.buttons().container().appendTo('#buttons-wrapper-payments');
+  // document.getElementById('total-purchases').textContent = `${accountsToPayData.values.length} cuenta por pagars`
+  // loadingSpinner.classList.add('d-none')
+
+}
+
+  AllPaymentsApp.onLoad()
+
+</script>

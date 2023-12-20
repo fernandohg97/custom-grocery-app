@@ -1,0 +1,473 @@
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div>
+        <h3>Devoluciones</h3>
+        <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="table-responsive mb-3">
+  <div class="row justify-content-end text-end">
+    <div class="col-md-2 text-start">
+      <!-- <div class="input-group input-group-sm date mb-3" data-provide="datepicker">
+        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+        <input style="font-size: 13px;" type="text" class="form-control" id="minCompras" name="minCompras" placeholder="Fecha inicio">
+      </div> -->
+      <label class="text-secondary m-0 p-0" style="font-size: 12px;">Inicio</label>
+      <div class="input-group input-group-sm date" data-provide="datepicker">
+        <span class="input-group-addon input-group-text" id="basic-addon1"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="minDevoluciones" aria-label="minDevoluciones" aria-describedby="basic-addon1">
+      </div>
+    </div>
+    <div class="col-md-2 text-start">
+      <!-- <div class="input-group input-group-sm date mb-3" data-provide="datepicker">
+        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+        <input style="font-size: 13px;" type="text" class="form-control" id="maxCompras" name="maxCompras" placeholder="Fecha fin">
+      </div> -->
+      <label class="text-secondary m-0 p-0" style="font-size: 12px;">Fin</label>
+      <div class="input-group input-group-sm date" data-provide="datepicker">
+        <span class="input-group-addon input-group-text" id="basic-addon2"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="maxDevoluciones" aria-label="maxDevoluciones" aria-describedby="basic-addon2">
+      </div>
+    </div>
+    <!-- button wrapper purchases-->
+    <div class="col-8">
+      <div id="buttons-wrapper-refunds" class="mb-1"></div><br>
+      <div id="invalid-message-user-check" class="invalid-message-user-check text-start d-none mt-1" style="font-size: 12px; color: red;">
+        Por favor selecciona mas de 1 devolución.
+      </div>
+    </div>
+  </div>
+  <table id="refundsTable" class="display compact hover stripe" width="100%" style="font-size: 12px;">
+    <tfoot>
+      <tr>
+        <th colspan="3" class="text-start">Total:</th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+
+<%- include('../../partials/scripts'); %>
+
+
+
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  let apiUrl = '<%= process.env.API_URL %>'
+  console.log(apiUrl)
+  console.log(nodeEnv)
+  let refundsData = '<%- jsonResponse %>'
+  refundsData = refundsData.replace(/\s+/g," ")
+
+  let jsonRefunds = JSON.parse(refundsData)
+  console.log(jsonRefunds)
+
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+  const AllRefundsApp = {}
+
+  AllRefundsApp.onLoad = () => {
+    AllRefundsApp.getDataTable()
+
+  }
+
+  // TODO: in progress ---------------------------------------------------------
+  // AllRefundsApp.fetchNotesByRefundNoteNumber = async (noteNumber) => {
+  //   // AllRefundsApp.paymentsByNoteNumber = []
+  //   const response = await fetch(`${apiUrl}/refunds/${noteNumber}/with-payments`);
+  //   const result = await response.json();
+  //   console.log(result)
+  //   if (response.status === 400 || response.status === 404 || response.status >= 500) {
+  //     return new Error(result.message)
+  //   }
+  //   else if (response.status === 201 || response.status === 200) {
+  //     console.log(result)
+  //     return result
+  //   }
+  // }
+
+  AllRefundsApp.getDataTable = async () => {
+
+    // DATATABLE ------------
+    let refundsTable = $('#refundsTable').DataTable({
+                // responsive: true,
+        fixedHeader: true,
+        // footerCallback: function (row, data, start, end, display) {
+        //     var api = this.api();
+
+        //     // Remove the formatting to get integer data for summation
+        //     var intVal = function (i) {
+        //         // return i
+        //         // return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : Number(i.replace(/[\$,]/g, '') * 1);
+        //         // return isNaN(i) === true ? 0 : typeof i === 'string' ? isNaN(i.replace(/[\$,]/g, '') * 1) : typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+        //         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : typeof i === 'number' ? i : 0;
+
+        //     };
+        //     // console.log(intVal)
+        //     console.log(api.column(3, {page: 'current'}).data())
+        //     // Total over this page
+        //     let pageTotal = api
+        //         .column(2, { page: 'current' })
+        //         .data()
+        //         .reduce(function (a, b) {
+        //           console.log(`Numero: ${intVal(a)}`)
+        //             // a = isNaN(a) === true ? 0 : a
+        //             // b = isNaN(b) === true ? 0 : b
+        //             return intVal(a) + intVal(b);
+        //         });
+        //     console.log(`Total: ${pageTotal}`)
+
+        //     // Update footer
+        //     $(api.column(2).footer()).html(new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(pageTotal));
+        // },
+        paging: true,
+        data: jsonRefunds.refundsData,
+        stripeClasses: [ 'strip1', 'strip2' ],
+        columns: [
+            { title: 'ID', data: 'ID', visible: true, searchable: false, orderable: false, width: '5%', className: 'text-start text-xs' },
+            { title: 'Nota', data: 'No Nota', width: '7%', className: 'text-sm fw-bold' },
+            { title: 'Proveedor', data: 'Proveedor'},
+            { title: 'Monto', data: 'Monto'},
+            { title: 'Fecha', data: 'Fecha' },
+            { title: 'Forma de pago', data: 'Forma de pago', orderable: false, searchable: false },
+            { title: 'Usuario', data: 'Usuario', orderable: false, visible: true },
+            { title: 'Motivo', data: 'Motivo', visible: false, searchable: false },
+            { title: 'Editar', orderable: false, searchable: false }, // 9
+            // { title: 'Eliminar', orderable: false, searchable: false }
+        ],
+        columnDefs: [
+          { className: "fw-bold", targets: 3, width: "10%", render: function (data, type, row, meta) {
+              if (!data) data = 0
+              const formatNumber = isNaN(data.replace(/[\$,]/g, '') * 1) ? 0 : data.replace(/[\$,]/g, '') * 1;
+              return `${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(formatNumber)}`
+            }
+          },
+          { targets: 2, width: "25%", createdCell: function (td, cellData, rowData, row, col) {
+              $(td).css('font-size', '13px')
+            } 
+          },
+          { targets: 4, width: "10%",
+            render: function ( data, type, row, meta ) {
+              // console.log(data)
+              // return data
+              if (data.length > 0) {
+                return type === 'sort' || type === 'display' || type === 'filter' ? (moment(new Date(data)).format("DD MMM YYYY")) : new Date(data)
+              } else return "n/a"
+            }
+          },
+          { targets: 5, width: "15%", className: 'text-center',
+            createdCell: function(td, cellData, rowData, row, col) {
+              $(td).css('font-size', '11px')
+              if ( cellData == 'EFECTIVO' ) {
+                $(td).css('color', '#0e7c61')
+              } else if (cellData == 'TRANSFERENCIA ELECTRONICA') {
+                $(td).css('color', '#0095c2')
+              } else if (cellData == 'TARJETA DE CREDITO') {
+                $(td).css('color', '#6551a1')
+              } else if (cellData == 'TARJETA DE DEBITO') {
+                $(td).css('color', '#399db4')
+              } else if (cellData == 'CHEQUE') {
+                $(td).css('color', '#434343')
+              }
+            }
+          },
+          { targets: 6, width: "10%", className: 'text-xs' },
+          { targets: 7, render: $.fn.dataTable.render.ellipsis( 20, true ) },
+          { targets: 8, width: "5%", className: "text-center",
+            render: function (data, type, row, meta) {
+              // console.log(row.Estatus)
+              return `
+              <div class="dropdown">
+                <button type="button" id="dropdownMenuEdit" class="btn btn-light" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
+                <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
+                  ${moment().format('YYYY-MM-DD') === moment(new Date(row.Fecha)).format('YYYY-MM-DD') ?
+                  `<li>
+                    <a href="/refunds/edit/${Number(row.ID)}" class="text-dark dropdown-item">
+                      Editar&nbsp;<i class="bi bi-pencil"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="trigger-btn dropdown-item text-dark delete-refund-button" data-toggle="modal">
+                      Eliminar&nbsp;<i class="bi bi-trash3"></i>
+                    </a>
+                  </li>` :
+                  `<li>
+                    <a href="#" class="trigger-btn dropdown-item text-dark request-refund-auth-button" data-toggle="modal">
+                      Solicitar autorización
+                    </a>
+                  </li>`
+                }
+                </ul>
+              </div> 
+              `
+            } 
+          },
+          // { "targets": 10, "width": "10%", className: "text-center",
+          //   "render": function (data, type, row, meta) {
+          //     return '<button type="button" disabled class="btn btn-sm btn-danger remove-purchase" onclick="removeCompra('+row[0]+')"><i class="bi bi-trash3"></i></button>'
+          //   }
+          // },
+        ],
+        order: [[4, 'desc']],
+        select: {
+          style: 'multiple',
+          selector: 'tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6)'
+        },
+        buttons: [
+          {
+            extend: 'selectAll',
+            text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+            className: 'btn btn-sm btn-dark'
+          },
+          {
+            extend: 'selectNone',
+            text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+            className: 'btn btn-sm btn-dark'
+          },
+          {
+            extend: 'colvis',
+            text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+            // titleAttr: 'Show/Hide',
+            columns: ':not(.noVis)',
+            collectionLayout: 'fixed columns',
+            collectionTitle: 'Seleccionar columnas a ver'
+          },
+          { 
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'LEGAL',
+            messageTop: 'Este documento es informativo.',
+            messageBottom: datetimeExportText,
+            text: '<i class="bi bi-filetype-pdf"></i>', 
+            className: 'btn btn-dark',
+            footer: true,
+            title: 'Lista de devoluciones',
+            exportOptions: {
+              columns: ':visible',
+              modifier: {
+                selected: true
+              }
+            },
+          },
+          { extend: 'copy', 
+            text: '<i class="bi bi-clipboard-check"></i>', 
+            className: 'btn btn-dark',
+            title: 'Lista de devoluciones',
+            exportOptions: {
+              columns: ':visible',
+              modifier: {
+                selected: true
+              }
+            },
+          },
+          {
+            text: '<span style="font-size: 12px;">Enviar selección</span>',
+            className: 'btn btn-secondary btn-sm btn-send-refunds',
+            action: function (e, dt, node, config) {
+              let purchasesSelected = []
+              purchasesTable.rows( { selected: true } ).data().each(el => {
+                purchasesSelected.push(el)
+              })
+              // let user = document.getElementById('userCheck').value;
+              if (!purchasesSelected.length) {
+                document.getElementById('invalid-message-user-check').classList.remove('d-none')
+                setTimeout(() => {
+                  document.getElementById('invalid-message-user-check').classList.add('d-none')
+                }, 3000)
+              } else {
+                console.log(purchasesSelected.length)
+                sendEmailPurchasesSelected(purchasesSelected)
+
+              }
+                // events.prepend( '<div>'+count+' row(s) selected</div>' );
+            }
+          }
+        ],
+        "lengthMenu": [ 10, 20, 40, 60 ],
+        "pageLength": 20,
+        "language": {
+          "buttons": {
+            copyTitle: 'Datos copiados al portapapeles',
+            copySuccess: {
+                _: "%d productos copiados al portapapeles"
+            },
+            colvis: 'Ver/ocultar columnas'
+          },
+          "decimal":        "",
+          "emptyTable":     "No se encontraron datos",
+          "info":           "Mostrando _START_ a _END_ de _TOTAL_ devoluciones",
+          "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+          "infoFiltered":   "(Busqueda de _MAX_ devoluciones en total)",
+          "infoPostFix":    "",
+          "thousands":      ",",
+          "lengthMenu":     "Mostrar _MENU_ devoluciones",
+          "loadingRecords": "Cargando...",
+          "processing":     "",
+          "search":         "Buscar:",
+          "zeroRecords":    "No se encontraron devoluciones",
+          "paginate": {
+              "first":      "Primero",
+              "last":       "Ultimo",
+              "next":       "Siguiente",
+              "previous":   "Atrás"
+          },
+          "aria": {
+              "sortAscending":  ": activate to sort column ascending",
+              "sortDescending": ": activate to sort column descending"
+          }
+        },
+        // createdRow: function( row, data, dataIndex ) {
+        //   details = data[10].toString()
+        //   if (details.includes('NU') || details.includes('CREDITO NU') || details.includes('TARJETA NU')) {
+        //     $(row).css('background-color', '#E2B6FF');
+        //   }
+        // },
+        drawCallback: function() {
+          $('#refundsTable_paginate ul.pagination').addClass("pagination-sm");
+        }
+      });
+
+      // SHOW OFF CANVAS PURCHASE RESUME DETAILS
+      // $('#refundsTable tbody').on('click', 'tr td:nth-child(1)', async function () {
+      //     var data = refundsTable.row( this ).data();
+      //     console.log(data)
+      //     AllRefundsApp.paymentsByNoteNumber = await AllRefundsApp.fetchPaymentsByProvider(data['No Nota'])
+      //     console.log(AllRefundsApp.paymentsByNoteNumber)
+      //     // GUARD STATEMENT
+      //     // if (!res) return
+      //     const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPayments')
+
+      //     // Assign initial values to offcanvas
+      //     AllRefundsApp.offCanvasPaymentsTitle = document.getElementById('offCanvasPaymentsTitle')
+      //     AllRefundsApp.offCanvasPaymentsNote = document.getElementById('offCanvasPaymentsNote')
+      //     AllRefundsApp.offCanvasTotalPurchaseAmount = document.getElementById('totalPurchaseAmount')
+      //     AllRefundsApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
+
+      //     // Assign values
+      //     AllRefundsApp.offCanvasPaymentsTitle.textContent = data.Proveedor
+      //     AllRefundsApp.offCanvasPaymentsNote.textContent = `#${data['No Nota']} | Registrado por: ${data.Usuario || 'n/a'}`
+      //     AllRefundsApp.offCanvasTotalPurchaseAmount.textContent = data['Monto Total']
+      //     AllRefundsApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'n/a'
+          
+      //     // Get elements from off canvas table
+      //     let table = document.getElementById("paymentsResumeTable");
+      //     let paymentsNotFoundMsg = document.getElementById('paymentsNotFoundMessage')
+      //     let providerPaymentsTotalQuantity = document.getElementById('providerPaymentsTotalQuantity')
+
+      //     // GUARD STATEMENT
+      //     if (AllRefundsApp.paymentsByNoteNumber instanceof Error) {
+      //       table.classList.add('d-none')
+      //       paymentsNotFoundMsg.classList.remove('d-none')
+      //     } else {
+      //       console.log('pagos dentro')
+      //       // Assign payments data to table in offcanvas
+      //       paymentsNotFoundMsg.classList.add('d-none')
+      //       table.classList.remove('d-none')
+
+      //       let paymentResumeRows = document.getElementById('paymentResumeRows')
+      //       let templateBox = document.getElementById('rowTemplate')
+      //       let template = templateBox.content
+
+      //       // let quantityNotesEl = document.getElementById('quantityNotes');
+      //       // let totalBalanceToPayEl = document.getElementById('totalBalanceToPay');
+      //       // let providerToPaySelected = document.getElementById('providerToPaySelected')
+
+      //       // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
+      //       paymentResumeRows.innerHTML = ''
+      //       // $('#payment-invoice-tbody tr').remove()
+      //       // data.each(element => console.log(element));
+      //       // let getTotalAmountToPay = data.map(row => {
+      //       //   let totalAmount = row[6].split('$')[1].trim().split(',').join('');
+      //       //   totalAmount = totalAmount === '-' ? parseFloat('0.00') : parseFloat(totalAmount);
+      //       //   return totalAmount
+      //       // }).reduce((a, b) => parseFloat(a + b), 0);
+      //       // console.log(getTotalAmountToPay)
+      //       if (AllRefundsApp.paymentsByNoteNumber.payments.length > 0) {
+      //         AllRefundsApp.paymentsByNoteNumber.payments.filter(payment => {
+      //           // Get the table element in which you want to add row
+      //           console.log(payment)
+      //           // Create a row using the inserRow() method and
+      //           // specify the index where you want to add the row
+      //           let tr = template.cloneNode(true)
+      //           let folioCol = tr.querySelector('.folio')
+      //           let montoCol = tr.querySelector('.monto')
+      //           let fechacol = tr.querySelector('.fecha')
+      //           let formaDePagoCol = tr.querySelector('.formaDePago')
+      //           let cuentaCol = tr.querySelector('.cuenta')
+      //           let usuarioCol = tr.querySelector('.usuario')
+
+      //           folioCol.textContent = payment.Folio
+      //           montoCol.textContent = payment.Monto
+      //           fechacol.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(payment.FechaDePago))
+      //           formaDePagoCol.textContent = payment.FormaDePago
+      //           cuentaCol.textContent = payment.CuentaDeDinero
+      //           usuarioCol.textContent = payment.Usuario
+
+      //           paymentResumeRows.appendChild(tr)
+      //         })
+      //       }
+      //       providerPaymentsTotalQuantity.textContent = `Cant. de pagos realizados: ${AllRefundsApp.paymentsByNoteNumber.totalCount}`
+      //     }
+      //     bsOffcanvas.show()
+      // } );
+
+      // Custom filtering function which will search data in column four between two values
+      $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+          if (settings.nTable.id !== 'refundsTable') {
+            return true
+          }
+          let min = moment($('#minDevoluciones').val()).isValid() ?
+            new Date( $('#minDevoluciones').val() ).setUTCHours(0,0,0,0) :
+            null;
+
+          let max = moment($('#maxDevoluciones').val()).isValid() ?
+            new Date( $('#maxDevoluciones').val() ).setUTCHours(23,59,59,999):
+            null;
+
+          let splitDate = data[4].split(' ')
+
+          let monthSelected
+          for (let prop in months) {
+            if (prop.toString().toLowerCase() === splitDate[1].toString().toLowerCase()) {
+              monthSelected = months[prop]
+              break
+            }
+          }
+          let mon = Number(format_Date(monthSelected)) - 1;
+          let date = new Date(Number(splitDate[2]), Number(mon), Number(splitDate[0])).setUTCHours(23, 59, 59, 999)
+
+          if (
+            ( min === null && max === null ) ||
+            ( min === null && date <= max ) ||
+            ( min <= date && max === null ) ||
+            ( min <= date && date <= max )
+          ) {
+            return true;
+          }
+          return false;
+        }
+      );
+
+      // Refilter the table
+      $('#minDevoluciones, #maxDevoluciones').on('change', function () {
+        // $('#purchasesTable').DataTable().draw()
+        refundsTable.draw();
+      });
+    
+      refundsTable.buttons().container().appendTo('#buttons-wrapper-refunds');
+      // document.getElementById('total-purchases').textContent = `${refundsData.values.length} compras`
+      // loadingSpinner.classList.add('d-none')
+  }
+
+  AllRefundsApp.onLoad()
+</script>
+

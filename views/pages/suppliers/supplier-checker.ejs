@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+    <link rel="stylesheet" href="/stylesheets/suppliers/supplier-checker.css" />
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+
+    <main class="container mt-3 mb-5">
+      <%- include('../../partials/back'); %>
+      <div
+        class="text-center row justify-content-center align-items-center supplier-checker-row"
+      >
+        <div class="col">
+          <p class="title-text text-primary fw-bolder">Lista de precios</p>
+          <p class="description-text text-secondary">
+            Hola! Selecciona un proveedor para ver una lista de sus productos.
+          </p>
+          <p class="subtitle-text">Ingresa el proveedor</p>
+          <form
+            id="suppliers-list-form"
+            action="/suppliers/product-list"
+            method="GET"
+            class="needs-validation mt-5 mb-1 supplier-form"
+            novalidate
+          >
+            <div class="mx-auto w-75">
+              <input
+                name="supplierId"
+                onchange="addProductValues(this)"
+                class="form-control form-control-lg border border-dark supplier-input"
+                list="supplierOptions"
+                id="supplier-id"
+                placeholder="Busca por nombre"
+                required
+              />
+              <input type="hidden" id="supplierName" name="supplierName">
+              <datalist id="supplierOptions">
+                <% suppliers.map((supplier, index) => { %>
+                  <option value="<%= supplier.id %>" data-supplier-name="<%= supplier.supplier_name %>"><%= supplier.supplier_name.concat(' => ', supplier.description) %></option>
+                <% }) %>
+              </datalist>
+
+              <div class="invalid-feedback text-start fs-6">
+                Por favor debes ingresar el nombre de un proveedor actual.
+                Pregunta a alguien de nosotros.
+              </div>
+            </div>
+            <div class="check-supplier-btn">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="searchSupplierUrl"
+              >
+                Ver productos
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function () {
+        "use strict";
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll(".needs-validation");
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener(
+            "submit",
+            function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+
+              form.classList.add("was-validated");
+            },
+            false
+          );
+        });
+      })();
+
+      const datalistSuppliers = document.getElementById('supplierOptions')
+      let supplierNameInput = document.getElementById('supplierName')
+
+      function addProductValues(product) {
+        console.log(product)
+        for (let i = 0; i < datalistSuppliers.options.length; i++) {
+          if (datalistSuppliers.options[i].value === product.value) {
+            // console.log(datalistSuppliers.options[i])
+            // set blank input datalist value automatically
+            supplierNameInput.value = datalistSuppliers.options[i].dataset.supplierName;
+          }
+        }
+      }
+
+    </script>
+    <footer><%- include('../../partials/footer'); %></footer>
+  </body>
+</html>

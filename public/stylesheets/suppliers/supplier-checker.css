@@ -1,0 +1,50 @@
+.supplier-input[type=text] {
+  padding-bottom: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (max-width: 991.98px) { 
+  .supplier-checker-row {
+    margin-top: 2em;
+  }
+  .description-text {
+    margin-top: 1em;
+    font-size: 16px;
+  }
+  .title-text {
+    font-size: 50px;
+  }
+  .subtitle-text {
+    font-size: 28px;
+  }
+
+  .check-supplier-btn {
+    margin-top: 2em;
+  }
+  .supplier-input::placeholder {
+    font-size: 14px;
+  }
+}
+/* Large devices (laptops, up to) */
+@media (min-width: 992px) {
+  .supplier-checker-row {
+    margin-top: 4em;
+  }
+  .description-text {
+    margin-top: 1em;
+    font-size: 22px;
+  }
+  .title-text {
+    font-size: 70px;
+  }
+  .subtitle-text {
+    font-size: 36px;
+    margin-top: 0;
+  }
+
+  .check-supplier-btn {
+    margin-top: 2em;
+  }
+}

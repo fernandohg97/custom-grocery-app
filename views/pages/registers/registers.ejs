@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../../partials/head'); %>
+  </head>
+  <body>
+    <header><%- include('../../partials/header'); %></header>
+    <div class="container mt-3 product-list mb-5">
+      <%- include('../../partials/home-btn'); %>
+      <div class="row mt-1 mb-4 justify-content-between">
+        <div class="col-8">
+          <p class="h3">Cortes de caja</p>
+          <p class="fs-6"><%= totalCount %> productos</p>
+        </div>
+        <div class="col-4">
+          <form action="/" method="GET" class="row g-3">
+            <div class="col-6">
+              <label for="startDateInput" class="form-label">Inicio</label>
+              <input type="date" class="form-control" id="startDateInput">
+            </div>
+            <div class="col-6">
+              <label for="endDateInput" class="form-label">Fin</label>
+              <input type="date" class="form-control" id="endDateInput">
+            </div>
+          </form>
+        </div>
+      </div>
+      <% if (registers.length) { %>
+
+      <div class="table-responsive">
+        <table id="price-list"
+          class="table table-borderless table-striped table-hover shadow-lg p-3 mb-5 rounded">
+          <thead class="table-dark py-5">
+            <tr class="">
+              <th scope="col">#</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Codigo</th>
+              <th scope="col">Costo</th>
+              <th scope="col">Precio</th>
+              <th scope="col">Margen</th>
+              <th scope="col">Activo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.map((product, index) => { 
+              let bcolor;
+              if (index % 2 === 0) { bcolor = '#DCDCDC'} else { bcolor = 'white'} 
+            %>
+            <tr style="background-color: <%= bcolor %>">
+              <td scope="row"><%= index + 1 %></td>
+              <th class="fs-6"><%= product.name ? product.name : 'n/a' %>
+                <span class="<%= !product.has_variants ? 'd-none' : 'fw-bold text-primary' %>" style="font-size: 12px;">&nbsp;&nbsp;Producto Padre</span></th>
+              <td class="fw-bold" style="font-size: 14px">
+                <%= product.barcode %>
+              </td>
+              <td class="fw-bold" style="font-size: 14px; color: #922724">
+                <%= new Intl.NumberFormat('es-MX', { style: 'currency',currency: 'MXN' }).format(product.product_outlets[0].cost_price) %>
+              </td>
+              <td class="fw-bold" style="font-size: 14px; color: #355e3b">
+                <%= new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN'}).format(product.product_outlets[0].price_inc_tax) %>
+              </td>
+              <td class="fw-bold" style="font-size: 14px">
+                <%= product.product_outlets[0].markup.toFixed(2).toString().concat('%') %>
+              </td>
+              <td>
+                <span class="<%= product.isActive ? 'badge bg-primary' : 'badge bg-secondary' %>">
+                  <%= product.isActive %>
+                </span>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } else { %>
+      <div class="alert alert-secondary text-center fs-6" role="alert">
+        Ups, no encontramos los productos!
+      </div>
+      <% } %> 
+      <%- include('../../partials/supplier-product-pagination', { resultsPerPage, currentPage, numPages, apiUrl, supplierName, supplierId}); %>
+    </div>
+    <footer><%- include('../../partials/footer'); %></footer>
+
+    <script src="/javascripts/ejs.min.js"></script>
+    <script>
+      const supplierId = '<%- supplierId %>'
+      const supplierName = '<%- supplierName %>'
+
+      const updateProductDataForm = document.getElementById('updateProductForm')
+      const apiUrl = '<%= process.env.LOCAL_API_URL %>'
+      // console.log(products)
+
+      async function updateProductData(e) {
+        const loadingSpinner = document.getElementById('loading-update-product-data')
+        loadingSpinner.classList.remove('d-none')
+        const response = await fetch(`${apiUrl}/suppliers/sheets/update-product-data?supplierId=${supplierId}&supplierName=${supplierName}`)
+        console.log(response)
+        if (!response.ok) {
+          return alert('Ocurrio un error!')
+        }
+        const data = await response.json()
+        loadingSpinner.classList.add('d-none')
+
+        alert(`Mensaje: ${data.message}`)
+
+      }
+
+      function getCurrentDate() {
+        let date = new Date();
+        let month = (date.getMonth() + 1) < 10 ? '0'.concat(date.getMonth() + 1) : date.getMonth() + 1
+        let day = date.getDate() < 10 ? '0'.concat(date.getDate()) : date.getDate()
+        let currentDate = [date.getFullYear(), month, day].join('-');
+        return currentDate;
+      }
+
+      function getFormattedDate(date) {
+        let month = (date.getMonth() + 1) < 10 ? '0'.concat(date.getMonth() + 1) : date.getMonth() + 1
+        let formatDate = [date.getFullYear(), month, date.getDate()].join('-')
+        return formatDate;
+      }
+    </script>
+  </body>
+</html>

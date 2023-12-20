@@ -1,0 +1,400 @@
+<%- include('../../partials/spinner'); %>
+
+<div class="container-lg">
+  <!-- success message -->
+  <div id="success-message" class="alert alert-success d-none text-center d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+  <!-- failure message -->
+  <div id="failure-message" class="alert alert-danger d-none text-center d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+
+  <h3 class="mb-2 mt-0">Nuevo proveedor</h3>
+  <p class="mb-2 fw-bold" style="font-size: 13px;">ID: <span id="providerId" style="width: 10%;" class="placeholder"></span></p>
+
+  <!-- FORMULARIO -->
+  <form id="new-supplier-form" action="/suppliers" method="post" enctype="application/x-www-form-urlencoded" class="add-supplier-form row g-3 mt-2 pb-4 supplier-needs-validation">
+    <h6>Datos generales</h6>
+    <!-- Nombre del proveedor -->
+    <div class="col-12 valid-required">
+      <label for="provider-name" class="form-label name-field-label">Proveedor*</label>
+      <input id="provider-name" name="providerName" type="text" class="form-control input-valid" placeholder="Ingresa nombre del proveedor">
+      <div id="textHelp" style="font-size: 12px;" class="form-text">
+        El nombre debe ser específico, claro y reconocible. (Compañia/Marca/Empresa)
+      </div>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa el nombre del proveedor.
+      </div>
+    </div>
+    <!-- Vendedor -->
+    <div class="col-md-4 valid-required">
+      <label for="seller" class="form-label">Vendedor</label>
+      <input id="seller" name="seller" type="text" class="form-control input-valid" placeholder="Nombre del vendedor">
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa nombre del vendedor.
+      </div>
+    </div>
+    <!-- Telefono -->
+    <div class="col-md-4 valid-required">
+      <label for="phone" class="form-label">Teléfono</label>
+      <input id="phone" name="phone" type="text" class="form-control input-valid" placeholder="Telefono del vendedor">
+      <div id="textHelp" style="font-size: 12px;" class="form-text">
+        Puedes escribir más de 1 número de teléfono separado por comas (,).
+      </div>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa un numero telefónico válido.
+      </div>
+    </div>
+    <!-- Correo -->
+    <div class="col-md-4">
+      <label for="email" class="form-label">Correo electrónico*</label>
+      <input id="email" type="email" name="email" class="form-control input-valid" placeholder="Correo electrónico">
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa un correo electrónico válido.
+      </div>
+    </div>
+    <!-- CATEGORIA -->
+    <div class="col-md-3 valid-required">
+      <label for="categoryInput" class="form-label">Departamento</label>
+      <select id="category" name="category" class="form-select input-valid" aria-label="supplier-category">
+        <option selected disabled value="">Selecciona el tipo</option>
+        <option value="Abarrotes🥫">Abarrotes🥫</option>
+        <option value="Frutas y Verduras🍎">Frutas y Verduras🍎</option>
+        <option value="Carniceria y Salchichoneria🥩">Carniceria y Salchichoneria🥩</option>
+        <option value="Limpieza y Hogar🧹">Limpieza y Hogar🧹</option>
+        <option value="Bebidas🥤">Bebidas🥤</option>
+        <option value="Botanas Postres y Snacks🍟">Botanas Postres y Snacks🍟</option>
+        <option value="Lacteos🥛">Lacteos🥛</option>
+        <option value="Panaderia y Tortilleria🍞">Panaderia y Tortilleria🍞</option>
+        <option value="Mascotas🐶">Mascotas🐶</option>
+        <option value="Cigarros🚬">Cigarros🚬</option>
+        <option value="Granos y Semillas🌾">Granos y Semillas🌾</option>
+        <option value="Dulceria🍬">Dulceria🍬</option>
+        <option value="Cuidado Personal🧼">Cuidado Personal🧼</option>
+        <option value="Alimentos y Comida🥪">Alimentos y Comida🥪</option>
+        <option value="Farmacia💊">Farmacia💊</option>
+        <option value="Insumos🛍">Insumos🛍</option>
+        <option value="Varios🎈">Varios🎈</option>
+        <option value="Congelados🧊">Congelados🧊</option>
+        <option value="Plantas🌱">Plantas🌱</option>
+        <option value="Sin asignar">Sin asignar</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona un departamento correcto.
+      </div>
+    </div>
+    <!-- CONVENIO -->
+    <div class="col-md-3 valid-required">
+      <label for="agreementInput" class="form-label">Convenio</label>
+      <select onchange="AddSupplierApp.checkAgreementSelected()" name="agreement" id="agreement" class="form-select input-valid" aria-label="agreement">
+        <option selected disabled value="">Selecciona el tipo</option>
+        <option value="CONSIGNACION">CONSIGNACION</option>
+        <option value="CREDITO">CREDITO</option>
+        <option value="CONTADO">CONTADO</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona una opcion correcta.
+      </div>
+    </div>
+    <!-- FORMA DE PAGO PREFERENTE -->
+    <div class="col-md-3 valid-required">
+      <label for="paymentMethodProvider" class="form-label">Forma de pago preferente</label>
+      <select id="paymentMethodProvider" name="paymentMethodProvider" class="form-select input-valid" aria-label="supplier-payment-method">
+        <option selected disabled value="">Selecciona la forma de pago</option>
+        <option value="EFECTIVO">Efectivo</option>
+        <option value="TRANSFERENCIA ELECTRONICA">Transferencia electronica</option>
+        <option value="TARJETA DE DEBITO">Tarjeta de debito (TDD)</option>
+        <option value="TARJETA DE CREDITO">Tarjeta de credito (TDC)</option>
+        <option value="CHEQUE">Cheque</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona un metodo de pago correcto.
+      </div>
+    </div>
+    <!-- CUENTA DE RETIRO PREFERENTE -->
+    <div class="col-md-3 valid-required">
+      <label for="retirementAccountProvider" class="form-label">Cuenta de retiro preferente</label>
+      <select id="retirementAccountProvider" name="retirementAccountProvider" class="form-select input-valid" aria-label="supplier-retirement-account">
+        <option selected disabled value="">Selecciona la cuenta de retiro</option>
+        <option value="FONDO FIJO">Fondo fijo</option>
+        <option value="CAJA EXTERNA">Caja externa</option>
+        <option value="BANAMEX EMPRESA">Banamex Empresa</option>
+        <option value="CREDITO NU">Credito NU</option>
+        <option value="CREDITO COSTCO">Credito Costco</option>
+        <option value="CREDITO ORO">Credito Oro</option>
+        <option value="CREDITO AMEX">Credito AMEX</option>
+        <option value="KUESKI">Kueski</option>
+        <option value="OTRO">Otro</option>
+        <option value="POR DEFINIR">Por definir</option>
+
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona una cuenta de retiro correcto.
+      </div>
+    </div>
+    <!-- MINIMO DE NOTAS -->
+    <div id="notesMinimumInput" class="col-md-4 d-none">
+      <label for="numberOfNotesAllow" class="form-label">Mínimo de notas</label>
+      <input id="numberOfNotesAllow" name="numberOfNotesAllow" type="number" min="2" class="form-control input-valid" placeholder="Ingresa la cantidad minima de notas pendientes">
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa una cantidad minima de notas.
+      </div>
+    </div>
+    <!-- DIAS A PAGAR CREDITO -->
+    <div id="daysToPayCreditInput" class="col-md-4">
+      <label for="daysToPayCredit" class="form-label">Plazo a pagar</label>
+      <select id="daysToPayCredit" name="daysToPayCredit" class="form-select input-valid" aria-label="daysToPayCredit">
+        <option selected disabled value="">Selecciona la cantidad de días</option>
+        <option value="7">7 dias</option>
+        <option value="15">15 dias</option>
+        <option value="21">21 dias</option>
+        <option value="30">30 dias</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa un plazo valido de dias.
+      </div>
+    </div>
+    <!-- FACTURA -->
+    <div class="col-md-4 valid-required">
+      <label for="invoiceInput" class="form-label">Factura</label>
+      <select id="isInvoice" name="isInvoice" class="form-select input-valid" aria-label="supplier-invoice">
+        <option selected disabled value="">Selecciona el tipo</option>
+        <option value="FACTURA">Factura</option>
+        <option value="NO FACTURA">No Factura</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona una opcion correcta.
+      </div>
+    </div>
+    <!-- DIAS DE VISITA -->
+    <!-- <div id="visitDaysInput" class="col-12">
+      <label>Dias de visita</label>
+      <select id="providerVisitDays" name="supplierVisitDays" class="selectpicker d-block" style="font-size: 14px;" multiple aria-label="multiple select example" disabled>
+        <option value="lunes-check">Lunes</option>
+        <option value="martes-check">Martes</option>
+        <option value="miercoles-check">Miercoles</option>
+        <option value="jueves-check">Jueves</option>
+        <option value="viernes-check">Viernes</option>
+        <option value="sabado-check">Sabado</option>
+        <option value="domingo-check">Domingo</option>
+      </select>
+    </div> -->
+    <!-- Detalles -->
+    <div class="col-sm-12 mt-2">
+      <label for="supplierDetails" class="form-label">Detalles</label>
+      <textarea style="font-size: 14px;" name="supplierDetails" class="form-control" id="supplierDetails" rows="3" placeholder="Escribe algo importante sobre este proveedor"></textarea>
+    </div>
+
+    <!-- AGREGAR DATOS BANCARIOS -->
+    <div class="col-sm-12">
+      <button style="font-size: 13px; margin: 0; padding: 0;" type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#datosBancariosCollapse" aria-expanded="false" aria-controls="datosBancariosCollapse">
+        Agregar datos bancarios
+      </button>
+      <div id="textHelp" style="font-size: 12px;" class="form-text">
+        Es requisito agregar los datos bancarios en caso de que la forma de pago al proveedor sea "transferencia electrónica".
+      </div>
+    </div>
+    <!-- DATOS BANCARIOS -->
+    <div class="collapse" id="datosBancariosCollapse">
+      <div class="row g-3 pb-3">
+        <h6>Datos bancarios</h6>
+        <!-- BANCO -->
+        <div class="col-sm-6">
+          <label for="bankname" class="form-label">Banco*</label>
+          <input id="bankname" name="bankname" type="text" class="form-control input-valid" placeholder="Ingresa nombre del banco">
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa el nombre del banco.
+          </div>
+        </div>
+        <!-- BENEFICIARIO -->
+        <div class="col-sm-6">
+          <label for="recipient" class="form-label">Beneficiario*</label>
+          <input id="recipient" name="recipient" type="text" class="form-control input-valid" placeholder="Ingresa nombre del beneficiario">
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa el nombre del beneficiario.
+          </div>
+        </div>
+        <!-- CLABE -->
+        <div class="col-sm-6">
+          <label for="clabeAccount" class="form-label">CLABE*</label>
+          <input id="clabeAccount" name="clabeAccount" type="number" class="form-control input-valid" placeholder="Ingresa la cuenta CLABE">
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+          PREFERENTE
+          </div>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa la cuenta CLABE.
+          </div>
+        </div>
+        <!-- NO. TARJETA -->
+        <div class="col-sm-6">
+          <label for="cardnumber" class="form-label">No. tarjeta*</label>
+          <input id="cardnumber" name="cardnumber" type="number" class="form-control input-valid" placeholder="Ingresa número de la tarjeta">
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa el número de tarjeta.
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- BOTONES -->
+    <div class="col-12">
+      <button id="submitCreateButton" type="submit" class="btn btn-primary">Guardar</button>
+      <a role="button" class="btn btn-light" href="/admin">Cancelar</a>
+    </div>
+  </form>
+  
+  
+
+<!-- Loading spinner -->
+<div id="loading-add-supplier" class="loading-spinner loading-add-supplier d-flex justify-content-center align-items-center text-center d-none">
+<div>
+  <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <div>Agregando proveedor...</div>
+</div>
+</div>
+
+</div>
+
+<%- include('../../partials/scripts'); %>
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+  if (nodeEnv === 'local') {
+    console.log(apiUrl)
+  }
+  console.log('apiURL')
+  let newID = '<%- newID %>'
+
+  // asign values
+  let providerIdEl = document.getElementById('providerId')
+  providerIdEl.classList.remove('placeholder')
+  providerIdEl.textContent = newID
+
+  let loadingSpinner = document.getElementById('loading-spinner')
+  let loadingSpinnerMsg = document.getElementById('spinner-message')
+
+  // BUILD VIEW
+  const AddSupplierApp = {}
+
+  AddSupplierApp.onLoad = function() {
+    AddSupplierApp.loadingSpinner = document.getElementById('loading-spinner-update')
+    AddSupplierApp.loadingSpinnerMsg = document.getElementById('spinner-update-message')
+  
+    AddSupplierApp.form = document.getElementById('new-supplier-form')
+    AddSupplierApp.submitCreateBtn = document.getElementById('submitCreateButton')
+
+    AddSupplierApp.form.addEventListener('submit', AddSupplierApp.onSubmit);
+
+  }
+
+  // MIDDLEWARES ---------------------------------------
+  // Handler when radio button in record form is clicked
+  AddSupplierApp.checkAgreementSelected = () => {
+    if (document.getElementById('agreement').value === 'CREDITO') {
+      document.getElementById('daysToPayCreditInput').classList.remove('d-none');
+      document.getElementById('notesMinimumInput').classList.add('d-none');
+      // document.getElementById('date-to-pay-record').value = document.getElementById('date-record').value; 
+    } else if (document.getElementById('agreement').value === 'CONSIGNACION') {
+      document.getElementById('daysToPayCreditInput').classList.add('d-none');
+      document.getElementById('notesMinimumInput').classList.remove('d-none');
+    } else if (document.getElementById('agreement').value === 'CONTADO') {
+      document.getElementById('daysToPayCreditInput').classList.add('d-none');
+      document.getElementById('notesMinimumInput').classList.add('d-none');
+    }
+  }
+
+  // SUBMIT FORM - CREATE NEW SUPPLER
+  AddSupplierApp.onSubmit = async (e) => {
+    e.preventDefault()
+    AddSupplierApp.clearInputValids()
+    // show spinners
+    AddSupplierApp.loadingSpinnerMsg.textContent = 'Espera un momento...'
+    AddSupplierApp.loadingSpinner.classList.remove('d-none')
+
+    // HTML FORM POST DATA
+      // loadingSpinnerMsg.textContent = 'Agregando proveedor...'
+      // loadingSpinner.classList.remove('d-none')
+      const fd = new FormData(AddSupplierApp.form)
+      const urlEncoded = new URLSearchParams(fd).toString()
+
+      const response = await fetch(`${apiUrl}/suppliers`, {
+        method: 'POST',
+        body: urlEncoded,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      let result = await response.json()
+      // console.log(response.status)
+      if (response.status === 422) {
+        AddSupplierApp.loadingSpinner.classList.add('d-none')
+
+        let inputEls = AddSupplierApp.form.getElementsByClassName('input-valid')
+        // console.log(result)
+        let errors = result.errors
+        // console.log(inputEls)
+
+        Array.from(inputEls).forEach(inputValid => {
+          errors.forEach((err) => {
+            let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+
+            if (inputValid.name === err.param) {
+              // console.log(err)
+              invalidMsg.textContent = err.msg
+              invalidMsg.classList.remove('d-none')
+            }
+          })
+          
+        })
+
+
+      } else if (response.status === 201 || response.status === 200) {
+        AddSupplierApp.loadingSpinner.classList.add('d-none')
+        let successMessageAlert = document.getElementById('success-message')
+        successMessageAlert.textContent = result.message
+        successMessageAlert.classList.remove('d-none')
+
+        setTimeout(() => {
+          successMessageAlert.classList.add('d-none')
+          AddSupplierApp.submitCreateBtn.disabled = true
+          // Simulate an HTTP redirect:
+          window.location.replace(`${apiUrl}/suppliers`);
+        }, "4000");
+      }
+      // .then(res => )
+      // .then(response => {
+      //   console.log(response)
+      //   let successMessageAlert = document.getElementById('success-message')
+      //   successMessageAlert.classList.remove('d-none')
+      //   successMessageAlert.textContent = response.message
+
+      //   setTimeout(() => {
+      //     successMessageAlert.classList.add('d-none')
+      //   }, "3000");
+      // })
+      // .catch(err => {
+      //   console.log(`err: ${err}`)
+      // })
+  }
+
+  // Clear invalid message
+  AddSupplierApp.clearInputValids = () => {
+    let inputEls = AddSupplierApp.form.getElementsByClassName('input-valid')
+
+    Array.from(inputEls).forEach(inputValid => {
+      let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+
+      if (!invalidMsg.classList.contains('d-none')) {
+        invalidMsg.classList.add('d-none')
+      }
+    })
+  }
+
+
+
+  AddSupplierApp.onLoad()
+
+  
+
+</script>

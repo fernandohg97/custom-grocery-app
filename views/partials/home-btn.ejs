@@ -1,10 +1,23 @@
 <style>
   /*This is modifying the btn-primary colors but you could create your own .btn-something class as well*/
-.back-btn {
+  .back-btn {
     color: #000000;
-}
-.back-btn:hover, .back-btn:focus, .back-btn:active, .back-btn.active, .open>.dropdown-toggle.back-btn {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .back-btn:hover,
+  .back-btn:focus,
+  .back-btn:active,
+  .back-btn.active,
+  .open > .dropdown-toggle.back-btn {
     color: grey;
-}
+  }
 </style>
-<a type="button" class="btn btn-light p-0 mb-2 back-btn" style="font-size: 14px;" href="/welcome">Ir al inicio</a>
+<a
+  type="button"
+  class="btn btn-light mb-2 mt-1 p-0 back-btn align-items-center"
+  href="/welcome"
+>
+  <i class="bi bi-arrow-left-short" style="font-size: 1rem;"></i>
+  Ir al inicio
+</a>

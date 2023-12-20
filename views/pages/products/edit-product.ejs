@@ -6,11 +6,11 @@
   </head>
   <body>
     <header><%- include('../../partials/header'); %></header>
-    <div class="container edit-product mt-5">
+    <div class="container edit-product mt-3">
       <%- include('../../partials/home-btn'); %>
       <div class="row">
         <p class="h4 text-primary"><%= product.name %></p>
-        <p class="" style="font-size: 12px">
+        <p class="fw-bold" style="font-size: 12px">
           <%= product.has_variants ? 'Este producto tiene variantes' : 'Este producto no tiene variantes' %>
         </p>
         <p class="" style="font-size: 12px">

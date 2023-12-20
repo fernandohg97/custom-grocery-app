@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <%- include('../partials/head'); %>
+
+</head>
+<body>
+
+  <!-- <div class="container">
+    <div class="row justify-content-center" style="margin-top: 8em;">
+      <div class="card text-center bg-dark text-white w-50 p-5">
+        <div class="card-body">
+          <h2 class="card-title">Hola, Bienvenido! ✌</h2>
+          <p class="card-text welcome-description">Aquí podrás encontrar información acerca de nuestros productos!</p>
+          <div class="d-grid gap-2">
+            <a href="/auth" class="btn btn-light" role="button" style="font-size: 16px; margin-top: 1em;">Ingresar al sistema</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+<div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+  
+    <%- include('../partials/header'); %>
+  <div class="app-main">
+
+    <%- include('../partials/sidebar'); %>
+    <div class="app-main__outer">
+
+        <div class="app-main__inner">
+          <%- body %>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- MODAL -->
+<!-- ELIMINAR PROVEEDOR REGISTRO  -->
+<div id="myModal" class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header flex-column">
+					<i class="bi bi-exclamation-diamond"></i>
+				<h4 class="modal-title w-100 p-0">¿Estás seguro?</h4>	
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="modal-body">
+				<p class="m-0 p-0">¿Quieres eliminar a <strong id="providerNameDeleteModal"></strong>?</p>
+        <form id="delete-supplier-form" action="/suppliers?_method=DELETE" method="post" enctype="application/x-www-form-urlencoded" class="delete-supplier-form">
+          <div class="mt-1 w-50 mx-auto valid-required">
+            <label for="deleteProviderPassword" class="col-form-label text-sm">🔒Ingresa clave</label>
+            <input type="password" name="passwordConfirm" class="form-control form-control-sm input-valid" id="passwordConfirm">
+            <div id="invalid-message-delete-supplier" class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+              Por favor ingresa la contraseña.
+            </div>
+          </div>
+        </form>
+			</div>
+			<div class="modal-footer justify-content-center mt-2 p-0">
+				<button type="button" class="btn btn-secondary cancel-changes" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-danger remove-provider">Eliminar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL - RESUME ACCOUNTS TO PAY - NUEVO CONTRA RECIBO -->
+<div class="modal fade" id="NewAgainstReceiptModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="NewAgainstReceiptModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="NewAgainstReceiptModal">Nuevo contra recibo</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <span id="currentdate-against-receipt" class="h4 font-bold text-sm d-block"></span>
+          <!-- RESUMEN GENERAL DE NOTAS A PAGAR -->
+          <form id="new-against-receipt-form" action="/against-receipts/" method="post" enctype="application/x-www-form-urlencoded" class="new-against-receipt-form">
+            <div class="row row-cols-1 gy-2 justify-content-center text-center">
+              <div class="col">
+                <span class="h4 font-semibold text-muted text-sm d-block">Proveedor</span>
+                <span id="supplierAgainstReceipt" class="font-bold text-primary fs-3"></span>
+              </div>
+              <div class="col">
+                <span class="h4 font-semibold text-muted text-sm d-block">Cant. de notas</span>
+                <span id="qtyAccountsAgainstReceipt" class="font-bold fs-3"></span>
+              </div>
+              <div class="col">
+                <span class="h4 font-semibold text-muted text-sm d-block">Total a pagar</span>
+                <span id="totalAmountAgainstReceipt" class="h3 font-bold"></span>
+              </div>
+                <!-- <span id="paymentMethodToPayMassive" class="h3 font-bold text-success"></span> -->
+              <!-- FORMA DE PAGO -->
+              <div id="paymentMethodInput" class="col-lg-6 valid-required mt-2">
+                <label for="paymentMethodInput" class="form-label h4 font-semibold text-muted text-sm">Forma de pago</label>
+                <!-- <span class="h4 font-semibold text-muted text-sm d-block">Tu forma de pago</span> -->
+                <select id="paymentMethodAgainstReceipt" name="paymentMethod" class="form-select form-select-sm input-valid" aria-label="paymentMethod">
+                  <option selected disabled value="">Selecciona la forma de pago</option>
+                  <option value="EFECTIVO">Efectivo</option>
+                  <option value="TRANSFERENCIA ELECTRONICA">Transferencia electronica</option>
+                  <!-- <option value="NO COMPUTABLE">No Computable</option> -->
+                </select>
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor selecciona una forma de pago disponible.
+                </div>
+              </div>
+              <!-- Force next columns to break to new line -->
+              <div class="w-100"></div>
+              <!-- ESTATUS -->
+              <div id="statusInput" class="col-lg-6 valid-required mt-2">
+                <label for="statusInput" class="form-label h4 font-semibold text-muted text-sm">Estatus</label>
+                <!-- <span class="h4 font-semibold text-muted text-sm d-block">Tu forma de pago</span> -->
+                <select id="statusAgainstReceipt" name="status" class="form-select form-select-sm input-valid" disabled aria-label="status">
+                  <!-- <option disabled value="">Selecciona la forma de pago</option> -->
+                  <option selected value="BORRADOR">BORRADOR</option>
+                  <option value="EN CORRECCION">EN CORRECCION</option>
+                  <option value="PROGRAMADA">PROGRAMADA</option>
+                  <option value="ENVIADO AL PROVEEDOR">ENVIADO AL PROVEEDOR</option>
+                  <!-- <option value="PAGADO">PAGADO</option> -->
+
+                </select>
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor selecciona una forma de pago disponible.
+                </div>
+              </div>
+              <!-- Force next columns to break to new line -->
+              <div class="w-100"></div>
+              <!-- USUARIO -->
+              <div id="userInput" class="col-lg-6 valid-required">
+                <label for="userInput" class="form-label h4 font-semibold text-muted text-sm">Usuario*</label>
+                <input id="userAgainstReceipt" name="user" type="text" class="form-control form-control-sm input-valid" placeholder="Ingresa tu nombre">
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor ingresa tu nombre.
+                </div>
+              </div>
+              <!-- Force next columns to break to new line -->
+              <div class="w-100"></div>
+              <!-- ENVIAR A CORREO -->
+              <div id="emailInput" class="col-lg-6 valid-required">
+                <label for="emailInput" class="form-label h4 font-semibold text-muted text-sm">Correo*</label>
+                <input id="email" name="email" type="email" class="form-control form-control-sm input-valid" placeholder="Ingresa correo de proveedor">
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor ingresa un correo válido.
+                </div>
+              </div>
+            </div>
+          </form>
+          <!-- TABLA DE NOTAS A PAGAR -->
+          <div class="row justify-content-center mt-4">
+            <div class="table-responsive col-lg-8">
+              <span class="mb-4 text-muted fst-italic" style="font-size: 12px;">Tabla de cuentas a pagar</span>
+              <table id="newAgainstReceiptTable" class="table table-sm newAgainstReceiptTable caption-bottom text-center" style="font-size: 13px;">
+                <caption class="text-sm">Cuentas que serán incluidas en el contra recibo</caption>
+                <thead>
+                  <tr class="">
+                    <th scope="col" class="text-black fw-medium" style="font-size: 11px;">No. Nota</th>
+                    <th scope="col" class="text-black fw-medium" style="font-size: 11px;">Monto</th>
+                    <th scope="col" class="text-black fw-medium" style="font-size: 11px;">Recibido</th>
+                  </tr>
+                </thead>
+                <tbody id="accountsToPayAgainstReceiptRows" class="table-group-divider">
+                </tbody>
+              </table>
+              <template id="accountsToPayAgainstReceiptRowsTemplate">
+                <tr class="py-3" style="padding-bottom: 10px !important;">
+                  <th class="noteNumber" scope="row"></th>
+                  <td class="totalAmount"></td>
+                  <td class="dateReceived"></td>
+                </tr>
+              </template>
+            </div>
+          <!-- </div> -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="new-against-receipt" type="button" class="btn btn-sm btn-primary new-against-receipt">Crear contra recibo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL - RESUME ACCOUNTS TO PAY - ABONO MASIVO -->
+<div class="modal fade" id="AddPaymentMultipleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AddPaymentMultipleModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="AddPaymentMultipleModal">Confirmar pago masivo</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <!-- RESUMEN GENERAL DE NOTAS A PAGAR -->
+          <form id="new-massive-payment-form" action="/payments/add-massive-payment" method="post" enctype="application/x-www-form-urlencoded" class="new-massive-payment-form">
+            <div class="row row-cols-1 gy-2 justify-content-center text-center">
+              <div class="col">
+                <span class="h4 font-semibold text-muted text-sm d-block">Proveedor</span>
+                <span id="supplierToPayMassive" class="font-bold text-primary fs-3"></span>
+              </div>
+              <div class="col">
+                <span class="h4 font-semibold text-muted text-sm d-block">Cant. de notas</span>
+                <span id="qtyAccountsToPayMassive" class="font-bold fs-3"></span>
+              </div>
+              <div class="col">
+                <span class="h4 font-semibold text-muted text-sm d-block">Total a pagar</span>
+                <span id="totalAmountToPayMassive" class="h3 font-bold"></span>
+              </div>
+                <!-- <span id="paymentMethodToPayMassive" class="h3 font-bold text-success"></span> -->
+              <!-- FORMA DE PAGO -->
+              <div id="paymentMethodInput" class="col-lg-6 valid-required mt-2">
+                <label for="paymentMethodInput" class="form-label h4 font-semibold text-muted text-sm">Forma de pago</label>
+                <!-- <span class="h4 font-semibold text-muted text-sm d-block">Tu forma de pago</span> -->
+                <select id="paymentMethod" name="paymentMethod" class="form-select form-select-sm input-valid" aria-label="paymentMethod">
+                  <option selected disabled value="">Selecciona la forma de pago</option>
+                  <option value="EFECTIVO">Efectivo</option>
+                  <option value="TRANSFERENCIA ELECTRONICA">Transferencia electronica</option>
+                  <!-- <option value="NO COMPUTABLE">No Computable</option> -->
+                </select>
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor selecciona una forma de pago disponible.
+                </div>
+              </div>
+              <!-- Force next columns to break to new line -->
+              <div class="w-100"></div>
+              <!-- USUARIO -->
+              <div id="userInput" class="col-lg-6 valid-required">
+                <label for="userInput" class="form-label h4 font-semibold text-muted text-sm">Usuario*</label>
+                <input id="user" name="user" type="text" class="form-control form-control-sm input-valid" placeholder="Ingresa tu nombre">
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor ingresa tu nombre.
+                </div>
+              </div>
+            </div>
+          </form>
+          <!-- TABLA DE NOTAS A PAGAR -->
+          <div class="row justify-content-center mt-4">
+            <div class="table-responsive col-lg-8">
+              <span class="mb-4 text-muted fst-italic" style="font-size: 12px;">Tabla de cuentas a pagar</span>
+              <table id="addPaymentsMultipleTable" class="table table-sm addPaymentsMultipleTable caption-bottom text-center" style="font-size: 13px;">
+                <caption>Cuentas que serán liquidadas</caption>
+                <thead>
+                  <tr class="">
+                    <th scope="col" class="text-black fw-medium" style="font-size: 11px;">No. Nota</th>
+                    <th scope="col" class="text-black fw-medium" style="font-size: 11px;">Monto</th>
+                    <th scope="col" class="text-black fw-medium" style="font-size: 11px;">Recibido</th>
+                  </tr>
+                </thead>
+                <tbody id="accountsToPayMassiveRows" class="table-group-divider">
+                </tbody>
+              </table>
+              <template id="accountsToPayMassiveRowTemplate">
+                <tr class="py-3" style="padding-bottom: 10px !important;">
+                  <th class="noteNumber" scope="row"></th>
+                  <td class="totalAmount"></td>
+                  <td class="dateReceived"></td>
+                </tr>
+              </template>
+            </div>
+          <!-- </div> -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="add-massive-payment" type="button" class="btn btn-sm btn-primary add-massive-payment">Aplicar pago masivo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OFF CANVAS - PURCHASE RESUME NOTE NUMBER PAYMENTS -->
+<div id="offCanvasPayments" class="offcanvas offcanvas-end offcanvas-payments" data-bs-scroll="true" tabindex="-1"  aria-labelledby="offCanvasPayments">
+  <div class="offcanvas-header">
+    <h3 class="offcanvas-title" id="offCanvasPaymentsTitle"></h3>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="page-title-subheading fw-bold mb-1 fs-6" id="offCanvasPaymentsNote"></div>
+    <div class="fs-6 mb-3">Total: <strong id="totalPurchaseAmount"></strong></div>
+    <span>Detalles:</span>&nbsp;
+    <p class="text-body-secondary" id="offCanvasPurchaseDetails"></p>
+    <div class="table-responsive mt-4">
+      <table id="paymentsResumeTable" class="table paymentsResumeTable d-none caption-top" style="font-size: 13px;">
+        <caption>Lista de pagos</caption>
+        <thead>
+          <tr class="text-center">
+            <th scope="col" style="font-size: 13px;">Folio</th>
+            <th scope="col" style="font-size: 13px;">Monto</th>
+            <th scope="col" style="font-size: 13px;">Fecha</th>
+            <th scope="col" style="font-size: 13px;">Forma de pago</th>
+            <th scope="col" style="font-size: 13px;">Cuenta</th>
+            <th scope="col" style="font-size: 13px;">Usuario</th>
+          </tr>
+        </thead>
+        <tbody id="paymentResumeRows" class="table-group-divider">
+        </tbody>
+        <tfoot>
+          <tr>
+            <td id="providerPaymentsTotalQuantity" colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <template id="rowTemplate">
+        <tr class="py-3" style="padding-bottom: 10px !important;">
+          <th class="px-3 py-3 folio" scope="row"></th>
+          <td class="px-3 py-3 monto"></td>
+          <td class="px-3 py-3 fecha"></td>
+          <td class="px-3 py-3 formaDePago"></td>
+          <td class="px-3 py-3 cuenta"></td>
+          <td class="px-3 py-3 usuario"></td>
+        </tr>
+      </template>
+      <div id="paymentsNotFoundMessage" class="text-secondary d-none">
+        No se han realizado pagos a esta compra.
+      </div>
+    </div>
+    <div class="dropdown mt-4">
+      <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        Enviar
+      </button>
+      <ul class="dropdown-menu">
+        <li><button type="button" onclick="window.print()" class="dropdown-item">Imprimir</button></li>
+        <li><a class="dropdown-item" href="#">Another action</a></li>
+        <li><a class="dropdown-item" href="#">Something else here</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- OFF CANVAS - ACCOUNT TO PAY RESUME NOTE NUMBER PAYMENTS -->
+<div id="offCanvasAccountToPayPayments" class="offcanvas offcanvas-end offcanvas-account-to-pay-payments p-3" data-bs-scroll="true" tabindex="-1"  aria-labelledby="offCanvasAccountToPayPayments">
+  <div class="offcanvas-header">
+    <h6 class="offcanvas-title mt-1 text-muted">Resumen</h6>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <h4 class="fw-bold" id="offCanvasAccountToPayPaymentsTitle"></h4>
+    <span class="fw-medium text-muted text-sm d-block">No. Nota</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasAccountToPayPaymentsNote"></div>
+    <span class="fw-medium text-muted text-sm d-block">Usuario</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasAccountToPayUserNote"></div>
+    <span class="fw-medium text-muted text-sm d-block">Fecha de recibido</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasAccountToPayDateRecordNote"></div>
+    <span class="fw-medium text-muted text-sm d-block">Tipo</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasAccountToPayTypeNote"></div>
+
+    <hr class="hr-1"> <!-- HORIZONTAL LINE -->
+
+    <span class="fw-medium text-muted text-sm d-block">Estatus</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasAccountToPayEstatusNote"></div>
+    <span class="fw-medium text-muted text-sm d-block">Monto total</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="accountToPayTotalPurchaseAmount"></div>
+    <span class="fw-medium text-muted text-sm d-block">Saldo restante</span>
+    <div class="page-title-subheading fw-semibold fs-6 text-primary" id="offCanvasAccountToPayBalance"></div>
+    <span class="fw-medium text-muted text-sm d-block">Detalles</span>
+    <p class="text-body-secondary fs-6" id="offCanvasAccountToPayDetails"></p>
+
+    <hr class="hr-1"> <!-- HORIZONTAL LINE -->
+
+    <div class="table-responsive mt-2">
+      <table id="accountToPayPaymentsResumeTable" class="table accountToPayPaymentsResumeTable d-none caption-top" style="font-size: 13px;">
+        <caption>Lista de pagos</caption>
+        <thead>
+          <tr class="text-center">
+            <th scope="col" style="font-size: 13px;">Folio</th>
+            <th scope="col" style="font-size: 13px;">Monto</th>
+            <th scope="col" style="font-size: 13px;">Fecha</th>
+            <th scope="col" style="font-size: 13px;">Forma de pago</th>
+            <th scope="col" style="font-size: 13px;">Cuenta</th>
+            <th scope="col" style="font-size: 13px;">Usuario</th>
+          </tr>
+        </thead>
+        <tbody id="accountToPayPaymentResumeRows" class="table-group-divider">
+        </tbody>
+        <tfoot>
+          <tr>
+            <td id="accountToPayProviderPaymentsTotalQuantity" colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <template id="rowTemplate">
+        <tr class="py-3" style="padding-bottom: 10px !important;">
+          <th class="px-3 py-3 folio" scope="row"></th>
+          <td class="px-3 py-3 monto"></td>
+          <td class="px-3 py-3 fecha"></td>
+          <td class="px-3 py-3 formaDePago"></td>
+          <td class="px-3 py-3 cuenta"></td>
+          <td class="px-3 py-3 usuario"></td>
+        </tr>
+      </template>
+      <div id="accountToPayPaymentsNotFoundMessage" class="text-secondary d-none">
+        No se han realizado pagos a esta compra.
+      </div>
+    </div>
+    <div class="dropdown mt-2">
+      <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        Acción
+      </button>
+      <ul class="dropdown-menu">
+        <!-- <li><button class="dropdown-item btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddPaymentMultipleModal">Abonar</button></li> -->
+        <li><button type="button" onclick="window.print()" class="dropdown-item">Imprimir</button></li>
+        <li><a class="dropdown-item" href="#">Something else here</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- OFF CANVAS - PAYMENTS RESUME NOTE NUMBERS -->
+<div id="offCanvasPaymentsResume" class="offcanvas offcanvas-end offcanvas-payments-resume p-3" data-bs-scroll="true" tabindex="-1"  aria-labelledby="offCanvasPaymentsResume">
+  <div class="offcanvas-header">
+    <h6 class="offcanvas-title mt-1 text-muted">Resumen</h6>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <h5 class="fw-bold mb-1">Pago realizado a&nbsp;<strong id="offCanvasPaymentsResumeTitle" class="text-primary"></strong></h5>
+    <!-- DISPLAY IF IS MASSIVE, AGAINST RECEIPT OR REGULAR -->
+    <span id="offCanvasPaymentsResumeIsMassive" class="fw-medium text-muted text-sm d-block d-none">Este pago representa un <strong class="text-dark">pago masivo</strong></span>
+    <span id="offCanvasPaymentsResumeIsReceipt" class="fw-medium text-muted text-sm d-block d-none">Este pago representa un <strong class="text-dark">pago de contrarecibo</strong></span>
+    <span id="offCanvasPaymentsResumeIsRegular" class="fw-medium text-muted text-sm d-block d-none">Este pago representa un <strong class="text-dark">pago directo a 1 nota</strong></span>
+    <!-- DISPLAY VIEW BASIC DATA -->
+    <span class="fw-medium text-muted text-sm d-block mt-2">Folio de pago</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumeFolio"></div>
+    <span class="fw-medium text-muted text-sm d-block">Monto</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumeTotalAmount"></div>
+    <span class="fw-medium text-muted text-sm d-block">Fecha de pago</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumePaymentDate"></div>
+    <span class="fw-medium text-muted text-sm d-block">Forma de pago</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumePaymentMethod"></div>
+    <span class="fw-medium text-muted text-sm d-block">Cuenta de retiro</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumeRetirementAccount"></div>
+    <span class="fw-medium text-muted text-sm d-block">Usuario</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumeUser"></div>
+   
+
+    <!-- <span class="fw-medium text-muted text-sm d-block">Pago masivo</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumeIsMassive"></div>
+    <span class="fw-medium text-muted text-sm d-block">Pago contrarecibo</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPaymentsResumeIsReceipt"></div> -->
+
+    <hr class="hr-1"> <!-- HORIZONTAL LINE -->
+    <span class="fw-medium text-muted text-sm d-block mb-2">Desglose del pago</span>
+
+    <!-- SECCION DE CONTRARECIBO PAGADO -->
+    <div id="paymentReceiptResumenWrapper" class="col-md-6 text-start border border-2 border-secondary-subtle p-3 rounded-1 d-none" style="--bs-border-opacity: .5;">
+      <h6 class="mt-2 mb-4">Resumen</h6>
+      <div class="row row-cols-1 gy-1">
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Creado:</span>
+          <span id="paymentReceiptCreatedAt" class="mb-0" style="font-size: 12px;"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Folio</span>
+          <span id="paymentReceiptFolio" class="fs-6 fw-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Proveedor</span>
+          <span id="paymentReceiptProvider" class="fs-6 fw-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Cant. notas</span>
+          <span id="paymentReceiptQtyNotes" class="fs-6 fw-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total</span>
+          <span id="paymentReceiptTotalAmount" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Autorizado</span>
+          <span id="paymentReceiptAuthorize" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
+          <span id="paymentReceiptStatus" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Elaborado por:</span>
+          <span id="paymentReceiptUser" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Detalles</span>
+          <span id="paymentReceiptDetails" class="fs-6 font-bold mb-0"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA DE NOTAS DEL PAGO -->
+    <div id="paymentsNotesTableWrapper" class="table-responsive mt-2 d-none">
+      <table id="paymentsNotesTable" class="table paymentsNotesTable d-none caption-top" style="font-size: 13px;">
+        <caption>Lista de notas</caption>
+        <thead>
+          <tr class="text-center">
+            <th scope="col" style="font-size: 13px;">Nota</th>
+            <th scope="col" style="font-size: 13px;">Proveedor</th>
+            <th scope="col" style="font-size: 13px;">Monto Total</th>
+            <th scope="col" style="font-size: 13px;">Recibido</th>
+            <th scope="col" style="font-size: 13px;">Estatus</th>
+            <th scope="col" style="font-size: 13px;">Tipo</th>
+            <th scope="col" style="font-size: 13px;">Usuario</th>
+          </tr>
+        </thead>
+        <tbody id="paymentNotesRows" class="table-group-divider">
+        </tbody>
+        <tfoot>
+          <tr>
+            <td id="paymentsNotesTotalQuantity" colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+      <!-- ROW TEMPLATE BODY - PAGO MASIVO - PAGO REGULAR A NOTA -->
+      <template id="notesPaymentRowTemplate">
+        <tr class="py-3" style="padding-bottom: 10px !important;">
+          <th class="px-3 py-3 noNota" scope="row"></th>
+          <td class="px-3 py-3 proveedor"></td>
+          <td class="px-3 py-3 montoTotal"></td>
+          <td class="px-3 py-3 fechaRecibido"></td>
+          <td class="px-3 py-3 estatus"></td>
+          <td class="px-3 py-3 tipo"></td>
+          <td class="px-3 py-3 usuario"></td>
+        </tr>
+      </template>
+      <!-- ROW TEMPLATE BODY - PAGO CONTRARECIBO -->
+      <!-- <template id="rowTemplateMassivePayment">
+        <tr class="py-3" style="padding-bottom: 10px !important;">
+          <th class="px-3 py-3 folioRecibo" scope="row"></th>
+          <td class="px-3 py-3 proveedor"></td>
+          <td class="px-3 py-3 cantNotas"></td>
+          <td class="px-3 py-3 total"></td>
+          <td class="px-3 py-3 estatus"></td>
+          <td class="px-3 py-3 usuario"></td>
+        </tr>
+      </template> -->
+      <div id="paymentsNotesNotFoundMessage" class="text-secondary d-none">
+        No se han realizado pagos a esta compra.
+      </div>
+    </div>
+    <!-- BOTONES -->
+    <div class="dropdown mt-2">
+      <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        Acción
+      </button>
+      <ul class="dropdown-menu">
+        <!-- <li><button class="dropdown-item btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddPaymentMultipleModal">Abonar</button></li> -->
+        <li><button type="button" onclick="window.print()" class="dropdown-item">Imprimir</button></li>
+        <li><a class="dropdown-item" href="#">Something else here</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+<script>
+  // window.jQuery || document.write('<script src="/javascripts/jquery.min.js"')
+  const FullContainerApp = {}
+
+  // ON LOAD VIEW --------------------------------------
+  FullContainerApp.onLoad = () => {
+    // global vars on MODALS
+    FullContainerApp.currentDateAgainstReceipt = document.getElementById('currentdate-against-receipt')
+    // call initial functions
+    FullContainerApp.setInitialValues()
+  }
+
+  FullContainerApp.setInitialValues = () => {
+    FullContainerApp.currentDateAgainstReceipt.textContent = moment().format('DD MMM. YYYY')
+  }
+
+  // call on load function
+  FullContainerApp.onLoad()
+</script>
+
+</body>
+</html>

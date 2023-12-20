@@ -1,0 +1,543 @@
+<%- include('../../partials/spinner'); %>
+
+<!-- success message -->
+<div id="success-message" class="alert alert-success d-none text-center w-75 fs-6" role="alert">Proveedor exitoso</div>
+<!-- failure message -->
+<div id="failure-message" class="alert alert-danger d-none text-center w-75 fs-6" role="alert"></div>
+
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div>
+        <h3 class="">Proveedores</h3>
+        <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
+      </div>
+    </div>
+  </div>
+</div>
+	
+
+<!-- TABLE -->
+<div class="table-responsive mb-1">
+  <div id="buttons-wrapper" class="mb-2 text-end"></div>
+  <table id="providersTable" class="compact hover" width="100%" style="font-size: 12px;">
+  </table>
+</div>
+
+<%- include('../../partials/scripts'); %> 
+
+<script>
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+
+  let providersData = '<%- jsonResponse %>'
+
+  providersData = providersData.replace(/\s+/g," ")
+
+  let jsonProviders = JSON.parse(providersData)
+  console.log(jsonProviders.providersData[0])
+  // console.log(jsonPurchases.purchasesData)
+  // if (jsonProviders.providersData.length > 0) {
+  //   loadProvidersData()
+  // }
+
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+  const AllProvidersApp = {}
+
+  AllProvidersApp.onLoad = () => {
+
+    AllProvidersApp.loadingSpinner = document.getElementById('loading-spinner')
+    AllProvidersApp.loadingSpinnerMsg = document.getElementById('spinner-message')
+
+    // $(document).ready(function(){
+    //   AllProvidersApp.deleteForm = document.getElementById('delete-supplier-form');
+
+    // })
+
+    AllProvidersApp.removeButton = document.getElementById('deleteRow')
+
+    AllProvidersApp.providerToRemove = undefined
+    AllProvidersApp.rowDataTableToRemove = undefined
+    AllProvidersApp.providersTable = undefined
+
+    AllProvidersApp.getDataTable()
+    
+
+    // AllProvidersApp.providerNameModal = document.getElementById('providerNameDeleteModal')
+    // AllProvidersApp.dataIdProvider = AllProvidersApp.removeButton.dataset.idProvider
+    // console.log(AllProvidersApp.providerNameModal)
+
+  }
+
+  AllProvidersApp.getDataTable = () => {
+
+    const providersTable = $('#providersTable').DataTable({
+          headerCallback: function(thead, data, start, end, display) {
+              $(thead).find('th').css('border-bottom', 'none');
+            },
+          fixedHeader: true,
+          paging: true,
+          data: jsonProviders.providersData,
+          // stripeClasses: [ 'strip1', 'strip2' ],
+          responsive: true,
+          columns: [
+            { title: 'ID', className: 'noVis', data: 'ID' },
+            { title: 'Proveedor', className: 'noVis', data: 'Proveedor' },
+            { title: 'Vendedor', visible: false, data: 'Vendedor' },
+            { title: 'Telefono', visible: false, data: 'Telefono' },
+            { title: 'Convenio', className: 'noVis', data: 'Convenio' },
+            { title: 'Categoria', visible: false, data: 'Categoria' }, //5
+            { title: 'Factura', className: 'noVis', visible: false, data: 'Factura' },
+            { title: 'Metodo de pago', data: 'Metodo de pago' },
+            { title: 'Cuenta de retiro', data: 'Cuenta de retiro' },
+            { title: 'Minimo notas', data: 'Notas' },
+            { title: 'Dias a pagar', data: 'Dias a pagar' },
+            { title: 'Correo', visible: false, data: 'Correo' }, // 11
+            { title: 'Banco', visible: false, data: 'Banco' },
+            { title: 'Beneficiario', visible: false, data: 'Beneficiario' },
+            { title: 'CLABE', visible: false, data: 'CLABE' }, // 14
+            { title: 'No. Tarjeta', visible: false, data: 'No Tarjeta' },
+            { title: 'Descripcion', visible: false, data: 'Descripcion' },
+            // { title: 'Creado', visible: false },
+            { title: 'Editar' },
+            { title: 'Eliminar' } // 18
+          ],
+          columnDefs: [
+            { "targets": 0, createdCell: function (td, cellData, rowData, row, col) {
+                if ( rowData.Factura === 'TRUE' ) {
+                  $(td).css('color', 'green')
+                } else if (rowData.Factura === 'FALSE') {
+                  $(td).css('color', 'red')
+                }
+              }
+            },
+            { "targets": [ 2, 3, 9, 10, 7 ], "width": "10%"},
+            { "targets": [ 7, 8, 9, 10 ], className: 'text-center fw-bold'},
+            { "targets": [2, 3, 9, 10], 
+              "render": function (data, type, row, meta) {
+                // console.log(Boolean(data))
+                return Boolean(data) == true ? data : 'n/a'
+              } 
+            },
+            { className: "fw-bold", "targets": 0, "width": "3%" },
+            { "targets": 4, "width": "10%", className: 'fw-bold text-center',
+              "createdCell": function (td, cellData, rowData, row, col) {
+                if ( cellData == 'CREDITO' ) {
+                  $(td).css('color', '#2E5EAA')
+                } else if (cellData == 'CONSIGNACION') {
+                  $(td).css('color', '#2dbb54')
+                } else if (cellData == 'CONTADO') {
+                  $(td).css('color', 'black')
+                }
+              } 
+            },
+            { "targets": 1, "width": "20%", createdCell: function (td) {
+                $(td).css('font-size', '13px')
+              } 
+            },
+            { className: "fw-bold", "targets": 6,
+              "createdCell": function (td, cellData, rowData, row, col) {
+                if ( cellData == true ) {
+                  $(td).css('color', 'green')
+                } else if (cellData == false) {
+                  $(td).css('color', 'red')
+                }
+              },
+              "render": function (data) {
+                return data == true ? 'SI' : 'NO'
+              },
+              "width": "5%"
+            },
+            { "targets": [3, 12, 13, 14, 15], "searchable": false },
+            { "targets": 7, "width": "15%", className: 'text-center',
+              "createdCell": function(td, cellData, rowData, row, col) {
+                if ( cellData == 'EFECTIVO' ) {
+                  $(td).css('color', '#0e7c61')
+                } else if (cellData == 'TRANSFERENCIA ELECTRONICA') {
+                  $(td).css('color', '#0095c2')
+                } else if (cellData == 'TARJETA DE CREDITO') {
+                  $(td).css('color', '#6551a1')
+                } else if (cellData == 'TARJETA DE DEBITO') {
+                  $(td).css('color', '#399db4')
+                } else if (cellData == 'CHEQUE') {
+                  $(td).css('color', '#434343')
+                }
+              }, render: function (data, type, row, meta) {
+                return data.length > 0 ? data : 'n/a'
+              }
+            },
+            { "targets": 8,
+              "createdCell": function(td, cellData, rowData, row, col) {
+                $(td).css('font-size', '13px')
+                if ( cellData == 'FONDO FIJO' ) {
+                  $(td).html(`<span class="badge" style="background-color: #434343; color: white;">${cellData}</span>`)
+                } else if (cellData == 'CAJA EXTERNA') {
+                  $(td).html(`<span class="badge" style="background-color: #b7b7b7;">${cellData}</span>`)
+                } else if (cellData == 'BANAMEX EMPRESA') {
+                  $(td).html(`<span class="badge" style="background-color: #6d9eeb;">${cellData}</span>`)
+                } else if (cellData == 'DELTA') {
+                  $(td).html(`<span class="badge" style="background-color: #e06666;">${cellData}</span>`)
+                } else if (cellData == 'CREDITO NU') {
+                  $(td).html(`<span class="badge" style="background-color: #b4a7d6;">${cellData}</span>`)
+                } else if (cellData == 'CREDITO COSTCO') {
+                  $(td).html(`<span class="badge" style="background-color: #6fa8dc;">${cellData}</span>`)
+                } else if (cellData == 'KUESKI') {
+                  $(td).html(`<span class="badge" style="background-color: #76a5af;">${cellData}</span>`)
+                } else if (cellData == 'OTRO') {
+                  $(td).html(`<span class="badge text-bg-light">${cellData}</span>`)
+                } else if (cellData == 'POR DEFINIR') {
+                  $(td).html(`<span class="badge" style="background-color: #434343;">${cellData}</span>`)
+                }
+              }
+            },
+            { "targets": 11, render: function (data, type, row, meta) {
+                return data.length > 0 ? data : 'n/a'
+              }
+            },
+            { "targets": 16, "render": $.fn.dataTable.render.ellipsis( 10, true ) },
+            { "targets": 17, "width": "5%", className: 'text-center', 
+              render: function(data, type, row, meta) {
+                return `
+              <div class="dropdown">
+                <button type="button" id="dropdownMenuEdit" class="btn btn-light" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
+                <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
+                  <li>
+                    <a href="/suppliers/edit/${Number(row.ID)}" class="text-dark dropdown-item">
+                      Editar
+                    </a>
+                  </li>
+                  <li>
+                    <button type="button" class="text-dark dropdown-item price-list-provider-link" data-provider-id="${row[0]}" data-provider-name="${row[1]}">
+                      Ver historial de precios
+                    </button>
+                  </li>
+                </ul>
+              </div> 
+              `
+              }
+            },
+            { "targets": 18, "width": "5%", className: "text-center",
+              render: function (data, type, row, meta) {
+                return `
+                <a href="#myModal" class="trigger-btn btn btn-sm btn-danger delete-button" data-toggle="modal"><i class="bi bi-trash3"></i></a>
+                `
+                // return `<a href='/suppliers/remove/${Number(row.ID)}' role="button" class="btn btn-sm btn-danger remove-provider"><i class="bi bi-trash3"></i></a>`
+            } 
+          },
+          ],
+          order: [[1, 'asc']],
+          select: {
+            style: 'multiple',
+            selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6), tr>td:nth-child(7)'
+          },
+          // dom: 'Bfrtip',
+          buttons: [
+            {
+              extend: 'selectAll',
+              text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+              className: 'btn btn-sm btn-dark'
+            },
+            {
+              extend: 'selectNone',
+              text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+              className: 'btn btn-sm btn-dark'
+            },
+            {
+              extend: 'colvis',
+              text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+              // titleAttr: 'Show/Hide',
+              columns: ':not(.noVis)',
+              collectionLayout: 'fixed columns',
+              collectionTitle: 'Seleccionar columnas a ver'
+            },
+            { 
+              extend: 'pdfHtml5',
+              orientation: 'landscape',
+              pageSize: 'LEGAL',
+              messageTop: 'Este documento es informativo.',
+              messageBottom: datetimeExportText,
+              text: '<i class="bi bi-filetype-pdf"></i>', 
+              className: 'btn btn-dark',
+              title: 'Lista de proveedores',
+              exportOptions: {
+                columns: ':visible',
+                modifier: {
+                  selected: true
+                }
+              },
+            },
+            { extend: 'copy', 
+              text: '<i class="bi bi-clipboard-check"></i>', 
+              className: 'btn btn-dark',
+              title: 'Lista de proveedores',
+              exportOptions: {
+                columns: ':visible',
+                modifier: {
+                  selected: true
+                }
+              },
+            }
+            // { 
+            //   extend: 'csv', 
+            //   text: '<i class="bi bi-filetype-csv"></i>', 
+            //   className: 'btn btn-dark',
+            //   columns: ':visible',
+            // },
+          ],
+          "lengthMenu": [ 30, 50, 100 ],
+          "pageLength": 30,
+          "language": {
+            "buttons": {
+              copyTitle: 'Datos copiados al portapapeles',
+              copySuccess: {
+                  _: "%d productos copiados al portapapeles",
+              colvis: 'Ver/ocultar columnas'
+              },
+            },
+            "decimal":        "",
+            "emptyTable":     "No se encontraron datos",
+            "info":           "Mostrando _START_ a _END_ de _TOTAL_ proveedores",
+            "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+            "infoFiltered":   "(Busqueda de _MAX_ proveedores en total)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "Mostrar _MENU_ proveedores",
+            "loadingRecords": "Cargando...",
+            "processing":     "",
+            "search":         "Buscar:",
+            "zeroRecords":    "No se encontraron proveedores",
+            "paginate": {
+                "first":      "Primero",
+                "last":       "Ultimo",
+                "next":       "Siguiente",
+                "previous":   "Atrás"
+            },
+            "aria": {
+                "sortAscending":  ": activate to sort column ascending",
+                "sortDescending": ": activate to sort column descending"
+            },
+          },
+          // createdRow: function( row, data, dataIndex ) {
+          //   let isFactura = data[6]
+          //   console.log(data[6])
+          //   console.log(dataIndex)
+          //   if (isFactura == true) {
+          //     $(row.querySelector).css('color', '#E2B6FF')
+          //   } else {
+          //     $(row[0]).css('color', '#e6b8af');
+          //   }
+          // },
+      });
+    
+    // AllProvidersApp.providersTable = $('#providersTable')
+    providersTable.buttons().container().appendTo('#buttons-wrapper');
+
+    // Remove row from table ui
+    $('#providersTable tbody').on( 'click', 'a.delete-button', function () {
+      console.log(this)
+      console.log(providersTable.row($(this).parents('tr')))
+      deleteRecordData = providersTable.row($(this).closest('tr')).data();
+      console.log(deleteRecordData);
+
+      AllProvidersApp.providerToRemove = deleteRecordData
+      AllProvidersApp.providerNameModal = document.getElementById('providerNameDeleteModal')
+
+      AllProvidersApp.providerNameModal.textContent = AllProvidersApp.providerToRemove.Proveedor
+      AllProvidersApp.rowDataTableToRemove = $(this)
+      // console.log(AllProvidersApp.rowDataTableToRemove)
+      // $("#exampleModal").modal('show');
+    } );
+
+    // Remove row from table ui
+    console.log(AllProvidersApp.confirmationDeleteModalBtn)
+
+    // DELETE ROW PERMANENTLY
+    $(document).ready(function(){
+      
+      AllProvidersApp.deleteForm = document.getElementById('delete-supplier-form')
+      AllProvidersApp.passwordConfirm = document.getElementById('passwordConfirm')
+      AllProvidersApp.invalidMsgDeleteSupplier = document.getElementById('invalid-message-delete-supplier')
+      // LOGIC WHEN MODAL IS HIDDEN REGARDLESS WITH A BUTTON OR OUTSIDE THE MODAL
+      // $(document).ready(function() {
+      //   $('#myModal').on('hidden.bs.modal', function() {
+      //     console.log("I was called");
+      //     alert('hola')
+      //   });
+      // })
+
+      // LOGIC WHEN DELETE BUTTON OF MODAL IS CLICKED
+      $('#myModal').on('click', 'button.remove-provider', async () => {
+        // $('#myModal').hide()
+        // $('.modal-backdrop').remove();
+
+        // SHOW SPINNER
+        AllProvidersApp.loadingSpinner.classList.remove('d-none')
+        // AllProvidersApp.loadingSpinnerMsg.textContent = 'Eliminando proveedor...'
+
+        const fd = new FormData(AllProvidersApp.deleteForm)
+        const urlEncoded = new URLSearchParams(fd).toString()
+        console.log(urlEncoded);
+
+        // CALL SERVER TO DELETE DATA
+        const response = await fetch(`${apiUrl}/suppliers/${Number(AllProvidersApp.providerToRemove.ID)}`, {
+          method: 'DELETE',
+          body: urlEncoded,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+
+        const result = await response.json()
+        // console.log(result)
+        // console.log(response)
+        
+
+        // check for error response
+        if (response.status >= 500) { // SERVER ERROR
+          $('#myModal').hide()
+          $('.modal-backdrop').remove();
+          AllProvidersApp.loadingSpinner.classList.add('d-none')
+          let failureMessageAlert = document.getElementById('failure-message')
+          failureMessageAlert.classList.remove('d-none')
+          failureMessageAlert.textContent = result.message
+
+          setTimeout(() => {
+            failureMessageAlert.classList.add('d-none')
+          }, "4000");
+          AllProvidersApp.passwordConfirm.value = ''
+
+        } else if (response.status === 422) { // VALIDATION ERROR
+          AllProvidersApp.loadingSpinner.classList.add('d-none')
+          let inputEls = AllProvidersApp.deleteForm.getElementsByClassName('input-valid')
+          // console.log(result)
+          let errors = result.errors
+          // console.log(inputEls)
+
+          Array.from(inputEls).forEach(inputValid => {
+            errors.forEach((err) => {
+              console.log(err)
+              let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+              console.log(invalidMsg)
+              
+              if (inputValid.name === err.param) {
+                console.log(invalidMsg)
+                invalidMsg.textContent = err.msg
+                invalidMsg.classList.remove('d-none')
+              }
+            })
+          })
+          AllProvidersApp.passwordConfirm.value = ''
+
+        } else if (response.status >= 400 && response.status <= 404) { // DOESNT FIND DATA
+          $('#myModal').hide()
+          $('.modal-backdrop').remove();
+          AllProvidersApp.loadingSpinner.classList.add('d-none')
+
+          let failureMessageAlert = document.getElementById('failure-message')
+          failureMessageAlert.classList.remove('d-none')
+          failureMessageAlert.textContent = result.message
+
+          return setTimeout(() => {
+            failureMessageAlert.classList.add('d-none')
+          }, "4000");
+          AllProvidersApp.passwordConfirm.value = ''
+
+        } else if (response.status === 201 || response.status === 200) { // DELETE SUCCESS
+          // remove modal
+          $('#myModal').hide()
+          $('.modal-backdrop').remove();
+          // hide spinner
+          AllProvidersApp.loadingSpinner.classList.add('d-none')
+          let successMessageAlert = document.getElementById('success-message')
+          successMessageAlert.textContent = result.message
+          successMessageAlert.classList.remove('d-none')
+          // remove (hide) row from datatable
+          providersTable
+          .row( $(AllProvidersApp.rowDataTableToRemove).parents('tr'))
+          .remove()
+          .draw();
+          setTimeout(() => {
+            successMessageAlert.classList.add('d-none')
+          }, "4000");
+          AllProvidersApp.passwordConfirm.value = ''
+
+        }
+        // let successMessageAlert = document.getElementById('success-message')
+        // successMessageAlert.textContent = 'Proveedor eliminado correctamente!'
+        // successMessageAlert.classList.remove('d-none')
+
+        // setTimeout(() => {
+        //   successMessageAlert.classList.add('d-none')
+        //   hideConfirmationDeleteModal()
+        // }, "3000");
+       
+        //remove (hide) row from datatable
+        // providersTable
+        // .row( $(AllProvidersApp.rowDataTableToRemove).parents('tr'))
+        // .remove()
+        // .draw();
+      } );
+    })
+             
+  }
+
+  AllProvidersApp.deleteRow = () => {
+    // e.preventDefault
+    console.log('delete button')
+    // console.log($('#providersTable').data())
+    console.log(AllProvidersApp.providerToRemove)
+    console.log(AllProvidersApp.rowDataTableToRemove[0])
+    // if (!$.fn.DataTable.isDataTable('#providersTable') ) {
+    //   $('#providersTable').DataTable()
+    // }
+    $('#providersTable').DataTable()
+      .row( $(AllProvidersApp.rowDataTableToRemove).parents('tr'))
+      .remove()
+      .draw();
+    // AllProvidersApp.loadingSpinner.classList.remove('d-none')
+    // let successMessageAlert = document.getElementById('success-message')
+    // successMessageAlert.textContent = 'Proveedor eliminado correctamente!'
+    // successMessageAlert.classList.remove('d-none')
+
+    // setTimeout(() => {
+    //   successMessageAlert.classList.add('d-none')
+    //   hideConfirmationDeleteModal()
+    // }, "3000");
+
+    // AllProvidersApp.providersTable
+    //   .row( AllProvidersApp.rowDataTableToRemove )
+    //   .remove()
+    //   .draw();
+    // e.preventDefault()
+    // const response = await fetch(`${apiUrl}/suppliers/${Number(AllProvidersApp.providerToRemove.ID)}`, { method: 'DELETE' })
+    // const result = await response.json()
+    // console.log(result)
+    // // check for error response
+    // if (response.status >= 400 && response.status <= 404) {
+    //   AllProvidersApp.confirmationDeleteModal.hide()
+
+    //   let failureMessageAlert = document.getElementById('failure-message')
+    //   failureMessageAlert.classList.remove('d-none')
+    //   failureMessageAlert.textContent = result.message
+
+    //   return setTimeout(() => {
+    //     failureMessageAlert.classList.add('d-none')
+    //   }, "4000");
+    // }
+    // AllProvidersApp.confirmationDeleteModal.hide()
+
+    // let successMessageAlert = document.getElementById('success-message')
+    // successMessageAlert.classList.remove('d-none')
+    // successMessageAlert.textContent = result.message
+
+    // setTimeout(() => {
+    //   successMessageAlert.classList.add('d-none')
+    // }, "4000")
+
+  }
+    AllProvidersApp.onLoad()
+</script>
+

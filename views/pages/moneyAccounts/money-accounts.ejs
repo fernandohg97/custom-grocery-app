@@ -1,0 +1,135 @@
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div>
+        <h4 class="mb-1 mt-0">Cuentas de dinero</h4>
+        <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<template id="cardTemplateMoneyAccount">
+  <div class="col-xl-3 col-sm-6 col-12">
+    <div class="card shadow border-0 rounded-4 py-2">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col">
+                    <span class="moneyAccountName fw-bold fs-5 text-body d-block mb-0"></span>
+                    <span id="moneyAccountCode" class="moneyAccountCode text-dark d-block fw-light mb-3" style="font-size: 11px;"></span>
+                    <span id="moneyAccountUse" class="moneyAccountUse text-muted fw-normal"></span>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                  <span class="moneyAccountLimit fw-medium text-dark d-block mb-2" style="font-size: 13px;"></span>
+                  <span class="moneyAccountBalance fw-normal text-dark d-block mb-2" style="font-size: 13px;"></span>
+                  <span class="moneyAccountDifference fw-normal text-dark d-block" style="font-size: 13px;"></span>
+                  <!-- <span id="moneyAccountUse" class="text-muted fw-light mb-0">Compras de mercancia a establecimientos fisicos</span> -->
+              </div>
+              <div class="row mt-4">
+                <div class="col">
+                  <a href="#" class="card-link" style="font-size: 13px;">Movimientos</a>
+                  <a href="#" class="card-link text-dark" style="font-size: 13px;">Editar</a>
+
+                  <!-- <a href="#" class="card-link d-inline" style="font-size: 13px;"></a> -->
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+
+<!-- Card stats -->
+<div id="moneyAccountCardRows" class="row gx-5 gy-4 mb-4 text-center mt-1">
+
+</div>
+
+
+
+<!-- TABLE -->
+
+
+
+<%- include('../../partials/scripts'); %>
+
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  let apiUrl = '<%= process.env.API_URL %>'
+  console.log(apiUrl)
+  console.log(nodeEnv)
+  let moneyAccountsData = '<%- jsonResponse %>'
+  moneyAccountsData = moneyAccountsData.replace(/\s+/g," ")
+
+  let jsonMoneyAccounts = JSON.parse(moneyAccountsData)
+  console.log(jsonMoneyAccounts)
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+  const AllMoneyAccountsApp = {}
+
+  AllMoneyAccountsApp.onLoad = () => {
+
+    AllMoneyAccountsApp.totalDueAmount = document.getElementById('totalDueAmount')
+    AllMoneyAccountsApp.totalCount = document.getElementById('totalCount')
+    AllMoneyAccountsApp.totalBalanceAmount = document.getElementById('totalBalanceAmount')
+
+
+    // <span class="badge badge-pill bg-soft-success text-success me-2">
+    //                   <i class="bi bi-arrow-up me-1"></i>13%
+    //               </span>
+
+    AllMoneyAccountsApp.setInitialValues()
+  }
+
+  AllMoneyAccountsApp.setInitialValues = () => {
+
+    let moneyAccountCardRows = document.getElementById('moneyAccountCardRows')
+    let templateBox = document.getElementById('cardTemplateMoneyAccount')
+    let template = templateBox.content
+
+    // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
+    moneyAccountCardRows.innerHTML = ''
+    
+    if (jsonMoneyAccounts.moneyAccountsData.length) {
+      
+
+      jsonMoneyAccounts.moneyAccountsData.filter(account => {
+        // Get the table element in which you want to add row
+        console.log(account)
+        // Create a row using the inserRow() method and
+        // specify the index where you want to add the row
+        let tr = template.cloneNode(true)
+        let cuentaNombre = tr.querySelector('.moneyAccountName')
+        let cuentaCodigo = tr.querySelector('.moneyAccountCode')
+        let cuentaUso = tr.querySelector('.moneyAccountUse')
+        let cuentaLimite = tr.querySelector('.moneyAccountLimit')
+        let cuentaSaldo = tr.querySelector('.moneyAccountBalance')
+        let cuentaDiferencia = tr.querySelector('.moneyAccountDifference')
+
+        cuentaNombre.textContent = account.Nombre
+        cuentaCodigo.textContent = account.Codigo
+        cuentaUso.textContent = account.Uso
+        cuentaLimite.textContent = `Limite: ${account.Limite
+        ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(0)
+        : new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(account.Limite)}`
+
+        cuentaSaldo.textContent = `Saldo: ${account.Saldo
+        ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(0)
+        : new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(account.Saldo)}`
+
+        cuentaDiferencia.textContent = `Diferencia: ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(account.diferencia)}`
+
+        moneyAccountCardRows.appendChild(tr)
+      })
+    }
+    // AllMoneyAccountsApp.percentageBalanceProgressEl.innerHTML = html
+  }
+
+
+  AllMoneyAccountsApp.onLoad()
+</script>

@@ -1,22 +1,66 @@
 /* eslint-disable camelcase */
 const fs = require('fs/promises')
 const url = require('url')
-const getAllUrl = 'https://api.hikeup.com/api/v1/products/get_all'
-const getOneByIdUrl = 'https://api.hikeup.com/api/v1/products/get'
-const getOneBySkuUrl = 'https://api.hikeup.com/api/v1/products/by_sku'
-const getAllProductTypesUrl = 'https://api.hikeup.com/api/v1/product_types/get_all'
-const updateProductUrl = 'https://api.hikeup.com/api/v1/products/create'
-const deleteProductUrl = 'https://api.hikeup.com/api/v1/products/delete'
-const taxesUrl = 'https://api.hikeup.com/api/v1/taxes/get_all'
 const axios = require('axios').default
+const createError = require('http-errors')
 
 class Product {
+  static getAllUrl = 'https://api.hikeup.com/api/v1/products/get_all'
+  static getOneByIdUrl = 'https://api.hikeup.com/api/v1/products/get'
+  static getOneBySkuUrl = 'https://api.hikeup.com/api/v1/products/by_sku'
+  static getAllProductTypesUrl = 'https://api.hikeup.com/api/v1/product_types/get_all'
+  static updateProductUrl = 'https://api.hikeup.com/api/v1/products/create'
+  static deleteProductUrl = 'https://api.hikeup.com/api/v1/products/delete'
+  static taxesUrl = 'https://api.hikeup.com/api/v1/taxes/get_all'
+
+  static async allProducts (req, res, next) {
+    // Options for this request
+    const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
+
+    try {
+      // Call API to get all products
+      const data = await axios.get(`${Product.getAllUrl}?page_size=${res.locals.resultsPerPage}&Skip_count=${res.locals.skipCount}&Sorting=last_modified`, opts)
+      // const data = await axios.get(`${Product.getAllUrl}?page_size=${100000}&Skip_count=${0}&Sorting=last_modified`, opts)
+
+      const products = data.data
+      const totalCount = products.totalCount
+      const numberOfPages = Math.ceil(totalCount / res.locals.resultsPerPage)
+
+      // return res.render('pages/products/all-products', {
+      //   products: products.items,
+      //   totalCount,
+      //   resultsPerPage: res.locals.resultsPerPage,
+      //   currentPage: res.locals.currentPage,
+      //   numPages: numberOfPages
+      // })
+      // TODO: in progress
+
+      let jsonResponse = JSON.stringify({
+        products: products.items,
+        totalCount,
+        resultsPerPage: res.locals.resultsPerPage,
+        currentPage: res.locals.currentPage,
+        numPages: numberOfPages
+      })
+
+      return res.render('pages/products/all-products', {
+        jsonResponse
+      })
+    } catch (error) {
+      console.log(error)
+      const { response } = error
+      console.log(response)
+      if (response.status === 400) return next(createError(400, 'Peticion incorrecta'))
+      return next(error)
+    }
+  }
+
   static async oneProductBySku (req, res, next) {
     let { searchFilter, pageSize, skipCount } = req.query
 
     // In case query params are not sent
     if (!pageSize || !skipCount) {
-      pageSize = 1
+      pageSize = 100
       skipCount = 0
     }
 
@@ -25,13 +69,14 @@ class Product {
 
     try {
       // Fetch data
-      const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&Skip_count=${skipCount}&Filter=${searchFilter}`, opts)
+      const data = await axios.get(`${Product.getAllUrl}?page_size=${pageSize}&Skip_count=${skipCount}&Filter=${searchFilter}`, opts)
       // Get the product
       const product = data.data.items[0]
-      console.log(product)
+      // console.log(data)
 
       // Successfully render product price view
       return res.render('pages/products/product-price', { product: product, criteria: searchFilter })
+      // return res.send(data.data)
     } catch (error) {
       return next(error)
     }
@@ -45,8 +90,8 @@ class Product {
 
     try {
       // Fetch data
-      const { data } = await axios.get(`${getOneByIdUrl}/${id}`, opts)
-      const taxes = await axios.get(`${taxesUrl}`, opts)
+      const { data } = await axios.get(`${Product.getOneByIdUrl}/${id}`, opts)
+      const taxes = await axios.get(`${Product.taxesUrl}`, opts)
       // Get the product
       const product = data
       // console.log(taxes.data.items)
@@ -140,11 +185,11 @@ class Product {
     }
     console.log(name)
     try {
-      const productEdited = await axios.post(`${updateProductUrl}`, params, opts)
+      const productEdited = await axios.post(`${Product.updateProductUrl}`, params, opts)
       // console.log(req.body)
       console.log(productEdited)
       // return res.send(req.body)
-      return res.render('pages/welcome', { message: `${name} se actualizo correctamente!` })
+      return res.render('pages/welcome', { successMessage: `${name} se actualizó correctamente!` })
     } catch (error) {
       return next(error)
     }
@@ -157,9 +202,9 @@ class Product {
     // Set option headers
     const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
     try {
-      await axios.delete(`${deleteProductUrl}/${id}`, opts)
+      await axios.delete(`${Product.deleteProductUrl}/${id}`, opts)
 
-      return res.render('pages/welcome', { message: `Producto con ID: ${id} eliminado satisfactoriamente!` })
+      return res.render('pages/welcome', { successMessage: `Producto con ID: ${id} eliminado satisfactoriamente!` })
     } catch (error) {
       return next(error)
     }
@@ -168,7 +213,7 @@ class Product {
   static async allProductTypes (req, res, next) {
     // Get required query params
     let { pageSize, skipCount } = req.query
-
+    const sorting = 'name'
     // In case query params are not sent
     if (!pageSize || !skipCount) {
       pageSize = 30
@@ -180,7 +225,7 @@ class Product {
 
     try {
       // Fetch data
-      const { data } = await axios.get(`${getAllProductTypesUrl}?page_size=${pageSize}&Skip_count=${skipCount}`, opts)
+      const { data } = await axios.get(`${Product.getAllProductTypesUrl}?page_size=${pageSize}&Skip_count=${skipCount}&sorting=${sorting}`, opts)
       // Destructure total number of items and data
       let { totalCount, items: productTypes } = data
 
@@ -194,24 +239,37 @@ class Product {
     }
   }
 
-  static async allProducts (req, res, next) {
-    let { pageSize, skipCount } = req.query
+  static async topTypeProducts (req, res, next) {
+    let { typeId } = req.params
+    typeId = Number(typeId)
 
-    if (!pageSize || !skipCount) {
-      pageSize = 1
-      skipCount = 0
-    }
+    if (typeId !== 50) return next(createError(404, 'I\'m not able to find these type of products!'))
 
     // Options for this request
     const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-
+    const searchFilter = 'CS0'
     try {
-      const data = await axios.get(`${getAllUrl}?page_size=${pageSize}&skip_count=${skipCount}`, opts)
-      const products = data.data
+      // Call API to get all products
+      const data = await axios.get(`${Product.getAllUrl}?page_size=${res.locals.resultsPerPage}&Skip_count=${res.locals.skipCount}&Sorting=name&Filter=${searchFilter}`, opts)
 
-      console.log(products)
-      return res.status(200).send(products)
+      const products = data.data
+      const totalCount = products.totalCount
+      const numberOfPages = Math.ceil(totalCount / res.locals.resultsPerPage)
+
+      console.log(totalCount, numberOfPages)
+      return res.render('pages/products/meat-cheese-products', {
+        products: products.items,
+        totalCount,
+        apiUrl: res.locals.apiUrl,
+        resultsPerPage: res.locals.resultsPerPage,
+        currentPage: res.locals.currentPage,
+        numPages: numberOfPages
+      })
     } catch (error) {
+      console.log(error)
+      const { response } = error
+      console.log(response)
+      if (response.status === 400) return next(createError(400, 'Peticion incorrecta'))
       return next(error)
     }
   }

@@ -1,0 +1,441 @@
+<%- include('../../partials/spinner'); %>
+
+<div class="container-lg mb-5">
+  <!-- success message -->
+  <div id="success-message" class="alert alert-success d-none d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+  <!-- failure message -->
+  <div id="failure-message" class="alert alert-danger d-none d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+
+  <!-- <p class="mb-2 fw-bold" style="font-size: 13px;">No. Nota: <span id="noteNumber" style="width: 10%;" class="placeholder"></span></p> -->
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h4 class="mb-2 mt-0 text-primary">Pagar contra recibo</h4>
+      <span id="receiptIsAutorizedToPay" class="h6 font-medium text-muted text-sm"></span>
+    </div>
+    <!-- Force next columns to break to new line at md breakpoint and up -->
+    <div class="w-100 mt-2"></div>
+    <!-- RESUMEN CONTRA RECIBO -->
+    <div class="col-md-6 text-start border border-2 border-secondary-subtle p-3 rounded-1" style="--bs-border-opacity: .5;">
+      <h6 class="mt-2 mb-4">Resumen</h6>
+      <div class="row row-cols-1 gy-3">
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Creado:</span>
+          <span id="againstReceiptCreatedAt" class="mb-0" style="font-size: 12px;"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Folio</span>
+          <span id="againstReceiptFolio" class="fs-6 fw-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Proveedor</span>
+          <span id="againstReceiptProviderName" class="fs-6 fw-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Cant. notas</span>
+          <span id="againstReceiptQtyNotes" class="fs-6 fw-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <!-- TABLA DE NOTAS A PAGAR -->
+          <div class="row justify-content-start mt-1">
+            <div class="table-responsive col-lg-8">
+              <span class="mb-0 text-muted fst-italic" style="font-size: 12px;">Tabla de cuentas a pagar</span>
+              <table id="addReceiptPaymentTable" class="table table-sm addReceiptPaymentTable caption-bottom text-center" style="font-size: 12px;">
+                <caption class="text-sm fst-italic">Cuentas que serán incluidas en el contra recibo</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-black fw-medium py-1" style="font-size: 11px;">No. Nota</th>
+                    <th scope="col" class="text-black fw-medium py-1" style="font-size: 11px;">Monto</th>
+                    <th scope="col" class="text-black fw-medium py-1" style="font-size: 11px;">Recibido</th>
+                  </tr>
+                </thead>
+                <tbody id="addReceiptPaymentRows" class="table-group-divider">
+                </tbody>
+              </table>
+              <template id="addReceiptPaymentRowsTemplate">
+                <tr class="py-3" style="padding-bottom: 10px !important;">
+                  <th class="noteNumber" scope="row"></th>
+                  <td class="totalAmount"></td>
+                  <td class="dateReceived"></td>
+                </tr>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total</span>
+          <span id="againstReceiptTotalAmount" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Fecha a pagar:</span>
+          <span id="againstReceiptPaymentDate" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Elaborado por:</span>
+          <span id="againstReceiptUserBy" class="fs-6 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Detalles</span>
+          <span id="againstReceiptDetails" class="fs-6 font-bold mb-0"></span>
+        </div>
+      </div>
+    </div>
+    <!-- BOTON descargar resumen PDF -->
+    <!-- Force next columns to break to new line at md breakpoint and up -->
+    <div class="w-100"></div>
+    <div class="col-md-6 mt-3">
+      <a class="btn btn-outline-dark btn-sm" href="#" role="button">Descargar resumen</a>
+    </div>
+    <!-- Force next columns to break to new line at md breakpoint and up -->
+    <div class="w-100 mt-3"></div>
+    <!-- FORMULARIO -->
+    <div class="col-md-6">
+      <form id="add-receipt-payment-form" action="/payments" method="post" enctype="application/x-www-form-urlencoded" class="add-receipt-payment-form row row-cols-1 g-3 mt-2 pb-3 payment-needs-validation">
+        <h6 class="mt-0 mb-0">Llenar formulario</h6>
+        <!-- PROVEEDOR - NO EDITABLE -->
+        <!-- <div class="col-6 valid-required">
+          <label for="providerName" class="form-label name-field-label">Proveedor*</label>
+          <input id="providerName" name="providerName" type="text" class="form-control input-valid" readonly style="border: 4px solid blue; border-radius: 4px">
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+            No editable.
+          </div>
+        </div> -->
+        <!-- MONTO A PAGAR -->
+        <div class="col valid-required">
+          <label for="paymentAmount" class="form-label fw-bold">Monto a pagar</label>
+          <div class="input-group">
+            <span class="paymentAmountInput input-group-text" id="currency-symbol">$</span>
+            <input id="paymentAmount" type="text" name="paymentAmount" readonly class="form-control input-valid" placeholder="Monto a pagar" aria-label="paymentAmount" aria-describedby="currency-symbol">
+          </div>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa un valor correcto. (Mayor a 0).
+          </div>
+        </div>
+        <!-- FORMA DE PAGO -->
+        <div id="againstReceiptPaymentMethodInput" class="col valid-required">
+        <label for="againstReceiptPaymentMethodInput" class="form-label">Forma de pago</label>
+        <select id="againstReceiptPaymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
+          <option selected disabled value="">Selecciona la forma de pago</option>
+          <!-- <option value="Efectivo">Efectivo</option>
+          <option value="Tarjeta">Tarjeta</option> -->
+          <option value="EFECTIVO">Efectivo</option>
+          <option value="TRANSFERENCIA ELECTRONICA">Transferencia electronica</option>
+          <option value="TARJETA DE DEBITO">Tarjeta de debito (TDD)</option>
+          <option value="TARJETA DE CREDITO">Tarjeta de credito (TDC)</option>
+          <option value="CHEQUE">Cheque</option>
+          <!-- <option value="NO COMPUTABLE">No Computable</option> -->
+        </select>
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor selecciona una forma de pago disponible.
+        </div>
+      </div>
+      <!-- CUENTA DE RETIRO -->
+      <div id="againstReceiptRetirementAccountInput" class="col valid-required">
+        <label for="againstReceiptRetirementAccountInput" class="form-label">Cuenta de retiro</label>
+        <select id="againstReceiptRetirementAccount" name="retirementAccount" class="form-select input-valid" aria-label="payment-retirement-account">
+        <option selected disabled value="">Selecciona la cuenta de retiro</option>
+        <option value="CD01">Fondo fijo - CD01</option>
+        <option value="CD02">Caja externa - CD02</option>
+        <option value="CD03">Banamex Empresa - CD03</option>
+        <option value="CD04">Credito NU - CD04</option>
+        <option value="CD05">Credito Costco - CD05</option>
+        <option value="CD06">Credito Oro - CD06</option>
+        <option value="CD07">Credito AMEX - CD07</option>
+        <option value="CD08">Kueski - CD08</option>
+        <option value="CD09">Otro - CD09</option>
+        <option value="CD10">Por definir - CD10</option>
+        </select>
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor selecciona una cuenta de retiro correcto.
+        </div>
+      </div>
+      <!-- FECHA DE PAGO -->
+      <div class="col valid-required">
+        <label for="paymentDate" class="form-label fw-bold">Fecha de pago</label>
+        <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
+        <input id="paymentDate" type="text" name="paymentDate" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="payment-date" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor ingresa una fecha correcta.
+        </div>
+      </div>
+      <!-- USUARIO -->
+      <div class="col valid-required">
+        <label for="againstReceiptUserInput" class="form-label name-field-label fw-bold">Usuario*</label>
+        <input id="againstReceiptUser" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor ingresa tu nombre.
+        </div>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="col-12">
+        <button id="submitAddReceiptPaymentBtn" type="submit" class="btn btn-primary btn-sm">Aplicar pago</button>
+        <a role="button" class="btn btn-light btn-sm" href="/admin">Cancelar</a>
+      </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+  
+
+<!-- Loading spinner -->
+<!-- <div id="loading-add-purchase" class="loading-spinner loading-add-supplier d-flex justify-content-center align-items-center text-center d-none">
+  <div>
+    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>Agregando compra...</div>
+  </div>
+</div> -->
+
+<%- include('../../partials/scripts'); %>
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+  if (nodeEnv === 'local') {
+    console.log(apiUrl)
+  }
+
+  // Get data from server
+  let oneAgainstReceipt = '<%- jsonResponse %>'
+  oneAgainstReceipt = oneAgainstReceipt.replace(/\s+/g," ")
+  // parse data from server
+  let {resume, notas} = JSON.parse(oneAgainstReceipt)
+  resume = resume[0]
+  console.log(resume, notas)
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+
+  // BUILD VIEW
+  const AddReceiptPaymentApp = {}
+
+  AddReceiptPaymentApp.onLoad = function() {
+   
+    AddReceiptPaymentApp.loadingSpinner = document.getElementById('loading-spinner-add')
+    AddReceiptPaymentApp.loadingSpinnerMsg = document.getElementById('spinner-add-message')
+    // AddReceiptPaymentApp.showActivityTable = document.getElementById('showActivityTable')
+    AddReceiptPaymentApp.receiptIsAutorizedToPay = document.getElementById('receiptIsAutorizedToPay')
+
+    // Set FORM VARS
+    // AddReceiptPaymentApp.receiptFolioEl = document.getElementById('receiptFolio')
+    AddReceiptPaymentApp.againstReceiptProviderName = document.getElementById('againstReceiptProviderName')
+    // AddReceiptPaymentApp.type = document.getElementById('type')
+    AddReceiptPaymentApp.paymentAmount = document.getElementById('paymentAmount')
+    AddReceiptPaymentApp.againstReceiptPaymentMethod = document.getElementById('againstReceiptPaymentMethod')
+    AddReceiptPaymentApp.againstReceiptRetirementAccount = document.getElementById('againstReceiptRetirementAccount')
+    AddReceiptPaymentApp.againstReceiptUser = document.getElementById('againstReceiptUser')
+    // AddReceiptPaymentApp.status = document.getElementById('status')
+    AddReceiptPaymentApp.paymentDate = document.getElementById('paymentDate')
+
+    // FORM
+    AddReceiptPaymentApp.form = document.getElementById('add-receipt-payment-form')
+    AddReceiptPaymentApp.submitAddReceiptPaymentBtn = document.getElementById('submitAddReceiptPaymentBtn')
+
+    
+    // RESUMEN CONTRARECIBO VARS --------------------------------
+    AddReceiptPaymentApp.againstReceiptCreatedAt = document.getElementById('againstReceiptCreatedAt')
+    AddReceiptPaymentApp.againstReceiptFolio = document.getElementById('againstReceiptFolio')
+    AddReceiptPaymentApp.againstReceiptQtyNotes = document.getElementById('againstReceiptQtyNotes')
+    AddReceiptPaymentApp.againstReceiptTotalAmount = document.getElementById('againstReceiptTotalAmount')
+    AddReceiptPaymentApp.againstReceiptPaymentDate = document.getElementById('againstReceiptPaymentDate')
+    AddReceiptPaymentApp.againstReceiptUserBy = document.getElementById('againstReceiptUserBy')
+    AddReceiptPaymentApp.againstReceiptDetails = document.getElementById('againstReceiptDetails')
+    // table notas
+    AddReceiptPaymentApp.addReceiptPaymentTable = document.getElementById('addReceiptPaymentTable')
+    AddReceiptPaymentApp.addReceiptPaymentRows = document.getElementById('addReceiptPaymentRows')
+    AddReceiptPaymentApp.addReceiptPaymentRowsTemplate = document.getElementById('addReceiptPaymentRowsTemplate')
+
+
+
+    AddReceiptPaymentApp.form.addEventListener('submit', AddReceiptPaymentApp.onSubmit);
+    AddReceiptPaymentApp.setInitialValues()
+    // AddReceiptPaymentApp.getActivityPaymentsPurchaseTable()
+
+  }
+
+  // SET INITIAL VALUES -------------------------------
+  AddReceiptPaymentApp.setInitialValues = () => {
+
+    
+
+    // if (purchaseById.Estatus === 'PAGO PARCIAL' || purchaseById.Estatus === 'PENDIENTE DE PAGO') {
+    //   // SET USER
+    //   AddReceiptPaymentApp.userPurchase.textContent = purchaseById.Usuario
+    //   AddReceiptPaymentApp.purchaseStatus.textContent = purchaseById.Estatus
+
+    //   // set date to pay
+    //   const dateToPayMoment = moment(new Date(purchaseById['Fecha a Pagar'])).format('YYYY-MM-DD')
+    //   AddReceiptPaymentApp.dateToPayInput.classList.remove('d-none')
+    //   AddReceiptPaymentApp.dateToPayRecord.value = dateToPayMoment
+    //   AddReceiptPaymentApp.dateToPayLimit.textContent = dateToPayMoment
+    //   // asignar dias faltantes para limite de pago
+    //   const diffDays = moment(dateToPayMoment).diff(moment().format('YYYY-MM-DD'), 'days')
+    //   AddReceiptPaymentApp.daysLeftToDateLimit.textContent = diffDays
+    //   // asignar total de nota, abonado y saldo pendiente
+    //   AddReceiptPaymentApp.totalPurchaseAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+    //   .format(parseFloat(purchaseById['Monto Total'].split('$')[1].trim().split(',').join('')))
+    //   AddReceiptPaymentApp.totalPurchasePayed.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+    //   .format(purchaseById.TotalPagado)
+    //   AddReceiptPaymentApp.totalBalanceToPay.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+    //   .format(purchaseById.Saldo)
+    // }
+
+    // autorize value
+    if (resume.Autorizado === 'SI') {
+      AddReceiptPaymentApp.submitAddReceiptPaymentBtn.disabled = false
+    } else if (resume.Autorizado === 'NO') {
+      AddReceiptPaymentApp.submitAddReceiptPaymentBtn.disabled = true
+    }
+    AddReceiptPaymentApp.receiptIsAutorizedToPay.textContent = `Este contrarecibo ${resume.Autorizado.toString().toUpperCase()} está autorizado para pago.`
+
+    // form values
+    // AddReceiptPaymentApp.receiptFolioEl.textContent = '#' + resume.Folio
+    AddReceiptPaymentApp.againstReceiptProviderName.textContent = resume.Proveedor
+    AddReceiptPaymentApp.paymentAmount.value = resume.Total.replace(/[\$,]/g, '').trim()
+    AddReceiptPaymentApp.againstReceiptPaymentMethod.value = resume.FormaDePago
+    AddReceiptPaymentApp.againstReceiptRetirementAccount.value = resume.CuentaDeDinero
+    AddReceiptPaymentApp.paymentDate.value = moment().format('YYYY-MM-DD')
+
+    // resumen contrarecibo values
+    AddReceiptPaymentApp.againstReceiptCreatedAt.textContent = resume.Creado
+    AddReceiptPaymentApp.againstReceiptFolio.textContent = resume.Folio
+    AddReceiptPaymentApp.againstReceiptQtyNotes.textContent = resume.CantNotas
+    AddReceiptPaymentApp.againstReceiptTotalAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(resume.Total.replace(/[\$,]/g, '').trim())
+    AddReceiptPaymentApp.againstReceiptPaymentDate.textContent = resume.FechaAPagar
+    AddReceiptPaymentApp.againstReceiptUserBy.textContent = resume.Usuario
+    AddReceiptPaymentApp.againstReceiptDetails.textContent = resume.Detalles
+
+    // Set table template notas values ------------------------
+    let template = AddReceiptPaymentApp.addReceiptPaymentRowsTemplate.content
+
+    // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
+    AddReceiptPaymentApp.addReceiptPaymentRows.innerHTML = ''
+
+    // loop all notas
+    notas.filter(nota => {
+      // Get the table element in which you want to add row
+      console.log(nota)
+      // Create a row using the inserRow() method and
+      // specify the index where you want to add the row
+      let tr = template.cloneNode(true)
+      let noteNumberCol = tr.querySelector('.noteNumber')
+      let totalAmountCol = tr.querySelector('.totalAmount')
+      let dateReceivedCol= tr.querySelector('.dateReceived')
+
+      noteNumberCol.textContent = `#${nota.NoNota}`
+      totalAmountCol.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(nota.MontoTotal.replace(/[\$,]/g, ''))
+      dateReceivedCol.textContent = moment(new Date(nota.FechaRecibido)).format("DD MMM YYYY")
+    
+      AddReceiptPaymentApp.addReceiptPaymentRows.appendChild(tr)
+    })
+
+    // Set provider names to option select field
+    // for (value in providerNames) {
+    //   var option = document.createElement("option");
+
+    //   option.text = providerNames[value];
+    //   option.value = providerNames[value];
+    //   AddReceiptPaymentApp.selectProviderNames.add(option);
+    // }
+  }
+
+  // SUBMIT FORM - CREATE NEW PURCHASE
+  AddReceiptPaymentApp.onSubmit = async (e) => {
+    e.preventDefault()
+    AddReceiptPaymentApp.clearInputValids()
+    // show spinners
+    AddReceiptPaymentApp.loadingSpinnerMsg.textContent = 'Espera un momento...'
+    AddReceiptPaymentApp.loadingSpinner.classList.remove('d-none')
+
+    // HTML FORM POST DATA
+    const fd = new FormData(AddReceiptPaymentApp.form)
+    // fd.append('status', purchaseByNoteNumber.Estatus)
+    // fd.append('saldo', purchaseByNoteNumber.Saldo)
+    fd.append('folioRecibo', resume.Folio)
+    fd.append('notes', JSON.stringify(notas))
+    fd.append('saldoTotal', resume.Total.replace(/[\$,]/g, '').trim())
+
+    const urlEncoded = new URLSearchParams(fd).toString()
+    console.log(urlEncoded)
+
+    const response = await fetch(`${apiUrl}/against-receipts`, {
+      method: 'POST',
+      body: urlEncoded,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    let result = await response.json()
+    console.log(result)
+    console.log(response.status)
+      if (response.status === 422) { // VALIDATION ERROR
+        AddReceiptPaymentApp.loadingSpinner.classList.add('d-none')
+
+        let inputEls = AddReceiptPaymentApp.form.getElementsByClassName('input-valid')
+        // console.log(result)
+        let errors = result.errors
+        // console.log(inputEls)
+
+        Array.from(inputEls).forEach(inputValid => {
+          errors.forEach((err) => {
+            let parentEl = inputValid.parentElement
+            let invalidMsg = parentEl.classList.contains('input-group') ? 
+            parentEl.parentElement.getElementsByClassName('invalid-message')[0] : 
+            parentEl.getElementsByClassName('invalid-message')[0]
+            // let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+            // console.log(invalidMsg)
+            if (inputValid.name === err.param) {
+              console.log(err)
+              invalidMsg.textContent = err.msg
+              invalidMsg.classList.remove('d-none')
+            }
+          })
+          
+        })
+
+
+      } else if (response.status === 400 || response.status === 404) { // CLIENT ERROR
+        AddReceiptPaymentApp.loadingSpinner.classList.add('d-none')
+        let failureMessageAlert = document.getElementById('failure-message')
+        failureMessageAlert.classList.remove('d-none')
+        failureMessageAlert.textContent = result.message
+
+        setTimeout(() => {
+          failureMessageAlert.classList.add('d-none')
+        }, "4000");
+      } else if (response.status === 201 || response.status === 200) { // SUCCESS RESPONSE
+        AddReceiptPaymentApp.loadingSpinner.classList.add('d-none')
+        let successMessageAlert = document.getElementById('success-message')
+        successMessageAlert.textContent = result.message
+        successMessageAlert.classList.remove('d-none')
+        window.scrollTo(0,0) // scroll to top of page to see message
+        setTimeout(() => {
+          successMessageAlert.classList.add('d-none')
+          AddReceiptPaymentApp.submitAddReceiptPaymentBtn.disabled = true
+          // Simulate an HTTP redirect:
+          window.location.replace(`${apiUrl}/against-receipts`);
+        }, "4000");
+      }
+  }
+
+  // Clear invalid message
+  AddReceiptPaymentApp.clearInputValids = () => {
+    let inputEls = AddReceiptPaymentApp.form.getElementsByClassName('input-valid')
+
+    Array.from(inputEls).forEach(inputValid => {
+      let invalidMsg = inputValid.closest('.valid-required').getElementsByClassName('invalid-message')[0]
+      console.log(invalidMsg)
+      if (!invalidMsg.classList.contains('d-none')) {
+        invalidMsg.classList.add('d-none')
+      }
+    })
+  }
+
+  AddReceiptPaymentApp.onLoad()
+  
+
+</script>

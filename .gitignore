@@ -78,6 +78,8 @@ web_modules/
 .env
 .env.test
 .env.production
+local.env
+development.env
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -124,5 +126,9 @@ dist
 
 # Heroku file
 Procfile
+
+# Temp uploads folder
+uploads/receipts/**
+!.gitkeep
 
 # End of https://www.toptal.com/developers/gitignore/api/node
