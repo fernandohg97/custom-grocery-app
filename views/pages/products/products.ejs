@@ -48,5 +48,15 @@
       <%- include('../../partials/products-pagination', { resultsPerPage, currentPage, numPages}); %>
     </div>
     <footer><%- include('../../partials/footer'); %></footer>
+
+    <script>
+      // $( document ).ready(function() {
+        let apiUrl = '<%= process.env.API_URL %>'
+        let apiUrlData = '<%- apiUrl %>'
+
+        console.log(apiUrl)
+        console.log(apiUrlData)
+      // })
+    </script>
   </body>
 </html>

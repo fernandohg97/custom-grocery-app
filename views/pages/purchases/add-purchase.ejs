@@ -1,0 +1,407 @@
+<%- include('../../partials/spinner'); %>
+
+<div class="container-lg">
+  <!-- success message -->
+  <div id="success-message" class="alert alert-success d-none text-center d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+  <!-- failure message -->
+  <div id="failure-message" class="alert alert-danger d-none text-center d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+
+  <h3 class="mb-2 mt-0">Nueva compra</h3>
+  <p class="mb-2 fw-bold" style="font-size: 13px;">No. Nota: <span id="noteNumber" style="width: 10%;" class="placeholder"></span></p>
+
+  <!-- FORMULARIO -->
+  <form id="new-purchase-form" action="/purchases" method="post" enctype="application/x-www-form-urlencoded" class="add-purchase-form row g-3 mt-2 pb-4 purchase-needs-validation">
+    <h6>Datos generales</h6>
+    <!-- Nombre del proveedor -->
+    <div class="col-6 valid-required">
+      <label for="providerName" class="form-label name-field-label">Proveedor*</label>
+      <select id="providerName" name="providerName" class="form-select input-valid" aria-label="provider-name">
+        <option selected disabled value="">Selecciona el proveedor</option>
+      </select>
+      <!-- <div id="textHelp" style="font-size: 12px;" class="form-text">
+        El nombre debe ser específico, claro y reconocible. (Compañia/Marca/Empresa)
+      </div> -->
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa el nombre del proveedor.
+      </div>
+    </div>
+     <!-- TIPO -->
+     <div class="col-4 valid-required">
+      <label for="typeInput" class="form-label">Tipo</label>
+      <select id="type" name="type" class="form-select input-valid" aria-label="type-record">
+        <option selected disabled value="">Selecciona el tipo</option>
+        <option value="Mercancia">Mercancia</option>
+        <option value="Externa">Externa</option>
+        <option value="Insumos">Insumos</option>
+
+        <!-- <option value="Apartado">Apartado</option> -->
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona el tipo de registro correcto.
+      </div>
+    </div>
+      <!-- USUARIO -->
+    <div class="col-2 valid-required">
+      <label for="userInput" class="form-label name-field-label">Usuario*</label>
+      <input id="user" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa el nombre del usuario que registra esta compra
+      </div>
+    </div>
+    <!-- Fecha de visita -->
+    <div class="col-md-4 valid-required">
+      <label for="dateRecord" class="form-label">Fecha de visita</label>
+      <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
+      <input id="dateRecord" type="text" name="dateRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa una fecha correcta.
+      </div>
+    </div>
+    <!-- MONTO TOTAL -->
+    <div class="col-md-4 valid-required">
+      <label for="totalAmount" class="form-label">Monto total</label>
+      <div class="input-group">
+        <span class="totalAmountInput input-group-text" id="currency-symbol">$</span>
+        <input id="totalAmount" type="text" name="totalAmount" class="form-control input-valid" placeholder="Monto Total" aria-label="totalAmount" aria-describedby="currency-symbol">
+      </div>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa un valor correcto. (Mayor a 0).
+      </div>
+    </div>
+     <!-- ESTATUS -->
+     <div class="col-md-4 valid-required">
+      <label for="statusInput" class="form-label">Estatus</label>
+      <select onchange="AddPurchaseApp.checkStatusRadio()" id="status" name="status" class="form-select input-valid" aria-label="supplier-status">
+        <option selected disabled value="">Selecciona el estatus</option>
+        <option value="LIQUIDADO">LIQUIDADO</option>
+        <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO</option>
+        <option value="PAGO PARCIAL">PAGO PARCIAL</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona una opcion correcta.
+      </div>
+    </div>
+    <!-- MONTO PARCIAL - OPCIONAL - EN CASO DE ELEGIR ESTATUS: PAGO PARCIAL -->
+    <div id="partialAmountInput" class="col-md-3 valid-required d-none">
+      <label for="partialAmount" class="form-label">Monto parcial</label>
+      <div class="input-group">
+        <span class="partialAmountSymbol input-group-text" id="currency-symbol">$</span>
+        <input id="partialAmount" type="text" name="partialAmount" class="form-control input-valid" placeholder="Monto Parcial" aria-label="partialAmount" aria-describedby="currency-symbol">
+      </div>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor ingresa un monto parcial a pagar.
+      </div>
+    </div>
+     <!-- FORMA DE PAGO -->
+     <div id="paymentMethodInput" class="col-md-3 valid-required d-none">
+      <label for="paymentMethodInput" class="form-label">Forma de pago</label>
+      <select id="paymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
+        <option selected disabled value="">Selecciona la forma de pago</option>
+        <!-- <option value="Efectivo">Efectivo</option>
+        <option value="Tarjeta">Tarjeta</option> -->
+        <option value="EFECTIVO">Efectivo</option>
+        <option value="TRANSFERENCIA ELECTRONICA">Transferencia electronica</option>
+        <option value="TARJETA DE DEBITO">Tarjeta de debito (TDD)</option>
+        <option value="TARJETA DE CREDITO">Tarjeta de credito (TDC)</option>
+        <option value="CHEQUE">Cheque</option>
+        <!-- <option value="NO COMPUTABLE">No Computable</option> -->
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona una forma de pago disponible.
+      </div>
+    </div>
+    <!-- CUENTA DE RETIRO -->
+    <div id="retirementAccountInput" class="col-md-3 valid-required d-none">
+      <label for="retirementAccountInput" class="form-label">Cuenta de retiro</label>
+      <select id="retirementAccount" name="retirementAccount" class="form-select input-valid" aria-label="purchase-retirement-account">
+      <option selected disabled value="">Selecciona la cuenta de retiro</option>
+      <option value="CD01">Fondo fijo - CD01</option>
+      <option value="CD02">Caja externa - CD02</option>
+      <option value="CD03">Banamex Empresa - CD03</option>
+      <option value="CD04">Credito NU - CD04</option>
+      <option value="CD05">Credito Costco - CD05</option>
+      <option value="CD06">Credito Oro - CD06</option>
+      <option value="CD07">Credito AMEX - CD07</option>
+      <option value="CD08">Kueski - CD08</option>
+      <option value="CD09">Otro - CD09</option>
+      <option value="CD10">Por definir - CD10</option>
+      </select>
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor selecciona una cuenta de retiro correcto.
+      </div>
+    </div>
+    <!-- Fecha a pagar -->
+    <div id="dateToPayInput" class="col-md-3 valid-required">
+      <label for="dateToPayRecord" class="form-label">Fecha a pagar</label>
+      <!-- <input id="date-to-pay-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
+      <input id="dateToPayRecord" name="dateToPayRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+      <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+        Por favor la fecha a pagar debe ser mayor a la fecha de visita.
+      </div>
+    </div>
+
+
+    <!-- Detalles -->
+    <div class="row">
+      <div class="col-sm-12 col-md-6 mt-2">
+        <label for="purchaseDetails" class="form-label">Detalles</label>
+        <textarea style="font-size: 14px;" name="purchaseDetails" class="form-control" id="purchaseDetails" rows="4" placeholder="Escribe algo importante sobre esta compra"></textarea>
+      </div>
+    </div>
+    <!-- AGREGAR DATOS BANCARIOS -->
+    <div class="col-sm-12">
+      <button style="font-size: 13px; margin: 0; padding: 0;" type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#datosBancariosCollapse" aria-expanded="false" aria-controls="datosBancariosCollapse">
+        Agregar datos bancarios
+      </button>
+      <div id="textHelp" style="font-size: 12px;" class="form-text">
+        Es requisito agregar los datos bancarios en caso de que la forma de pago al proveedor sea "transferencia electrónica".
+      </div>
+    </div>
+    <!-- DATOS BANCARIOS -->
+    <!-- <div class="collapse" id="datosBancariosCollapse">
+      <div class="row g-3 pb-3">
+        <h6>Datos bancarios</h6>
+        <div class="col-sm-6">
+          <label for="bankname" class="form-label">Banco*</label>
+          <input id="bankname" name="bankname" type="text" class="form-control input-valid" placeholder="Ingresa nombre del banco">
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa el nombre del banco.
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <!-- BOTONES -->
+    <div class="col-12">
+      <button id="submitCreatePurchaseBtn" type="submit" class="btn btn-primary">Guardar</button>
+      <a role="button" class="btn btn-light" href="/admin">Cancelar</a>
+    </div>
+  </form>
+  
+  
+
+<!-- Loading spinner -->
+<!-- <div id="loading-add-purchase" class="loading-spinner loading-add-supplier d-flex justify-content-center align-items-center text-center d-none">
+  <div>
+    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>Agregando compra...</div>
+  </div>
+</div> -->
+
+</div>
+
+<%- include('../../partials/scripts'); %>
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+  if (nodeEnv === 'local') {
+    console.log(apiUrl)
+  }
+  console.log('apiURL')
+  let newNoteNumber = '<%- newNoteNumber %>'
+
+  let providerNames = '<%- providerNames %>'
+  providerNames = providerNames.split(',').sort()
+  console.log(providerNames.length)
+
+  // BUILD VIEW
+  const AddPurchaseApp = {}
+
+  AddPurchaseApp.onLoad = function() {
+   
+    AddPurchaseApp.loadingSpinner = document.getElementById('loading-spinner-update')
+    AddPurchaseApp.loadingSpinnerMsg = document.getElementById('spinner-update-message')
+
+    // Set vars
+    AddPurchaseApp.noteNumberEl = document.getElementById('noteNumber')
+    AddPurchaseApp.selectProviderNames = document.getElementById('providerName');
+    AddPurchaseApp.providerName = document.getElementById('providerName')
+    AddPurchaseApp.type = document.getElementById('type')
+    AddPurchaseApp.dateRecord = document.getElementById('dateRecord')
+    AddPurchaseApp.totalAmount = document.getElementById('totalAmount')
+    AddPurchaseApp.status = document.getElementById('status')
+    AddPurchaseApp.paymentMethod = document.getElementById('paymentMethod')
+    AddPurchaseApp.retirementAccount = document.getElementById('retirementAccount')
+    AddPurchaseApp.dateToPayRecord = document.getElementById('dateToPayRecord')
+    AddPurchaseApp.purchaseDetails = document.getElementById('purchaseDetails')
+    // inputs
+    AddPurchaseApp.partialAmountInput = document.getElementById('partialAmountInput')
+    AddPurchaseApp.paymentMethodInput = document.getElementById('paymentMethodInput')
+    AddPurchaseApp.dateToPayInput = document.getElementById('dateToPayInput')
+    AddPurchaseApp.dateRecord = document.getElementById('dateRecord')
+    AddPurchaseApp.dateToPayRecord = document.getElementById('dateToPayRecord')
+    AddPurchaseApp.retirementAccountInput = document.getElementById('retirementAccountInput')
+    // SET INPUT FIELD VALUES
+    
+
+    // form
+    AddPurchaseApp.form = document.getElementById('new-purchase-form')
+    AddPurchaseApp.submitCreatePurchaseBtn = document.getElementById('submitCreatePurchaseBtn')
+
+    AddPurchaseApp.form.addEventListener('submit', AddPurchaseApp.onSubmit);
+    AddPurchaseApp.setInitialValues()
+  }
+
+  AddPurchaseApp.setInitialValues = () => {
+    AddPurchaseApp.noteNumberEl.classList.remove('placeholder')
+    AddPurchaseApp.noteNumberEl.textContent = newNoteNumber
+
+    // Set provider names to option select field
+    for (value in providerNames) {
+      var option = document.createElement("option");
+
+      option.text = providerNames[value];
+      option.value = providerNames[value];
+      AddPurchaseApp.selectProviderNames.add(option);
+    }
+  }
+
+  // CHECK STATUS INPUT FIELD
+  AddPurchaseApp.checkStatusRadio = () => {
+    if (AddPurchaseApp.status.value === 'LIQUIDADO') {
+      AddPurchaseApp.partialAmountInput.classList.add('d-none');
+      AddPurchaseApp.paymentMethodInput.classList.remove('d-none');
+      AddPurchaseApp.retirementAccountInput.classList.remove('d-none')
+      AddPurchaseApp.dateToPayInput.classList.add('d-none');
+      AddPurchaseApp.dateToPayRecord.value = AddPurchaseApp.dateRecord.value; 
+    } else if (AddPurchaseApp.status.value === 'PENDIENTE DE PAGO') {
+      AddPurchaseApp.partialAmountInput.classList.add('d-none');
+      AddPurchaseApp.paymentMethodInput.classList.add('d-none');
+      AddPurchaseApp.retirementAccountInput.classList.add('d-none')
+      AddPurchaseApp.dateToPayInput.classList.remove('d-none');
+    } else if (AddPurchaseApp.status.value === 'PAGO PARCIAL') {
+      AddPurchaseApp.partialAmountInput.classList.remove('d-none');
+      AddPurchaseApp.paymentMethodInput.classList.remove('d-none');
+      AddPurchaseApp.retirementAccountInput.classList.remove('d-none')
+      AddPurchaseApp.dateToPayInput.classList.remove('d-none');
+    }
+  }
+
+  // MIDDLEWARES ---------------------------------------
+  // Handler when radio button in record form is clicked
+  // AddPurchaseApp.checkAgreementSelected = () => {
+  //   if (document.getElementById('agreement').value === 'CREDITO') {
+  //     document.getElementById('daysToPayCreditInput').classList.remove('d-none');
+  //     document.getElementById('notesMinimumInput').classList.add('d-none');
+  //     // document.getElementById('date-to-pay-record').value = document.getElementById('date-record').value; 
+  //   } else if (document.getElementById('agreement').value === 'CONSIGNACION') {
+  //     document.getElementById('daysToPayCreditInput').classList.add('d-none');
+  //     document.getElementById('notesMinimumInput').classList.remove('d-none');
+  //   } else if (document.getElementById('agreement').value === 'CONTADO') {
+  //     document.getElementById('daysToPayCreditInput').classList.add('d-none');
+  //     document.getElementById('notesMinimumInput').classList.add('d-none');
+  //   }
+  // }
+
+  // SUBMIT FORM - CREATE NEW PURCHASE
+  AddPurchaseApp.onSubmit = async (e) => {
+    e.preventDefault()
+    AddPurchaseApp.clearInputValids()
+    // show spinners
+    AddPurchaseApp.loadingSpinnerMsg.textContent = 'Espera un momento...'
+    AddPurchaseApp.loadingSpinner.classList.remove('d-none')
+
+    // HTML FORM POST DATA
+    const fd = new FormData(AddPurchaseApp.form)
+    fd.append('noteNumber', newNoteNumber)
+    const urlEncoded = new URLSearchParams(fd).toString()
+    console.log(urlEncoded)
+    // console.log(`${apiUrl}/purchases`)
+    const response = await fetch(`${apiUrl}/purchases`, {
+      method: 'POST',
+      body: urlEncoded,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    let result = await response.json()
+    console.log(response.status)
+      if (response.status === 422) { // VALIDATION ERROR
+        AddPurchaseApp.loadingSpinner.classList.add('d-none')
+
+        let inputEls = AddPurchaseApp.form.getElementsByClassName('input-valid')
+        // console.log(result)
+        let errors = result.errors
+        // console.log(inputEls)
+
+        Array.from(inputEls).forEach(inputValid => {
+          errors.forEach((err) => {
+            let parentEl = inputValid.parentElement
+            let invalidMsg = parentEl.classList.contains('input-group') ? 
+            parentEl.parentElement.getElementsByClassName('invalid-message')[0] : 
+            parentEl.getElementsByClassName('invalid-message')[0]
+            // let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+            // console.log(invalidMsg)
+            if (inputValid.name === err.param) {
+              console.log(err)
+              invalidMsg.textContent = err.msg
+              invalidMsg.classList.remove('d-none')
+            }
+          })
+          
+        })
+
+
+      } else if (response.status === 400 || response.status === 404) { // CLIENT ERROR
+        AddPurchaseApp.loadingSpinner.classList.add('d-none')
+        let failureMessageAlert = document.getElementById('failure-message')
+        failureMessageAlert.classList.remove('d-none')
+        failureMessageAlert.textContent = result.message
+
+        setTimeout(() => {
+          failureMessageAlert.classList.add('d-none')
+        }, "4000");
+      } else if (response.status === 201 || response.status === 200) { // SUCCESS RESPONSE
+        AddPurchaseApp.loadingSpinner.classList.add('d-none')
+        let successMessageAlert = document.getElementById('success-message')
+        successMessageAlert.textContent = result.message
+        successMessageAlert.classList.remove('d-none')
+
+        setTimeout(() => {
+          successMessageAlert.classList.add('d-none')
+          AddPurchaseApp.submitCreatePurchaseBtn.disabled = true
+          // Simulate an HTTP redirect:
+          window.location.replace(`${apiUrl}/purchases`);
+        }, "4000");
+      }
+  }
+
+  // Clear invalid message
+  AddPurchaseApp.clearInputValids = () => {
+    let inputEls = AddPurchaseApp.form.getElementsByClassName('input-valid')
+
+    Array.from(inputEls).forEach(inputValid => {
+      let invalidMsg = inputValid.closest('.valid-required').getElementsByClassName('invalid-message')[0]
+      // console.log(invalidMsg)
+      if (!invalidMsg.classList.contains('d-none')) {
+        invalidMsg.classList.add('d-none')
+      }
+    })
+  }
+
+  // // CLEAR ALL FORM INPUT VALUES
+  // AddPurchaseApp.clearForm = () => {
+  //   // Set vars
+  //   AddPurchaseApp.noteNumberEl = document.getElementById('noteNumber')
+  //   AddPurchaseApp.selectProviderNames = document.getElementById('providerName');
+  //   AddPurchaseApp.providerName = document.getElementById('providerName')
+  //   AddPurchaseApp.type = document.getElementById('type')
+  //   AddPurchaseApp.dateRecord = document.getElementById('dateRecord')
+  //   AddPurchaseApp.totalAmount = document.getElementById('totalAmount')
+  //   AddPurchaseApp.status = document.getElementById('status')
+  //   AddPurchaseApp.paymentMethod = document.getElementById('paymentMethod')
+  //   AddPurchaseApp.retirementAccount = document.getElementById('retirementAccount')
+  //   AddPurchaseApp.dateToPayRecord = document.getElementById('dateToPayRecord')
+  //   AddPurchaseApp.purchaseDetails = document.getElementById('purchaseDetails')
+  // }
+
+
+  AddPurchaseApp.onLoad()
+
+  
+
+</script>

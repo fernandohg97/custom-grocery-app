@@ -4,28 +4,42 @@ const router = express.Router()
 const axios = require('axios').default
 const url = require('url')
 const configVars = require('../config/config.vars')
+const getTotalCountElements = require('../middlewares/totalCount')
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-  if (req.session && req.session.accessToken) return res.redirect('/welcome')
-  return res.render('pages/index')
+router.get('/admin', [
+  getTotalCountElements.totalNumberOfSuppliers,
+  getTotalCountElements.totalNumberOfPurchases,
+  getTotalCountElements.totalNumberOfPayments
+], async (req, res, next) => {
+  // if (req.session && req.session.accessToken) return res.redirect('/welcome')
+  console.log(req.session)
+
+  // if (!req.session || !req.session.accessToken) return res.redirect('/auth')
+  console.log(req.session)
+  return res.render('pages/index', {
+    suppliersCount: res.locals.totalCountSuppliers,
+    purchasesCount: res.locals.totalCountPurchases,
+    paymentsCount: res.locals.totalCountPayments
+  })
 })
 
-router.get('/product', (req, res, next) => {
-  return res.render('pages/product')
+// GET LOGIN PAGE
+router.get('/', async (req, res, next) => {
+  return res.render('pages/users/login', { layout: './layouts/full-login' })
 })
 
-router.get('/welcome', async (req, res, next) => {
-  if (!req.session || !req.session.accessToken) return next()
-  // const { token } = req.query
+// router.get('/welcome', async (req, res, next) => {
+//   if (!req.session || !req.session.accessToken) return next()
+//   // const { token } = req.query
 
-  // const url = 'https://api.hikeup.com/api/v1/users/get_all'
-  // const options = { headers: { Accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-  return res.render('pages/welcome', { successMessage: '' })
-})
+//   // const url = 'https://api.hikeup.com/api/v1/users/get_all'
+//   // const options = { headers: { Accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
+//   return res.render('pages/welcome', { successMessage: '' })
+// })
 
 router.get('/auth', (req, res, next) => {
-  if (req.session.accessToken) return res.redirect('/welcome')
+  if (req.session.accessToken) return res.redirect('/')
   res.redirect(`https://api.hikeup.com/oauth/authorize?response_type=code&client_id=${configVars.client_id}&redirect_uri=${configVars.redirect_uri}&scope=all`)
 })
 
@@ -61,8 +75,8 @@ router.get('/callback', (req, res, next) => {
     .then(token => {
       console.log(`Token: ${token}`)
       req.session.accessToken = token
-      res.cookie('auth', token, { expires: new Date(Date.now() + 2 * 3600000) })
-      return res.redirect('/welcome')
+      res.cookie('auth', token, { expires: new Date(Date.now() + 8 * 3600000), httpOnly: true })
+      return res.redirect('/')
     })
     .catch(err => {
       console.log('Inside error')
@@ -71,5 +85,9 @@ router.get('/callback', (req, res, next) => {
       return next(err)
     })
 })
+
+// router.get('/product', (req, res, next) => {
+//   return res.render('pages/product')
+// })
 
 module.exports = router

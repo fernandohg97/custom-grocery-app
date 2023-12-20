@@ -1,0 +1,629 @@
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div>
+        <h3>Compras de hoy: <span id="todayDate" class="fw-bold text-muted d-inline-block"><%- new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date()) %></span></h3>
+        <!-- <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Card TODAY RESUME stats -->
+<div class="row gx-5 mb-4 text-center">
+  <!-- COMPRAS RECIBIDAS -->
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col">
+                      <span class="h6 font-semibold text-muted text-sm d-block mb-2">Compras</span>
+                      <span id="totalPurchasesAmountReceived" class="h3 font-bold mb-0">$100.00</span>
+                  </div>
+              </div>
+              <div class="mt-1 mb-0 p-0">
+                <span class="text-nowrap text-sm text-muted d-block p-0 m-0">
+                  Se recibieron <strong id="totalPurchasesCount" class="fw-bolder text-dark">5</strong>&nbsp;en total
+                </span>
+              </div>
+          </div>
+      </div>
+  </div>
+  <!-- PAGOS TOTAL REALIZADOS -->
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Pagos</span>
+                <span id="totalAmountPayed" class="h3 font-bold mb-0">$100.00</span>
+            </div>
+          </div>
+          <div class="mt-1 mb-0 p-0">
+            <span class="text-nowrap text-sm text-muted d-block p-0 m-0">
+              Se realizaron <strong id="totalPaymentsCount" class="fw-bolder text-dark">5</strong>&nbsp;en total
+            </span>
+          </div>
+      </div>
+      </div>
+  </div>
+  <!-- PAGOS REALIZADOS EN EFECTIVO FONDO FIJO - CD01 -->
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+                <span class="h6 font-semibold text-muted text-sm d-block mb-2">Pagos en Efectivo - CD01</span>
+                <span id="totalAmountPayedEfectivo" class="h3 font-bold mb-0">$50.00</span>
+            </div>
+          </div>
+          <div class="mt-1 mb-0 p-0">
+            <span class="text-nowrap text-sm text-muted d-block p-0 m-0">
+              Se realizaron <strong id="totalPaymentsEfectivoCount" class="fw-bolder text-dark">5</strong>&nbsp;en total
+            </span>
+          </div>
+      </div>
+      </div>
+  </div>
+  <!-- PAGOS REALIZADOS DE MERCANCIA -->
+  <div class="col-xl-3 col-sm-6 col-12">
+    <div class="card shadow border-0">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+              <span class="h6 font-semibold text-muted text-sm d-block mb-2">Pagos de Mercancia</span>
+              <span id="totalAmountPayedMercancia" class="h3 font-bold mb-0">$100.00</span>
+          </div>
+        </div>
+        <div class="mt-1 mb-0 p-0">
+          <span class="text-nowrap text-sm text-muted d-block p-0 m-0">
+            Se realizaron <strong id="totalPaymentsMercanciaCount" class="fw-bolder text-dark">5</strong>&nbsp;en total
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2da seccion - tablas -->
+<div class="row justify-content-center align-items-center bg-light mt-2 mb-3">
+  <!-- NAV PILLS MENU - TABLE SHOW HIDE - COMPRAS - PAGOS -->
+  <nav class="mb-0">
+    <div class="nav nav-pills" id="nav-tab" role="tablist">
+      <button class="nav-link active" id="nav-table-purchases-pill" data-bs-toggle="tab" data-bs-target="#nav-purchases-table" type="button" role="tab" aria-controls="nav-purchases-table" aria-selected="true">Compras</button>
+      <button class="nav-link" id="nav-table-payments-pill" data-bs-toggle="tab" data-bs-target="#nav-payments-table" type="button" role="tab" aria-controls="nav-payments-table" aria-selected="false">Pagos</button>
+    </div>
+  </nav>
+  <div class="tab-content p-0 bg-light mt-0" id="nav-tabContent">
+    <div class="tab-pane fade active show p-0" id="nav-purchases-table" role="tabpanel" aria-labelledby="nav-table-purchases-pill">
+      <!-- TABLA DE COMPRAS -->
+      <div class="table-responsive mb-3">
+        <div class="row text-end justify-content-end align-items-start">
+          <div class="col">
+            <div id="buttons-wrapper-today-purchases" class=""></div><br>
+            <div id="invalid-message-user-check" class="invalid-message-user-check text-start d-none mt-1" style="font-size: 12px; color: red;">
+              Por favor selecciona mas de 1 compra.
+            </div>
+          </div>
+        </div>
+        <table id="todayPurchasesTable" class="display compact hover stripe" width="100%" style="font-size: 12px;">
+          <tfoot>
+            <tr>
+              <th colspan="3" class="text-start">Total:</th>
+              <th></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <!-- TABLA DE PAGOS -->
+    <div class="tab-pane fade" id="nav-payments-table" role="tabpanel" aria-labelledby="nav-table-payments-pill">
+      <div class="table-responsive mb-3">
+        <div class="row justify-content-start align-items-start text-end">
+          <div class="col">
+            <div id="buttons-wrapper-today-payments" class="mb-1"></div><br>
+            <div id="invalid-message-user-check" class="invalid-message-user-check text-start d-none mt-1" style="font-size: 12px; color: red;">
+              Por favor selecciona mas de 1 compra.
+            </div>
+          </div>
+        </div>
+        <table id="todayPaymentsTable" class="display compact hover stripe" width="100%" style="font-size: 12px;">
+          <tfoot>
+            <tr>
+              <th colspan="3" class="text-start">Total:</th>
+              <th></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- TABLE -->
+<!-- <div class="table-responsive mb-3">
+  <div class="row justify-content-start align-items-start">
+    <div class="col">
+      <div id="buttons-wrapper-today-purchases" class="mb-1"></div><br>
+      <div id="invalid-message-user-check" class="invalid-message-user-check text-start d-none mt-1" style="font-size: 12px; color: red;">
+        Por favor selecciona mas de 1 compra.
+      </div>
+    </div>
+  </div>
+  <table id="todayPurchasesTable" class="display compact hover stripe" width="100%" style="font-size: 12px;">
+    <tfoot>
+      <tr>
+        <th colspan="3" class="text-start">Total:</th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div> -->
+
+
+<!-- JS CODE -->
+<%- include('../../partials/scripts'); %>
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  let apiUrl = '<%= process.env.API_URL %>'
+  console.log(apiUrl)
+  console.log(nodeEnv)
+  let todayPurchasesData = '<%- jsonResponse %>'
+  todayPurchasesData = todayPurchasesData.replace(/\s+/g," ")
+
+  let jsonPurchases = JSON.parse(todayPurchasesData)
+  console.log(jsonPurchases)
+
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+  const TodayPurchasesApp = {}
+
+  TodayPurchasesApp.onLoad = () => {
+
+    // SET CARD VARS
+    TodayPurchasesApp.totalPurchasesAmountReceived = document.getElementById('totalPurchasesAmountReceived')
+    TodayPurchasesApp.totalAmountPayed = document.getElementById('totalAmountPayed')
+    TodayPurchasesApp.totalAmountPayedEfectivo = document.getElementById('totalAmountPayedEfectivo')
+    TodayPurchasesApp.totalAmountPayedMercancia = document.getElementById('totalAmountPayedMercancia')
+    TodayPurchasesApp.totalPurchasesCount = document.getElementById('totalPurchasesCount')
+    TodayPurchasesApp.totalPaymentsCount = document.getElementById('totalPaymentsCount')
+    TodayPurchasesApp.totalPaymentsEfectivoCount = document.getElementById('totalPaymentsEfectivoCount')
+    TodayPurchasesApp.totalPaymentsMercanciaCount = document.getElementById('totalPaymentsMercanciaCount')
+
+
+    // call function data
+    TodayPurchasesApp.setInitialValues()
+    TodayPurchasesApp.getPurchasesDataTable()
+    TodayPurchasesApp.getPaymentsDataTable()
+
+  }
+
+  TodayPurchasesApp.setInitialValues = () => {
+    TodayPurchasesApp.totalPurchasesAmountReceived.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonPurchases.purchasesData.totalAmount)
+    TodayPurchasesApp.totalAmountPayed.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonPurchases.paymentsData.totalAmountPayed)
+    TodayPurchasesApp.totalAmountPayedEfectivo.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonPurchases.paymentsData.totalEfectivoFondoFijo.totalAmountPayed)
+    TodayPurchasesApp.totalAmountPayedMercancia.textContent = jsonPurchases.paymentsData.totalMercancia.totalAmountPayed
+    TodayPurchasesApp.totalPurchasesCount.textContent = jsonPurchases.purchasesData.totalCount
+    TodayPurchasesApp.totalPaymentsCount.textContent = jsonPurchases.paymentsData.totalCount
+    TodayPurchasesApp.totalPaymentsEfectivoCount.textContent = jsonPurchases.paymentsData.totalEfectivoFondoFijo.totalCount
+    TodayPurchasesApp.totalPaymentsMercanciaCount.textContent = jsonPurchases.paymentsData.totalMercancia.totalCount
+  
+  
+  }
+
+  // CARGAR TABLA DE COMPRAS
+  TodayPurchasesApp.getPurchasesDataTable = async () => {
+    // DATATABLE ------------
+    let todayPurchasesTable = $('#todayPurchasesTable').DataTable({
+                // responsive: true,
+        fixedHeader: true,
+        // footerCallback: function (row, data, start, end, display) {
+        //     var api = this.api();
+
+        //     // Remove the formatting to get integer data for summation
+        //     var intVal = function (i) {
+        //         // return i
+        //         // return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : Number(i.replace(/[\$,]/g, '') * 1);
+        //         // return isNaN(i) === true ? 0 : typeof i === 'string' ? isNaN(i.replace(/[\$,]/g, '') * 1) : typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+        //         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : typeof i === 'number' ? i : 0;
+
+        //     };
+        //     // console.log(intVal)
+        //     console.log(api.column(3, {page: 'current'}).data())
+        //     // Total over this page
+        //     let pageTotal = api
+        //         .column(2, { page: 'current' })
+        //         .data()
+        //         .reduce(function (a, b) {
+        //           console.log(`Numero: ${intVal(a)}`)
+        //             // a = isNaN(a) === true ? 0 : a
+        //             // b = isNaN(b) === true ? 0 : b
+        //             return intVal(a) + intVal(b);
+        //         });
+        //     console.log(`Total: ${pageTotal}`)
+
+        //     // Update footer
+        //     $(api.column(2).footer()).html(new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(pageTotal));
+        // },
+        paging: true,
+        data: jsonPurchases.purchasesData.records,
+        stripeClasses: [ 'strip1', 'strip2' ],
+        columns: [
+            { data: null, orderable: false, className: 'select-checkbox', defaultContent: '' },
+            { title: 'No. Nota', data: 'No Nota' },
+            { title: 'Proveedor', data: 'Proveedor'},
+            { title: 'Monto Total', data: 'Monto Total'},
+            { title: 'Fecha Recibido', data: 'Fecha Recibido' },
+            { title: 'Fecha a Pagar', data: 'Fecha a Pagar', orderable: false, searchable: false, visible: false },
+            { title: 'Estatus', data: 'Estatus', orderable: false },
+            { title: 'Tipo', data: 'Tipo', visible: true },
+            { title: 'Usuario', data: 'Usuario', orderable: false, visible: true },
+            { title: 'Detalles', data: 'Detalles', visible: false, searchable: false },
+            // { title: 'Editar', orderable: false, searchable: false }, // 9
+            // { title: 'Eliminar', orderable: false, searchable: false }
+        ],
+        columnDefs: [
+          { className: "fw-bold", "targets": 3, "width": "10%", render: function (data) {
+              const formatNumber = isNaN(data.replace(/[\$,]/g, '') * 1) ? 0 : data.replace(/[\$,]/g, '') * 1;
+              return `${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(formatNumber)}`
+            }
+          },
+          { className: "fw-bold", "targets": 1, "render": function (data) {
+              return `#${data}`
+            }
+          },
+          { "targets": 3, "width": "25%", "createdCell": function (td, cellData, rowData, row, col) {
+              $(td).css('font-size', '13px')
+            } 
+          },
+          { className: "fw-bold", "targets": 6, 
+            createdCell: function (td, cellData, rowData, row, col) {
+              if ( cellData == 'LIQUIDADO' ) {
+                $(td).css('color', 'green')
+              } else if (cellData == 'PAGO PARCIAL') {
+                $(td).css('color', 'blue')
+              } else if (cellData == 'PENDIENTE DE PAGO') {
+                $(td).css('color', '#F06610')
+              }
+            }
+          },
+          { "targets": [4, 5], "width": "10%",
+            render: function ( data, type, row, meta ) {
+              // console.log(data)
+              // return data
+              if (data.length > 0) {
+                return type === 'sort' || type === 'display' || type === 'filter' ? (moment(new Date(data)).format("DD MMM YYYY")) : new Date(data)
+              } else return "n/a"
+            }
+          },
+          { "targets": [7, 8], "width": "10%" },
+          { "targets": 9, render: $.fn.dataTable.render.ellipsis( 10, true ) }
+          // { "targets": 10, "width": "10%", className: "text-center",
+          //   "render": function (data, type, row, meta) {
+          //     return '<button type="button" disabled class="btn btn-sm btn-danger remove-purchase" onclick="removeCompra('+row[0]+')"><i class="bi bi-trash3"></i></button>'
+          //   }
+          // },
+        ],
+        order: [[1, 'asc']],
+        select: {
+          style: 'os',
+          selector: 'td:first-child'
+        },
+        buttons: [
+          {
+            extend: 'selectAll',
+            text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+            className: 'btn btn-sm btn-dark'
+          },
+          {
+            extend: 'selectNone',
+            text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+            className: 'btn btn-sm btn-dark'
+          },
+          {
+            extend: 'colvis',
+            text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+            // titleAttr: 'Show/Hide',
+            columns: ':not(.noVis)',
+            collectionLayout: 'fixed columns',
+            collectionTitle: 'Seleccionar columnas a ver'
+          },
+          { 
+            extend: 'pdfHtml5',
+            orientation: 'landscape',
+            pageSize: 'LEGAL',
+            messageTop: 'Este documento es informativo.',
+            messageBottom: datetimeExportText,
+            text: '<i class="bi bi-filetype-pdf"></i>', 
+            className: 'btn btn-dark',
+            footer: true,
+            title: 'Lista de compras',
+            exportOptions: {
+              columns: ':visible',
+              modifier: {
+                selected: true
+              }
+            },
+          },
+          { extend: 'copy', 
+            text: '<i class="bi bi-clipboard-check"></i>', 
+            className: 'btn btn-dark',
+            title: 'Lista de compras',
+            exportOptions: {
+              columns: ':visible',
+              modifier: {
+                selected: true
+              }
+            },
+          },
+          {
+            text: '<span style="font-size: 12px;">Enviar selección</span>',
+            className: 'btn btn-secondary btn-sm btn-send-purchases',
+            action: function (e, dt, node, config) {
+              let purchasesSelected = []
+              todayPurchasesTable.rows( { selected: true } ).data().each(el => {
+                purchasesSelected.push(el)
+              })
+              // let user = document.getElementById('userCheck').value;
+              if (!purchasesSelected.length) {
+                document.getElementById('invalid-message-user-check').classList.remove('d-none')
+                setTimeout(() => {
+                  document.getElementById('invalid-message-user-check').classList.add('d-none')
+                }, 3000)
+              } else {
+                console.log(purchasesSelected.length)
+                sendEmailPurchasesSelected(purchasesSelected)
+
+              }
+                // events.prepend( '<div>'+count+' row(s) selected</div>' );
+            }
+          }
+        ],
+        "lengthMenu": [ 10, 20, 40, 60 ],
+        "pageLength": 20,
+        "language": {
+          "buttons": {
+            copyTitle: 'Datos copiados al portapapeles',
+            copySuccess: {
+                _: "%d productos copiados al portapapeles"
+            },
+            colvis: 'Ver/ocultar columnas'
+          },
+          "decimal":        "",
+          "emptyTable":     "No se encontraron datos",
+          "info":           "Mostrando _START_ a _END_ de _TOTAL_ compras",
+          "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+          "infoFiltered":   "(Busqueda de _MAX_ compras en total)",
+          "infoPostFix":    "",
+          "thousands":      ",",
+          "lengthMenu":     "Mostrar _MENU_ compras",
+          "loadingRecords": "Cargando...",
+          "processing":     "",
+          "search":         "Buscar:",
+          "zeroRecords":    "No se encontraron compras",
+          "paginate": {
+              "first":      "Primero",
+              "last":       "Ultimo",
+              "next":       "Siguiente",
+              "previous":   "Atrás"
+          },
+          "aria": {
+              "sortAscending":  ": activate to sort column ascending",
+              "sortDescending": ": activate to sort column descending"
+          }
+        },
+        // createdRow: function( row, data, dataIndex ) {
+        //   details = data[10].toString()
+        //   if (details.includes('NU') || details.includes('CREDITO NU') || details.includes('TARJETA NU')) {
+        //     $(row).css('background-color', '#E2B6FF');
+        //   }
+        // },
+        drawCallback: function() {
+          $('#todayPurchasesTable_paginate ul.pagination').addClass("pagination-sm");
+        }
+      });
+    
+      todayPurchasesTable.buttons().container().appendTo('#buttons-wrapper-today-purchases');
+  }
+
+  // CARGAR TABLA DE PAGOS
+  TodayPurchasesApp.getPaymentsDataTable = async () => {
+
+  // DATATABLE ------------
+  let todayPaymentsTable = $('#todayPaymentsTable').DataTable({
+              // responsive: true,
+      fixedHeader: true,
+      // footerCallback: function (row, data, start, end, display) {
+      //     var api = this.api();
+
+      //     // Remove the formatting to get integer data for summation
+      //     var intVal = function (i) {
+      //         // return i
+      //         // return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : Number(i.replace(/[\$,]/g, '') * 1);
+      //         // return isNaN(i) === true ? 0 : typeof i === 'string' ? isNaN(i.replace(/[\$,]/g, '') * 1) : typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+      //         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : isNaN(i.replace(/[\$,]/g, '') * 1) === true ? 0 : typeof i === 'number' ? i : 0;
+
+      //     };
+      //     // console.log(intVal)
+      //     console.log(api.column(3, {page: 'current'}).data())
+      //     // Total over this page
+      //     let pageTotal = api
+      //         .column(2, { page: 'current' })
+      //         .data()
+      //         .reduce(function (a, b) {
+      //           console.log(`Numero: ${intVal(a)}`)
+      //             // a = isNaN(a) === true ? 0 : a
+      //             // b = isNaN(b) === true ? 0 : b
+      //             return intVal(a) + intVal(b);
+      //         });
+      //     console.log(`Total: ${pageTotal}`)
+
+      //     // Update footer
+      //     $(api.column(2).footer()).html(new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(pageTotal));
+      // },
+      paging: true,
+      data: jsonPurchases.paymentsData.records,
+      stripeClasses: [ 'strip1', 'strip2' ],
+      columns: [
+          { data: null, orderable: false, className: 'select-checkbox', defaultContent: '' },
+          { title: 'Folio', data: 'Folio', width: '5%', orderable: false, className: 'fw-bold' },
+          { title: 'Monto', data: 'Monto', orderable: false },
+          { title: 'Forma de pago', data: 'Forma de pago', orderable: true, searchable: true },
+          { title: 'Cuenta', data: 'Cuenta de dinero', searchable: true, orderable: false, width: '5%', className: 'text-center' },
+          { title: 'Comprobante', data: 'Comprobante', searchable: false, orderable: false, width: '10%' },
+          { title: 'Usuario', data: 'Usuario', orderable: true, searchable: true, width: '10%' },
+          // { title: 'Editar', orderable: false, searchable: false }, // 9
+          // { title: 'Eliminar', orderable: false, searchable: false }
+      ],
+      columnDefs: [
+        { className: "fw-bold", "targets": 2, "width": "5%", render: function (data) {
+            const formatNumber = isNaN(data.replace(/[\$,]/g, '') * 1) ? 0 : data.replace(/[\$,]/g, '') * 1;
+            return `${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(formatNumber)}`
+          }
+        },
+        { targets: 3, width: "15%", className: 'text-center',
+          createdCell: function(td, cellData, rowData, row, col) {
+            if ( cellData == 'EFECTIVO' ) {
+              $(td).css('color', '#0e7c61')
+            } else if (cellData == 'TRANSFERENCIA ELECTRONICA') {
+              $(td).css('color', '#0095c2')
+            } else if (cellData == 'TARJETA DE CREDITO') {
+              $(td).css('color', '#6551a1')
+            } else if (cellData == 'TARJETA DE DEBITO') {
+              $(td).css('color', '#399db4')
+            } else if (cellData == 'CHEQUE') {
+              $(td).css('color', '#434343')
+            }
+          }
+        },
+        { targets: 5, render: $.fn.dataTable.render.ellipsis( 10, true ) }
+      ],
+      order: [[1, 'asc']],
+      select: {
+        style: 'os',
+        selector: 'td:first-child'
+      },
+      buttons: [
+        {
+          extend: 'selectAll',
+          text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+          className: 'btn btn-sm btn-dark'
+        },
+        {
+          extend: 'selectNone',
+          text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+          className: 'btn btn-sm btn-dark'
+        },
+        {
+          extend: 'colvis',
+          text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+          // titleAttr: 'Show/Hide',
+          columns: ':not(.noVis)',
+          collectionLayout: 'fixed columns',
+          collectionTitle: 'Seleccionar columnas a ver'
+        },
+        { 
+          extend: 'pdfHtml5',
+          orientation: 'landscape',
+          pageSize: 'LEGAL',
+          messageTop: 'Este documento es informativo.',
+          messageBottom: datetimeExportText,
+          text: '<i class="bi bi-filetype-pdf"></i>', 
+          className: 'btn btn-dark',
+          footer: true,
+          title: 'Lista de compras',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        { extend: 'copy', 
+          text: '<i class="bi bi-clipboard-check"></i>', 
+          className: 'btn btn-dark',
+          title: 'Lista de compras',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        {
+          text: '<span style="font-size: 12px;">Enviar selección</span>',
+          className: 'btn btn-secondary btn-sm btn-send-purchases',
+          action: function (e, dt, node, config) {
+            let purchasesSelected = []
+            todayPurchasesTable.rows( { selected: true } ).data().each(el => {
+              purchasesSelected.push(el)
+            })
+            // let user = document.getElementById('userCheck').value;
+            if (!purchasesSelected.length) {
+              document.getElementById('invalid-message-user-check').classList.remove('d-none')
+              setTimeout(() => {
+                document.getElementById('invalid-message-user-check').classList.add('d-none')
+              }, 3000)
+            } else {
+              console.log(purchasesSelected.length)
+              sendEmailPurchasesSelected(purchasesSelected)
+
+            }
+              // events.prepend( '<div>'+count+' row(s) selected</div>' );
+          }
+        }
+      ],
+      "lengthMenu": [ 10, 20, 40, 60 ],
+      "pageLength": 20,
+      "language": {
+        "buttons": {
+          copyTitle: 'Datos copiados al portapapeles',
+          copySuccess: {
+              _: "%d registros copiados al portapapeles"
+          },
+          colvis: 'Ver/ocultar columnas'
+        },
+        "decimal":        "",
+        "emptyTable":     "No se encontraron datos",
+        "info":           "Mostrando _START_ a _END_ de _TOTAL_ pagos",
+        "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+        "infoFiltered":   "(Busqueda de _MAX_ pagos en total)",
+        "infoPostFix":    "",
+        "thousands":      ",",
+        "lengthMenu":     "Mostrar _MENU_ pagos",
+        "loadingRecords": "Cargando...",
+        "processing":     "",
+        "search":         "Buscar:",
+        "zeroRecords":    "No se encontraron pagos",
+        "paginate": {
+            "first":      "Primero",
+            "last":       "Ultimo",
+            "next":       "Siguiente",
+            "previous":   "Atrás"
+        },
+        "aria": {
+            "sortAscending":  ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        }
+      },
+      // createdRow: function( row, data, dataIndex ) {
+      //   details = data[10].toString()
+      //   if (details.includes('NU') || details.includes('CREDITO NU') || details.includes('TARJETA NU')) {
+      //     $(row).css('background-color', '#E2B6FF');
+      //   }
+      // },
+      drawCallback: function() {
+        $('#todayPaymentsTable_paginate ul.pagination').addClass("pagination-sm");
+      }
+    });
+
+    todayPaymentsTable.buttons().container().appendTo('#buttons-wrapper-today-payments');
+  }
+  TodayPurchasesApp.onLoad()
+</script>
+

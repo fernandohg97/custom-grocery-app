@@ -20,5 +20,6 @@
     "terminal.ansiRed": "#CC342B",
     "terminal.ansiWhite": "#C5C8C6",
     "terminal.ansiYellow": "#FBA922"
-  }
+  },
+  "beautify.config": ""
 }

@@ -7,14 +7,13 @@
 const app = require('../app')
 const debug = require('debug')('hikeapi:server')
 const http = require('http')
-const { port } = require('../config/config.vars')
+const { host, port } = require('../config/config.vars')
 
 /**
  * Get port from environment and store in Express.
  */
 
 app.set('port', normalizePort(port))
-
 /**
  * Create HTTP server.
  */
@@ -82,9 +81,9 @@ function onError (error) {
  */
 
 function onListening () {
-  const addr = server.address()
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port
-  console.log('Server listening on ' + bind)
+  // const addr = server.address()
+  // const bind = typeof addr === 'string'
+  //   ? 'pipe ' + addr
+  //   : 'port ' + addr.port
+  console.log(`Server listening on http://${host}:${port}`)
 }

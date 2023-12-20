@@ -1,0 +1,481 @@
+<%- include('../../partials/spinner'); %>
+
+<div class="container-lg mb-5">
+  <!-- success message -->
+  <div id="success-message" class="alert alert-success d-none d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+  <!-- failure message -->
+  <div id="failure-message" class="alert alert-danger d-none d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+
+  <!-- <p class="mb-2 fw-bold" style="font-size: 13px;">No. Nota: <span id="noteNumber" style="width: 10%;" class="placeholder"></span></p> -->
+
+  <div class="row justify-content-center">
+    <!-- FORMULARIO -->
+    <div class="col-6">
+      <h4 class="mb-2 mt-0 text-primary">Agregar pago - <strong id="providerName" class="text-dark fw-bolder"></strong> - <strong id="noteNumber" class="text-dark fw-bolder"></strong></h4>
+
+      <form id="add-payment-form" action="/payments" method="post" enctype="application/x-www-form-urlencoded" class="add-payment-form row row-cols-1 g-3 mt-2 pb-3 payment-needs-validation">
+        <h6 class="mt-1">Datos generales</h6>
+        <!-- PROVEEDOR - NO EDITABLE -->
+        <!-- <div class="col-6 valid-required">
+          <label for="providerName" class="form-label name-field-label">Proveedor*</label>
+          <input id="providerName" name="providerName" type="text" class="form-control input-valid" readonly style="border: 4px solid blue; border-radius: 4px">
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+            No editable.
+          </div>
+        </div> -->
+        <!-- MONTO A PAGAR -->
+        <div class="col valid-required">
+          <label for="paymentAmount" class="form-label fw-bold">Monto a pagar</label>
+          <div class="input-group">
+            <span class="paymentAmountInput input-group-text" id="currency-symbol">$</span>
+            <input id="paymentAmount" type="text" name="paymentAmount" class="form-control input-valid" placeholder="Monto a pagar" aria-label="paymentAmount" aria-describedby="currency-symbol">
+          </div>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa un valor correcto. (Mayor a 0).
+          </div>
+        </div>
+        <!-- FORMA DE PAGO -->
+        <div id="paymentMethodInput" class="col valid-required">
+        <label for="paymentMethodInput" class="form-label">Forma de pago</label>
+        <select id="paymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
+          <option selected disabled value="">Selecciona la forma de pago</option>
+          <!-- <option value="Efectivo">Efectivo</option>
+          <option value="Tarjeta">Tarjeta</option> -->
+          <option value="EFECTIVO">Efectivo</option>
+          <option value="TRANSFERENCIA ELECTRONICA">Transferencia electronica</option>
+          <option value="TARJETA DE DEBITO">Tarjeta de debito (TDD)</option>
+          <option value="TARJETA DE CREDITO">Tarjeta de credito (TDC)</option>
+          <option value="CHEQUE">Cheque</option>
+          <!-- <option value="NO COMPUTABLE">No Computable</option> -->
+        </select>
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor selecciona una forma de pago disponible.
+        </div>
+      </div>
+      <!-- CUENTA DE RETIRO -->
+      <div id="retirementAccountInput" class="col valid-required">
+        <label for="retirementAccountInput" class="form-label">Cuenta de retiro</label>
+        <select id="retirementAccount" name="retirementAccount" class="form-select input-valid" aria-label="payment-retirement-account">
+        <option selected disabled value="">Selecciona la cuenta de retiro</option>
+        <option value="CD01">Fondo fijo - CD01</option>
+        <option value="CD02">Caja externa - CD02</option>
+        <option value="CD03">Banamex Empresa - CD03</option>
+        <option value="CD04">Credito NU - CD04</option>
+        <option value="CD05">Credito Costco - CD05</option>
+        <option value="CD06">Credito Oro - CD06</option>
+        <option value="CD07">Credito AMEX - CD07</option>
+        <option value="CD08">Kueski - CD08</option>
+        <option value="CD09">Otro - CD09</option>
+        <option value="CD10">Por definir - CD10</option>
+        </select>
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor selecciona una cuenta de retiro correcto.
+        </div>
+      </div>
+      <!-- USUARIO -->
+      <div class="col valid-required">
+        <label for="userInput" class="form-label name-field-label fw-bold">Usuario*</label>
+        <input id="user" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor ingresa tu nombre.
+        </div>
+      </div>
+      <!-- FECHA DE PAGO -->
+      <div class="col valid-required">
+        <label for="paymentDate" class="form-label fw-bold">Fecha de pago</label>
+        <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
+        <input id="paymentDate" type="text" name="paymentDate" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="payment-date" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+        <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+          Por favor ingresa una fecha correcta.
+        </div>
+      </div>
+
+        <!-- ESTATUS - NO EDITABLE -->
+        <!-- <div class="col valid-required">
+          <label for="statusInput" class="form-label fw-bold">Estatus</label>
+          <select disabled onchange="AddPaymentApp.checkStatusRadio()" id="status" class="form-select input-valid" aria-label="supplier-status">
+            <option selected disabled value="">Selecciona el estatus</option>
+            <option value="LIQUIDADO">LIQUIDADO</option>
+            <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO</option>
+            <option value="PAGO PARCIAL">PAGO PARCIAL</option>
+          </select>
+          <input type="hidden" name="status">
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+            No editable.
+          </div>
+        </div> -->
+        <!-- MONTO PARCIAL - OPCIONAL - EN CASO DE ELEGIR ESTATUS: PAGO PARCIAL -->
+        <!-- <div id="partialAmountInput" class="col valid-required d-none">
+          <label for="partialAmount" class="form-label fw-bold">Monto parcial</label>
+          <div class="input-group">
+            <span class="partialAmountSymbol input-group-text" id="currency-symbol">$</span>
+            <input id="partialAmount" type="text" name="partialAmount" class="form-control input-valid" placeholder="Monto Parcial" aria-label="partialAmount" aria-describedby="currency-symbol">
+          </div>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa un monto parcial a pagar.
+          </div>
+        </div> -->
+
+        <!-- BOTONES -->
+        <div class="col-12">
+          <button id="submitAddPaymentBtn" type="submit" class="btn btn-primary">Aplicar pago</button>
+          <a role="button" class="btn btn-light" href="/admin">Cancelar</a>
+        </div>
+      </form>
+    </div>
+    <!-- RESUMEN COMPRA-->
+    <!-- <div class="col text-center border border-2 border-secondary-subtle p-2 rounded-1" style="--bs-border-opacity: .5;">
+      <h6 class="mt-2 mb-4">Resumen</h6>
+      <div class="row row-cols-1 gy-3">
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Recibido por:</span>
+          <span id="userPurchase" class="fs-6 mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
+          <span id="purchaseStatus" class="fs-5 mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total de la nota</span>
+          <span id="totalPurchaseAmount" class="h3 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Abonado</span>
+          <span id="totalPurchasePayed" class="h3 font-bold mb-0 text-success"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Saldo pendiente</span>
+          <span id="totalBalanceToPay" class="h3 font-bold mb-0 text-primary"></span>
+        </div>
+        <div class="col">
+          <p class="h6 font-normal text-body-secondary text-sm d-block mb-2 mt-3">
+            Fecha límite de pago: <strong id="dateToPayLimit">14 oct. 2023</strong><br><br>
+            Quedan <strong class="text-dark fw-bold" id="daysLefToToDateLimit">5</strong>&nbsp;días
+          </p>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+</div>
+  
+
+<!-- Loading spinner -->
+<!-- <div id="loading-add-purchase" class="loading-spinner loading-add-supplier d-flex justify-content-center align-items-center text-center d-none">
+  <div>
+    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>Agregando compra...</div>
+  </div>
+</div> -->
+
+<%- include('../../partials/scripts'); %>
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+  if (nodeEnv === 'local') {
+    console.log(apiUrl)
+  }
+
+  // Get data from server
+  let onePurchase = '<%- jsonResponse %>'
+  onePurchase = onePurchase.replace(/\s+/g," ")
+  // parse data from server
+  let {purchaseByNoteNumber, pagosDeLaNota} = JSON.parse(onePurchase)
+  console.log(purchaseByNoteNumber, pagosDeLaNota)
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+
+  // BUILD VIEW
+  const AddPaymentApp = {}
+
+  AddPaymentApp.onLoad = function() {
+   
+    AddPaymentApp.loadingSpinner = document.getElementById('loading-spinner-add')
+    AddPaymentApp.loadingSpinnerMsg = document.getElementById('spinner-add-message')
+    // AddPaymentApp.showActivityTable = document.getElementById('showActivityTable')
+
+    // Set FORM VARS
+    AddPaymentApp.noteNumberEl = document.getElementById('noteNumber')
+    AddPaymentApp.providerName = document.getElementById('providerName')
+    AddPaymentApp.type = document.getElementById('type')
+    AddPaymentApp.paymentAmount = document.getElementById('paymentAmount')
+    AddPaymentApp.paymentMethod = document.getElementById('paymentMethod')
+    AddPaymentApp.retirementAccount = document.getElementById('retirementAccount')
+    AddPaymentApp.user = document.getElementById('user')
+    AddPaymentApp.status = document.getElementById('status')
+    AddPaymentApp.paymentDate = document.getElementById('paymentDate')
+
+    
+    // SET OTHER ELEMENT VARS --------------------------------
+    // AddPaymentApp.totalPurchaseAmount = document.getElementById('totalPurchaseAmount')
+    // AddPaymentApp.totalPurchasePayed = document.getElementById('totalPurchasePayed')
+    // AddPaymentApp.totalBalanceToPay = document.getElementById('totalBalanceToPay')
+    // AddPaymentApp.dateToPayLimit = document.getElementById('dateToPayLimit')
+    // AddPaymentApp.daysLeftToDateLimit = document.getElementById('daysLefToToDateLimit')
+    // AddPaymentApp.userPurchase = document.getElementById('userPurchase')
+    // AddPaymentApp.purchaseStatus = document.getElementById('purchaseStatus')
+
+    // form
+    AddPaymentApp.form = document.getElementById('add-payment-form')
+    AddPaymentApp.submitAddPaymentBtn = document.getElementById('submitAddPaymentBtn')
+
+    AddPaymentApp.form.addEventListener('submit', AddPaymentApp.onSubmit);
+    AddPaymentApp.setInitialValues()
+    // AddPaymentApp.getActivityPaymentsPurchaseTable()
+
+  }
+
+  AddPaymentApp.setInitialValues = () => {
+
+    // if (purchaseById.Estatus === 'PAGO PARCIAL' || purchaseById.Estatus === 'PENDIENTE DE PAGO') {
+    //   // SET USER
+    //   AddPaymentApp.userPurchase.textContent = purchaseById.Usuario
+    //   AddPaymentApp.purchaseStatus.textContent = purchaseById.Estatus
+
+    //   // set date to pay
+    //   const dateToPayMoment = moment(new Date(purchaseById['Fecha a Pagar'])).format('YYYY-MM-DD')
+    //   AddPaymentApp.dateToPayInput.classList.remove('d-none')
+    //   AddPaymentApp.dateToPayRecord.value = dateToPayMoment
+    //   AddPaymentApp.dateToPayLimit.textContent = dateToPayMoment
+    //   // asignar dias faltantes para limite de pago
+    //   const diffDays = moment(dateToPayMoment).diff(moment().format('YYYY-MM-DD'), 'days')
+    //   AddPaymentApp.daysLeftToDateLimit.textContent = diffDays
+    //   // asignar total de nota, abonado y saldo pendiente
+    //   AddPaymentApp.totalPurchaseAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+    //   .format(parseFloat(purchaseById['Monto Total'].split('$')[1].trim().split(',').join('')))
+    //   AddPaymentApp.totalPurchasePayed.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+    //   .format(purchaseById.TotalPagado)
+    //   AddPaymentApp.totalBalanceToPay.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+    //   .format(purchaseById.Saldo)
+    // }
+
+
+    AddPaymentApp.noteNumberEl.textContent = '#' + purchaseByNoteNumber['No Nota']
+    AddPaymentApp.providerName.textContent = purchaseByNoteNumber.Proveedor
+    AddPaymentApp.type.value = purchaseByNoteNumber.Tipo
+    // AddPaymentApp.user.value = purchaseById.Usuario
+    AddPaymentApp.dateRecord.value = moment(new Date(purchaseByNoteNumber['Fecha Recibido'])).format('YYYY-MM-DD')
+    AddPaymentApp.totalAmount.value = purchaseByNoteNumber['Monto Total'].split('$')[1].trim().split(',').join('')
+    // AddPaymentApp.status.value = purchaseById.Estatus
+    AddPaymentApp.purchaseDetails.value = purchaseByNoteNumber.Detalles
+
+    // Set provider names to option select field
+    // for (value in providerNames) {
+    //   var option = document.createElement("option");
+
+    //   option.text = providerNames[value];
+    //   option.value = providerNames[value];
+    //   AddPaymentApp.selectProviderNames.add(option);
+    // }
+  }
+
+  // CONSTRUIR TABLA DE PAGOS DE LA COMPRA
+  AddPaymentApp.getActivityPaymentsPurchaseTable = async () => {
+
+    // DATATABLE ------------
+    let activityPaymentsPurchaseTable = $('#activityPaymentsPurchaseTable').DataTable({
+      responsive: true,
+      fixedHeader: true,
+      paging: false,
+      searching: false,
+      headerCallback: function(thead, data, start, end, display) {
+        $(thead).find('th').css('border-bottom', 'none');
+      },
+      data: pagosDeLaNota[0],
+      stripeClasses: [ 'strip1', 'strip2' ],
+      columns: [
+          { title: 'Folio', data: 'Folio', orderable: true, searchable: true, width: '15%'},
+          { title: 'Monto', data: 'Monto', orderable: false, searchable: true, width: '10%'},
+          { title: 'Fecha de pago', className: 'text-center', data: 'FechaDePago', orderable: true, searchable: true, width: '10%' },
+          { title: 'Forma de pago', className: 'text-center', data: 'FormaDePago', width: '20%' },
+          { title: 'Cuenta', data: 'CuentaDeDinero', orderable: false, searchable: true, width: '5%' }, //5
+          { title: 'Comprobante', data: 'Comprobante', orderable: false, searchable: false, visible: false },
+          { title: 'Usuario', data: 'Usuario', orderable: false, searchable: true },
+          // { title: 'Eliminar', width: '5%', className: 'text-center', data: null, defaultContent: `<a href="#" class="trigger-btn btn btn-sm btn-danger delete-payment-purchase-button">
+          //       <i class="bi bi-trash3"></i>
+          //     </a>` }
+      ],
+      columnDefs: [
+        { className: "fw-bold", "targets": 0 },
+        // { targets: 7, width: "5%", className: "text-center",
+        //   render: function (data, type, row, meta) {
+        //       // console.log(row.Estatus)
+        //       return 
+        //       `<a href="#" class="trigger-btn btn btn-sm btn-danger delete-payment-purchase-button">
+        //         <i class="bi bi-trash3"></i>
+        //       </a>`
+        //     } 
+        // },
+      ],
+      order: [[2, 'asc']],
+      select: {
+        style: 'multiple',
+        selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3)'
+      },
+      buttons: [
+        { 
+          extend: 'pdfHtml5',
+          orientation: 'landscape',
+          pageSize: 'LEGAL',
+          messageTop: 'Este documento es informativo.',
+          messageBottom: datetimeExportText,
+          text: '<i class="bi bi-filetype-pdf"></i>', 
+          className: 'btn btn-dark',
+          footer: true,
+          title: 'Lista de pagos',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        { extend: 'copy', 
+          text: '<i class="bi bi-clipboard-check"></i>', 
+          className: 'btn btn-dark',
+          title: 'Lista de pagos',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+      ],
+      "lengthChange": false,
+      "language": {
+        "buttons": {
+          copyTitle: 'Datos copiados al portapapeles',
+          copySuccess: {
+              _: "%d productos copiados al portapapeles"
+          },
+        },
+        "decimal":        "",
+        "emptyTable":     "No se encontraron datos",
+        "info":           "Mostrando _START_ a _END_ de _TOTAL_ pagos",
+        "infoEmpty":      "Mostrando 0 a 0 de 0 entradas",
+        "infoFiltered":   "(Busqueda de _MAX_ pagos en total)",
+        "infoPostFix":    "",
+        "thousands":      ",",
+        "lengthMenu":     "Mostrar _MENU_ pagos",
+        "loadingRecords": "Cargando...",
+        "processing":     "",
+        "search":         "Buscar:",
+        "zeroRecords":    "No se encontraron pagos",
+        "aria": {
+            "sortAscending":  ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        }
+      },
+      // createdRow: function( row, data, dataIndex ) {
+      //   details = data[10].toString()
+      //   if (details.includes('NU') || details.includes('CREDITO NU') || details.includes('TARJETA NU')) {
+      //     $(row).css('background-color', '#E2B6FF');
+      //   }
+      // },
+      // drawCallback: function() {
+      //   $('#activityPaymentsPurchaseTable_paginate ul.pagination').addClass("pagination-sm");
+      // }
+    });
+
+    activityPaymentsPurchaseTable.buttons().container().appendTo('#buttons-wrapper-payments-purchase');
+  }
+
+  // SUBMIT FORM - CREATE NEW PURCHASE
+  AddPaymentApp.onSubmit = async (e) => {
+    e.preventDefault()
+    AddPaymentApp.clearInputValids()
+    // show spinners
+    AddPaymentApp.loadingSpinnerMsg.textContent = 'Espera un momento...'
+    AddPaymentApp.loadingSpinner.classList.remove('d-none')
+
+    // HTML FORM POST DATA
+    const fd = new FormData(AddPaymentApp.form)
+    fd.append('status', purchaseByNoteNumber.Estatus)
+    fd.append('saldo', purchaseByNoteNumber.Saldo)
+    fd.append('noteNumber', purchaseByNoteNumber['No Nota'])
+
+    const urlEncoded = new URLSearchParams(fd).toString()
+    console.log(urlEncoded)
+
+    const response = await fetch(`${apiUrl}/payments`, {
+      method: 'POST',
+      body: urlEncoded,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    let result = await response.json()
+    console.log(response.status)
+      if (response.status === 422) { // VALIDATION ERROR
+        AddPaymentApp.loadingSpinner.classList.add('d-none')
+
+        let inputEls = AddPaymentApp.form.getElementsByClassName('input-valid')
+        // console.log(result)
+        let errors = result.errors
+        // console.log(inputEls)
+
+        Array.from(inputEls).forEach(inputValid => {
+          errors.forEach((err) => {
+            let parentEl = inputValid.parentElement
+            let invalidMsg = parentEl.classList.contains('input-group') ? 
+            parentEl.parentElement.getElementsByClassName('invalid-message')[0] : 
+            parentEl.getElementsByClassName('invalid-message')[0]
+            // let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+            // console.log(invalidMsg)
+            if (inputValid.name === err.param) {
+              console.log(err)
+              invalidMsg.textContent = err.msg
+              invalidMsg.classList.remove('d-none')
+            }
+          })
+          
+        })
+
+
+      } else if (response.status === 400 || response.status === 404) { // CLIENT ERROR
+        AddPaymentApp.loadingSpinner.classList.add('d-none')
+        let failureMessageAlert = document.getElementById('failure-message')
+        failureMessageAlert.classList.remove('d-none')
+        failureMessageAlert.textContent = result.message
+
+        setTimeout(() => {
+          failureMessageAlert.classList.add('d-none')
+        }, "4000");
+      } else if (response.status === 201 || response.status === 200) { // SUCCESS RESPONSE
+        AddPaymentApp.loadingSpinner.classList.add('d-none')
+        let successMessageAlert = document.getElementById('success-message')
+        successMessageAlert.textContent = result.message
+        successMessageAlert.classList.remove('d-none')
+
+        setTimeout(() => {
+          successMessageAlert.classList.add('d-none')
+          AddPaymentApp.submitAddPaymentBtn.disabled = true
+          // Simulate an HTTP redirect:
+          window.location.replace(`${apiUrl}/admin`);
+        }, "4000");
+      }
+  }
+
+  // Clear invalid message
+  AddPaymentApp.clearInputValids = () => {
+    let inputEls = AddPaymentApp.form.getElementsByClassName('input-valid')
+
+    Array.from(inputEls).forEach(inputValid => {
+      let invalidMsg = inputValid.closest('.valid-required').getElementsByClassName('invalid-message')[0]
+      console.log(invalidMsg)
+      if (!invalidMsg.classList.contains('d-none')) {
+        invalidMsg.classList.add('d-none')
+      }
+    })
+  }
+
+  AddPaymentApp.onLoad()
+  
+
+</script>

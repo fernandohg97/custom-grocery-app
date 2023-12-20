@@ -2,7 +2,7 @@
 module.exports = {
   getAllProductsPageParams: (req, res, next) => {
     // Current API url called
-    res.locals.apiUrl = req.originalUrl
+    res.locals.apiUrl = req.baseUrl
 
     // Declare response variables.
     res.locals.resultsPerPage = req.query.page_size || 30

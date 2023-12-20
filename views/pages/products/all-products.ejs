@@ -1,0 +1,339 @@
+<%- include('../../partials/spinner'); %>
+
+<!-- success message -->
+<div id="success-message" class="alert alert-success d-none text-center w-75 fs-6" role="alert">Producto exitoso</div>
+<!-- failure message -->
+<div id="failure-message" class="alert alert-danger d-none text-center w-75 fs-6" role="alert"></div>
+
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div>
+        <h3 class="">Productos</h3>
+        <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
+      </div>
+    </div>
+  </div>
+</div>
+	
+
+<!-- TABLE -->
+<div class="table-responsive mb-1">
+  <div id="buttons-wrapper-POS-products" class="mb-2 text-end"></div>
+  <table id="POSproductsTable" class="compact hover" width="100%" style="font-size: 12px;">
+  </table>
+</div>
+
+<%- include('../../partials/scripts'); %> 
+
+<script>
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+  let productsData = '<%- jsonResponse %>'
+
+
+
+  productsData = productsData.replace(/\s+/g," ")
+
+
+  let jsonProducts = JSON.parse(productsData)
+  console.log(jsonProducts)
+  // console.log(jsonPurchases.purchasesData)
+  // if (jsonProductos.productsData.length > 0) {
+  //   loadproductsData()
+  // }
+
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+  const AllProductsApp = {}
+
+  AllProductsApp.onLoad = () => {
+
+    AllProductsApp.loadingSpinner = document.getElementById('loading-spinner')
+    AllProductsApp.loadingSpinnerMsg = document.getElementById('spinner-message')
+
+    // CUSTOM VARS BASIC
+    AllProductsApp.productsWithMargin
+    // $(document).ready(function(){
+    //   AllProductsApp.deleteForm = document.getElementById('delete-supplier-form');
+
+    // })
+
+    // AllProductsApp.removeButton = document.getElementById('deleteRow')
+
+    // AllProductsApp.providerToRemove = undefined
+    // AllProductsApp.rowDataTableToRemove = undefined
+    // AllProductsApp.providersTable = undefined
+    AllProductsApp.sanitizeProductMargins()
+    console.log(AllProductsApp.productsWithMargin)
+    AllProductsApp.getDataTable()
+    
+
+    // AllProductsApp.providerNameModal = document.getElementById('providerNameDeleteModal')
+    // AllProductsApp.dataIdProvider = AllProductsApp.removeButton.dataset.idProvider
+    // console.log(AllProductsApp.providerNameModal)
+
+  }
+
+  // CALCULAR MARGENES DE PRODUCTOS
+  AllProductsApp.sanitizeProductMargins = () => {
+    // FILTER PRODUCTS TO DATATABLE
+    AllProductsApp.productsWithMargin = jsonProducts.products.reduce((names, product) => {
+        if (!product.has_variants) {
+          names.push([
+            product.id,
+            product.name,
+            product.barcode,
+            product.sku, 
+            product.product_outlets.length > 0 ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(product.product_outlets[0].cost_price) : 'n/a',
+            product.product_outlets.length > 0 ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(product.product_outlets[0].price_inc_tax) : 'n/a',
+            // product.product_outlets.length > 0 ? product.product_outlets[0].cost_price : 0,
+            // product.product_outlets.length > 0 ? product.product_outlets[0].price_inc_tax : 0,
+            product.product_outlets.length > 0 ? ((product.product_outlets[0].price_inc_tax - product.product_outlets[0].cost_price) * 100) / product.product_outlets[0].cost_price : 'n/a',
+            product.product_outlets.length > 0 ? product.product_outlets[0].tax_name : 'n/a',
+            product.product_outlets.length > 0 ? product.product_outlets[0].reorder_level : 0,
+            product.product_outlets.length > 0 ? product.product_outlets[0].reorder_qty : 0,
+          ])
+        }
+        return names
+      }, [])
+
+      let sumCost = 0;
+      let sumPrice = 0;
+      let averageProductCost = 0
+      let averageProductPrice = 0
+      let averageProductMargin
+
+      // MAP AVERAGA PRODUCTS DATA
+      jsonProducts.products.forEach(product => {
+        if (!product.has_variants && product.isActive) {
+          sumCost += product.product_outlets.length > 0 ? product.product_outlets[0].cost_price : null
+          sumPrice += product.product_outlets.length > 0 ? product.product_outlets[0].price_inc_tax : null
+        }
+      })
+
+      averageProductCost = sumCost / jsonProducts.totalCount
+      averageProductPrice = sumPrice / jsonProducts.totalCount
+      // (avgPrice - avgCost) / avgCost
+      averageProductMargin = (averageProductPrice - averageProductCost) / averageProductCost
+      averageProductMargin = Math.round((averageProductMargin + Number.EPSILON) * 100) / 100
+
+      // // STOP LOADING 
+      // document.getElementById('loading-supplier-products').classList.add('d-none')
+      // //set name provider
+      // document.getElementById('supplierName').textContent = `Proveedor: ${params.supplierName.toString().toUpperCase()}`
+      // // Set total count
+      // document.getElementById('total-products').textContent = `${res.totalCount} productos en total`
+      // set average product margin
+      // let spanAvgProductMargin = document.getElementById('averageProductMargin')
+      // let avgMarginColorTextClass = averageProductMargin < 0.35 ? 'text-bg-danger' : 'text-bg-dark'
+      // spanAvgProductMargin.classList.add(avgMarginColorTextClass)
+      // spanAvgProductMargin.textContent = (averageProductMargin * 100).toFixed(2).concat('%')
+  }
+
+  // OBTENER TABLA DE PRODUCTOS
+  AllProductsApp.getDataTable = () => {
+
+    const POSproductsTable = $('#POSproductsTable').DataTable({
+          headerCallback: function(thead, data, start, end, display) {
+              $(thead).find('th').css('border-bottom', 'none');
+            },
+          fixedHeader: true,
+          paging: true,
+          data: AllProductsApp.productsWithMargin,
+          // stripeClasses: [ 'strip1', 'strip2' ],
+          responsive: true,
+          columns: [
+            { title: 'ID', className: 'noVis' },
+            { title: 'Nombre', className: 'noVis fw-bold' },
+            { title: 'Codigo', visible: true },
+            { title: 'SKU', visible: true },
+            { title: 'Costo', className: 'fw-bold' },
+            { title: 'Precio' }, //5
+            { title: 'Margen', className: 'noVis fw-bold' },
+            { title: 'Impuesto' },
+            // { title: 'Ver' },
+          ],
+          columnDefs: [{
+            targets: 6, render: function (data) {
+            // return `${Number(data.toFixed(2))}%`
+            return new Intl.NumberFormat('default', {
+              style: 'percent',
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(data / 100);
+          }, createdCell: function (td, cellData, rowData, row, col) {
+              if (cellData === Infinity) {
+                $(td).html(`<span class="badge badge-danger">Coste cero</span>`)
+              } else if (isNaN(cellData)) {
+                $(td).html(`<span class="badge badge-danger">Revisar</span>`)
+              }
+            },
+          }],
+          order: [[1, 'asc']],
+          select: {
+            style: 'multiple',
+            selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6), tr>td:nth-child(7)'
+          },
+          // dom: 'Bfrtip',
+          buttons: [
+            {
+              extend: 'selectAll',
+              text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+              className: 'btn btn-sm btn-dark'
+            },
+            {
+              extend: 'selectNone',
+              text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+              className: 'btn btn-sm btn-dark'
+            },
+            {
+              extend: 'colvis',
+              text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+              // titleAttr: 'Show/Hide',
+              columns: ':not(.noVis)',
+              collectionLayout: 'fixed columns',
+              collectionTitle: 'Seleccionar columnas a ver'
+            },
+            { 
+              extend: 'pdfHtml5',
+              orientation: 'landscape',
+              pageSize: 'LEGAL',
+              messageTop: 'Este documento es informativo.',
+              messageBottom: datetimeExportText,
+              text: '<i class="bi bi-filetype-pdf"></i>', 
+              className: 'btn btn-dark',
+              title: 'Lista de proveedores',
+              exportOptions: {
+                columns: ':visible',
+                modifier: {
+                  selected: true
+                }
+              },
+            },
+            { extend: 'copy', 
+              text: '<i class="bi bi-clipboard-check"></i>', 
+              className: 'btn btn-dark',
+              title: 'Lista de proveedores',
+              exportOptions: {
+                columns: ':visible',
+                modifier: {
+                  selected: true
+                }
+              },
+            }
+            // { 
+            //   extend: 'csv', 
+            //   text: '<i class="bi bi-filetype-csv"></i>', 
+            //   className: 'btn btn-dark',
+            //   columns: ':visible',
+            // },
+          ],
+          "lengthMenu": [ 30, 50, 100 ],
+          "pageLength": 30,
+          "language": {
+            "buttons": {
+              copyTitle: 'Datos copiados al portapapeles',
+              copySuccess: {
+                  _: "%d productos copiados al portapapeles",
+              colvis: 'Ver/ocultar columnas'
+              },
+            },
+            "decimal":        "",
+            "emptyTable":     "No se encontraron datos",
+            "info":           "Mostrando _START_ a _END_ de _TOTAL_ proveedores",
+            "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+            "infoFiltered":   "(Busqueda de _MAX_ proveedores en total)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "Mostrar _MENU_ proveedores",
+            "loadingRecords": "Cargando...",
+            "processing":     "",
+            "search":         "Buscar:",
+            "zeroRecords":    "No se encontraron proveedores",
+            "paginate": {
+                "first":      "Primero",
+                "last":       "Ultimo",
+                "next":       "Siguiente",
+                "previous":   "Atrás"
+            },
+            "aria": {
+                "sortAscending":  ": activate to sort column ascending",
+                "sortDescending": ": activate to sort column descending"
+            },
+          },
+          // createdRow: function( row, data, dataIndex ) {
+          //   let isFactura = data[6]
+          //   console.log(data[6])
+          //   console.log(dataIndex)
+          //   if (isFactura == true) {
+          //     $(row.querySelector).css('color', '#E2B6FF')
+          //   } else {
+          //     $(row[0]).css('color', '#e6b8af');
+          //   }
+          // },
+      });
+    
+    // AllProductsApp.providersTable = $('#providersTable')
+    POSproductsTable.buttons().container().appendTo('#buttons-wrapper-POS-products');  
+  }
+
+  // AllProductsApp.deleteRow = () => {
+  //   // e.preventDefault
+  //   console.log('delete button')
+  //   // console.log($('#providersTable').data())
+  //   console.log(AllProductsApp.providerToRemove)
+  //   console.log(AllProductsApp.rowDataTableToRemove[0])
+  //   // if (!$.fn.DataTable.isDataTable('#providersTable') ) {
+  //   //   $('#providersTable').DataTable()
+  //   // }
+  //   $('#providersTable').DataTable()
+  //     .row( $(AllProductsApp.rowDataTableToRemove).parents('tr'))
+  //     .remove()
+  //     .draw();
+  //   // AllProductsApp.loadingSpinner.classList.remove('d-none')
+  //   // let successMessageAlert = document.getElementById('success-message')
+  //   // successMessageAlert.textContent = 'Proveedor eliminado correctamente!'
+  //   // successMessageAlert.classList.remove('d-none')
+
+  //   // setTimeout(() => {
+  //   //   successMessageAlert.classList.add('d-none')
+  //   //   hideConfirmationDeleteModal()
+  //   // }, "3000");
+
+  //   // AllProductsApp.providersTable
+  //   //   .row( AllProductsApp.rowDataTableToRemove )
+  //   //   .remove()
+  //   //   .draw();
+  //   // e.preventDefault()
+  //   // const response = await fetch(`${apiUrl}/suppliers/${Number(AllProductsApp.providerToRemove.ID)}`, { method: 'DELETE' })
+  //   // const result = await response.json()
+  //   // console.log(result)
+  //   // // check for error response
+  //   // if (response.status >= 400 && response.status <= 404) {
+  //   //   AllProductsApp.confirmationDeleteModal.hide()
+
+  //   //   let failureMessageAlert = document.getElementById('failure-message')
+  //   //   failureMessageAlert.classList.remove('d-none')
+  //   //   failureMessageAlert.textContent = result.message
+
+  //   //   return setTimeout(() => {
+  //   //     failureMessageAlert.classList.add('d-none')
+  //   //   }, "4000");
+  //   // }
+  //   // AllProductsApp.confirmationDeleteModal.hide()
+
+  //   // let successMessageAlert = document.getElementById('success-message')
+  //   // successMessageAlert.classList.remove('d-none')
+  //   // successMessageAlert.textContent = result.message
+
+  //   // setTimeout(() => {
+  //   //   successMessageAlert.classList.add('d-none')
+  //   // }, "4000")
+
+  // }
+    AllProductsApp.onLoad()
+</script>
+

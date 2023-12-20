@@ -1,0 +1,505 @@
+<%- include('../../partials/spinner'); %>
+
+<div class="container-lg mb-5">
+  <!-- success message -->
+  <div id="success-message" class="alert alert-success d-none d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+  <!-- failure message -->
+  <div id="failure-message" class="alert alert-danger d-none d-flex text-center align-items-center w-75 fs-6" role="alert"></div>
+
+  <h3 class="mb-2 mt-0 text-primary">Editar compra - <strong id="providerName" class="text-dark fw-bolder"></strong> - <strong id="noteNumber" class="text-dark fw-bolder"></strong></h3>
+  <!-- <p class="mb-2 fw-bold" style="font-size: 13px;">No. Nota: <span id="noteNumber" style="width: 10%;" class="placeholder"></span></p> -->
+
+  <div class="row">
+    <!-- FORMULARIO -->
+    <div class="col">
+      <form id="edit-purchase-form" action="/purchases?_method=PUT" method="post" enctype="application/x-www-form-urlencoded" class="edit-purchase-form row row-cols-1 g-3 mt-2 pb-3 purchase-needs-validation">
+        <h6 class="mt-1">Datos generales</h6>
+        <!-- PROVEEDOR - NO EDITABLE -->
+        <!-- <div class="col-6 valid-required">
+          <label for="providerName" class="form-label name-field-label">Proveedor*</label>
+          <input id="providerName" name="providerName" type="text" class="form-control input-valid" readonly style="border: 4px solid blue; border-radius: 4px">
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+            No editable.
+          </div>
+        </div> -->
+        <!-- TIPO -->
+        <div class="col valid-required mt-1">
+          <label for="typeInput" class="form-label fw-bold">Tipo de compra</label>
+          <select id="type" name="type" class="form-select input-valid" aria-label="type-record">
+            <option selected disabled value="">Selecciona el tipo</option>
+            <option value="Mercancia">Mercancia</option>
+            <option value="Externa">Externa</option>
+            <option value="Insumos">Insumos</option>
+          </select>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor selecciona el tipo de registro correcto.
+          </div>
+        </div>
+        <!-- USUARIO - NO EDITABLE -->
+        <!-- <div class="col valid-required">
+          <label for="userInput" class="form-label name-field-label fw-bold">Usuario*</label>
+          <input id="user" name="user" type="text" class="form-control input-valid" readonly>
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+            No editable.
+          </div>
+        </div> -->
+        <!-- Fecha de visita -->
+        <div class="col valid-required">
+          <label for="dateRecord" class="form-label fw-bold">Fecha de visita</label>
+          <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
+          <input id="dateRecord" type="text" name="dateRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa una fecha correcta.
+          </div>
+        </div>
+        <!-- MONTO TOTAL -->
+        <div class="col valid-required">
+          <label for="totalAmount" class="form-label fw-bold">Monto total</label>
+          <div class="input-group">
+            <span class="totalAmountInput input-group-text" id="currency-symbol">$</span>
+            <input id="totalAmount" type="text" name="totalAmount" class="form-control input-valid" placeholder="Monto Total" aria-label="totalAmount" aria-describedby="currency-symbol">
+          </div>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa un valor correcto. (Mayor a 0).
+          </div>
+        </div>
+        <!-- FECHA A PAGAR -->
+        <div id="dateToPayInput" class="col valid-required d-none">
+          <label for="dateToPayRecord" class="form-label">Fecha a pagar</label>
+          <input id="dateToPayRecord" name="dateToPayRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor la fecha a pagar debe ser mayor a la fecha de visita.
+          </div>
+        </div>
+        <!-- ESTATUS - NO EDITABLE -->
+        <!-- <div class="col valid-required">
+          <label for="statusInput" class="form-label fw-bold">Estatus</label>
+          <select disabled onchange="EditPurchaseApp.checkStatusRadio()" id="status" class="form-select input-valid" aria-label="supplier-status">
+            <option selected disabled value="">Selecciona el estatus</option>
+            <option value="LIQUIDADO">LIQUIDADO</option>
+            <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO</option>
+            <option value="PAGO PARCIAL">PAGO PARCIAL</option>
+          </select>
+          <input type="hidden" name="status">
+          <div id="textHelp" style="font-size: 12px;" class="form-text">
+            No editable.
+          </div>
+        </div> -->
+        <!-- MONTO PARCIAL - OPCIONAL - EN CASO DE ELEGIR ESTATUS: PAGO PARCIAL -->
+        <!-- <div id="partialAmountInput" class="col valid-required d-none">
+          <label for="partialAmount" class="form-label fw-bold">Monto parcial</label>
+          <div class="input-group">
+            <span class="partialAmountSymbol input-group-text" id="currency-symbol">$</span>
+            <input id="partialAmount" type="text" name="partialAmount" class="form-control input-valid" placeholder="Monto Parcial" aria-label="partialAmount" aria-describedby="currency-symbol">
+          </div>
+          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+            Por favor ingresa un monto parcial a pagar.
+          </div>
+        </div> -->
+
+        <!-- DETALLES -->
+        <div class="row">
+          <div class="col-12 mt-2">
+            <label for="purchaseDetails" class="form-label fw-bold">Detalles adicionales</label>
+            <textarea style="font-size: 14px;" name="purchaseDetails" class="form-control" id="purchaseDetails" rows="4" placeholder="Escribe algo importante sobre esta compra"></textarea>
+          </div>
+        </div>
+        <!-- BOTONES -->
+        <div class="col-12">
+          <button id="submitUpdatePurchaseBtn" type="submit" class="btn btn-primary">Guardar</button>
+          <a role="button" class="btn btn-light" href="/admin">Cancelar</a>
+        </div>
+      </form>
+    </div>
+    <!-- RESUMEN COMPRA-->
+    <div class="col text-center border border-2 border-secondary-subtle p-2 rounded-1" style="--bs-border-opacity: .5;">
+      <h6 class="mt-2 mb-4">Resumen</h6>
+      <div class="row row-cols-1 gy-3">
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Recibido por:</span>
+          <span id="userPurchase" class="fs-6 mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
+          <span id="purchaseStatus" class="fs-5 mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total de la nota</span>
+          <span id="totalPurchaseAmount" class="h3 font-bold mb-0"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Abonado</span>
+          <span id="totalPurchasePayed" class="h3 font-bold mb-0 text-success"></span>
+        </div>
+        <div class="col">
+          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Saldo pendiente</span>
+          <span id="totalBalanceToPay" class="h3 font-bold mb-0 text-primary"></span>
+        </div>
+        <div class="col">
+          <p class="h6 font-normal text-body-secondary text-sm d-block mb-2 mt-3">
+            Fecha límite de pago: <strong id="dateToPayLimit">14 oct. 2023</strong><br><br>
+            Quedan <strong class="text-dark fw-bold" id="daysLefToToDateLimit">5</strong>&nbsp;días
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- 2DA SECCION ACTIVIDAD DE PAGOS - VISTA EN TABLA-->
+  <div class="row justify-content-center align-items-end bg-light mt-2 mb-5">
+    <div class="col-12 p-1">
+      <p class="text-start d-inline-flex py-2 fs-4 fw-medium">
+        Actividad
+        <button id="showActivityTable" type="button" class="ml-3 btn btn-sm btn-link text-dark" data-bs-toggle="collapse" data-bs-target="#activityPaymentsPurchaseTableWrapper" aria-expanded="false" aria-controls="activityPaymentsPurchaseTableWrapper">Mostrar</button>
+      </p>
+    </div>
+    <div id="activityPaymentsPurchaseTableWrapper" class="collapse col-12 table-responsive mb-4">
+      <div class="row justify-content-start text-start">
+        <div class="col-12">
+          <div id="buttons-wrapper-payments-purchase" class="mb-1"></div><br>
+          <!-- <div id="invalid-message-money-check" class="invalid-message-money-check text-start d-none mt-1" style="font-size: 12px; color: red;">
+            Por favor selecciona mas de 1 cuenta por pagar.
+          </div> -->
+        </div>
+      </div>
+      
+      <table id="activityPaymentsPurchaseTable" class="display compact hover" width="100%" style="font-size: 13px;">
+        <!-- <tfoot>
+          <tr>
+            <th colspan="3" class="text-start">Total:</th>
+            <th></th>
+          </tr>
+        </tfoot> -->
+      </table>
+    </div>
+  </div>
+</div>
+  
+
+<!-- Loading spinner -->
+<!-- <div id="loading-add-purchase" class="loading-spinner loading-add-supplier d-flex justify-content-center align-items-center text-center d-none">
+  <div>
+    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>Agregando compra...</div>
+  </div>
+</div> -->
+
+<%- include('../../partials/scripts'); %>
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+  if (nodeEnv === 'local') {
+    console.log(apiUrl)
+  }
+
+  // Get data from server
+  let onePurchase = '<%- jsonResponse %>'
+  onePurchase = onePurchase.replace(/\s+/g," ")
+  // parse data from server
+  let {purchaseById, pagosDeLaNota} = JSON.parse(onePurchase)
+  console.log(purchaseById, pagosDeLaNota)
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+
+
+  // BUILD VIEW
+  const EditPurchaseApp = {}
+
+  EditPurchaseApp.onLoad = function() {
+   
+    EditPurchaseApp.loadingSpinner = document.getElementById('loading-spinner-update')
+    EditPurchaseApp.loadingSpinnerMsg = document.getElementById('spinner-update-message')
+    EditPurchaseApp.showActivityTable = document.getElementById('showActivityTable')
+
+    // Set FORM VARS
+    EditPurchaseApp.noteNumberEl = document.getElementById('noteNumber')
+    EditPurchaseApp.providerName = document.getElementById('providerName')
+    EditPurchaseApp.type = document.getElementById('type')
+    // EditPurchaseApp.user = document.getElementById('user')
+    EditPurchaseApp.dateRecord = document.getElementById('dateRecord')
+    EditPurchaseApp.totalAmount = document.getElementById('totalAmount')
+    EditPurchaseApp.status = document.getElementById('status')
+    EditPurchaseApp.paymentMethod = document.getElementById('paymentMethod')
+    EditPurchaseApp.retirementAccount = document.getElementById('retirementAccount')
+    EditPurchaseApp.dateToPayRecord = document.getElementById('dateToPayRecord')
+    EditPurchaseApp.purchaseDetails = document.getElementById('purchaseDetails')
+    // inputs
+    EditPurchaseApp.partialAmountInput = document.getElementById('partialAmountInput')
+    EditPurchaseApp.paymentMethodInput = document.getElementById('paymentMethodInput')
+    EditPurchaseApp.dateToPayInput = document.getElementById('dateToPayInput')
+    EditPurchaseApp.dateRecord = document.getElementById('dateRecord')
+    EditPurchaseApp.dateToPayRecord = document.getElementById('dateToPayRecord')
+    EditPurchaseApp.retirementAccountInput = document.getElementById('retirementAccountInput')
+    
+    // SET OTHER ELEMENT VARS --------------------------------
+    EditPurchaseApp.totalPurchaseAmount = document.getElementById('totalPurchaseAmount')
+    EditPurchaseApp.totalPurchasePayed = document.getElementById('totalPurchasePayed')
+    EditPurchaseApp.totalBalanceToPay = document.getElementById('totalBalanceToPay')
+    EditPurchaseApp.dateToPayLimit = document.getElementById('dateToPayLimit')
+    EditPurchaseApp.daysLeftToDateLimit = document.getElementById('daysLefToToDateLimit')
+    EditPurchaseApp.userPurchase = document.getElementById('userPurchase')
+    EditPurchaseApp.purchaseStatus = document.getElementById('purchaseStatus')
+
+    // form
+    EditPurchaseApp.form = document.getElementById('edit-purchase-form')
+    EditPurchaseApp.submitUpdatePurchaseBtn = document.getElementById('submitUpdatePurchaseBtn')
+
+    EditPurchaseApp.form.addEventListener('submit', EditPurchaseApp.onSubmit);
+    EditPurchaseApp.setInitialValues()
+    EditPurchaseApp.getActivityPaymentsPurchaseTable()
+
+  }
+
+  EditPurchaseApp.setInitialValues = () => {
+
+    if (purchaseById.Estatus === 'PAGO PARCIAL' || purchaseById.Estatus === 'PENDIENTE DE PAGO') {
+      // SET USER
+      EditPurchaseApp.userPurchase.textContent = purchaseById.Usuario
+      EditPurchaseApp.purchaseStatus.textContent = purchaseById.Estatus
+
+      // set date to pay
+      const dateToPayMoment = moment(new Date(purchaseById['Fecha a Pagar'])).format('YYYY-MM-DD')
+      EditPurchaseApp.dateToPayInput.classList.remove('d-none')
+      EditPurchaseApp.dateToPayRecord.value = dateToPayMoment
+      EditPurchaseApp.dateToPayLimit.textContent = dateToPayMoment
+      // asignar dias faltantes para limite de pago
+      const diffDays = moment(dateToPayMoment).diff(moment().format('YYYY-MM-DD'), 'days')
+      EditPurchaseApp.daysLeftToDateLimit.textContent = diffDays
+      // asignar total de nota, abonado y saldo pendiente
+      EditPurchaseApp.totalPurchaseAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+      .format(parseFloat(purchaseById['Monto Total'].split('$')[1].trim().split(',').join('')))
+      EditPurchaseApp.totalPurchasePayed.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+      .format(purchaseById.TotalPagado)
+      EditPurchaseApp.totalBalanceToPay.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
+      .format(purchaseById.Saldo)
+    }
+
+
+    EditPurchaseApp.noteNumberEl.textContent = '#' + purchaseById['No Nota']
+    EditPurchaseApp.providerName.textContent = purchaseById.Proveedor
+    EditPurchaseApp.type.value = purchaseById.Tipo
+    // EditPurchaseApp.user.value = purchaseById.Usuario
+    EditPurchaseApp.dateRecord.value = moment(new Date(purchaseById['Fecha Recibido'])).format('YYYY-MM-DD')
+    EditPurchaseApp.totalAmount.value = purchaseById['Monto Total'].split('$')[1].trim().split(',').join('')
+    // EditPurchaseApp.status.value = purchaseById.Estatus
+    EditPurchaseApp.purchaseDetails.value = purchaseById.Detalles
+
+    // Set provider names to option select field
+    // for (value in providerNames) {
+    //   var option = document.createElement("option");
+
+    //   option.text = providerNames[value];
+    //   option.value = providerNames[value];
+    //   EditPurchaseApp.selectProviderNames.add(option);
+    // }
+  }
+
+  // CONSTRUIR TABLA DE CUENTAS POR PAGAR
+  EditPurchaseApp.getActivityPaymentsPurchaseTable = async () => {
+
+    // DATATABLE ------------
+    let activityPaymentsPurchaseTable = $('#activityPaymentsPurchaseTable').DataTable({
+      responsive: true,
+      fixedHeader: true,
+      paging: false,
+      searching: false,
+      headerCallback: function(thead, data, start, end, display) {
+        $(thead).find('th').css('border-bottom', 'none');
+      },
+      data: pagosDeLaNota[0],
+      stripeClasses: [ 'strip1', 'strip2' ],
+      columns: [
+          { title: 'Folio', data: 'Folio', orderable: true, searchable: true, width: '15%'},
+          { title: 'Monto', data: 'Monto', orderable: false, searchable: true, width: '10%'},
+          { title: 'Fecha de pago', className: 'text-center', data: 'FechaDePago', orderable: true, searchable: true, width: '10%' },
+          { title: 'Forma de pago', className: 'text-center', data: 'FormaDePago', width: '20%' },
+          { title: 'Cuenta', data: 'CuentaDeDinero', orderable: false, searchable: true, width: '5%' }, //5
+          { title: 'Comprobante', data: 'Comprobante', orderable: false, searchable: false, visible: false },
+          { title: 'Usuario', data: 'Usuario', orderable: false, searchable: true },
+          // { title: 'Eliminar', width: '5%', className: 'text-center', data: null, defaultContent: `<a href="#" class="trigger-btn btn btn-sm btn-danger delete-payment-purchase-button">
+          //       <i class="bi bi-trash3"></i>
+          //     </a>` }
+      ],
+      columnDefs: [
+        { className: "fw-bold", "targets": 0 },
+        // { targets: 7, width: "5%", className: "text-center",
+        //   render: function (data, type, row, meta) {
+        //       // console.log(row.Estatus)
+        //       return 
+        //       `<a href="#" class="trigger-btn btn btn-sm btn-danger delete-payment-purchase-button">
+        //         <i class="bi bi-trash3"></i>
+        //       </a>`
+        //     } 
+        // },
+      ],
+      order: [[2, 'asc']],
+      select: {
+        style: 'multiple',
+        selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3)'
+      },
+      buttons: [
+        { 
+          extend: 'pdfHtml5',
+          orientation: 'landscape',
+          pageSize: 'LEGAL',
+          messageTop: 'Este documento es informativo.',
+          messageBottom: datetimeExportText,
+          text: '<i class="bi bi-filetype-pdf"></i>', 
+          className: 'btn btn-dark',
+          footer: true,
+          title: 'Lista de pagos',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        { extend: 'copy', 
+          text: '<i class="bi bi-clipboard-check"></i>', 
+          className: 'btn btn-dark',
+          title: 'Lista de pagos',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+      ],
+      "lengthChange": false,
+      "language": {
+        "buttons": {
+          copyTitle: 'Datos copiados al portapapeles',
+          copySuccess: {
+              _: "%d productos copiados al portapapeles"
+          },
+        },
+        "decimal":        "",
+        "emptyTable":     "No se encontraron datos",
+        "info":           "Mostrando _START_ a _END_ de _TOTAL_ pagos",
+        "infoEmpty":      "Mostrando 0 a 0 de 0 entradas",
+        "infoFiltered":   "(Busqueda de _MAX_ pagos en total)",
+        "infoPostFix":    "",
+        "thousands":      ",",
+        "lengthMenu":     "Mostrar _MENU_ pagos",
+        "loadingRecords": "Cargando...",
+        "processing":     "",
+        "search":         "Buscar:",
+        "zeroRecords":    "No se encontraron pagos",
+        "aria": {
+            "sortAscending":  ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        }
+      },
+      // createdRow: function( row, data, dataIndex ) {
+      //   details = data[10].toString()
+      //   if (details.includes('NU') || details.includes('CREDITO NU') || details.includes('TARJETA NU')) {
+      //     $(row).css('background-color', '#E2B6FF');
+      //   }
+      // },
+      // drawCallback: function() {
+      //   $('#activityPaymentsPurchaseTable_paginate ul.pagination').addClass("pagination-sm");
+      // }
+    });
+
+    activityPaymentsPurchaseTable.buttons().container().appendTo('#buttons-wrapper-payments-purchase');
+  }
+
+  // SUBMIT FORM - CREATE NEW PURCHASE
+  EditPurchaseApp.onSubmit = async (e) => {
+    e.preventDefault()
+    EditPurchaseApp.clearInputValids()
+    // show spinners
+    EditPurchaseApp.loadingSpinnerMsg.textContent = 'Espera un momento...'
+    EditPurchaseApp.loadingSpinner.classList.remove('d-none')
+
+    // HTML FORM POST DATA
+    const fd = new FormData(EditPurchaseApp.form)
+    fd.append('totalPayed', purchaseById.TotalPagado)
+
+    const urlEncoded = new URLSearchParams(fd).toString()
+    console.log(urlEncoded)
+
+    const response = await fetch(`${apiUrl}/purchases/${purchaseById.ID}`, {
+      method: 'PUT',
+      body: urlEncoded,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    let result = await response.json()
+    console.log(response.status)
+      if (response.status === 422) { // VALIDATION ERROR
+        EditPurchaseApp.loadingSpinner.classList.add('d-none')
+
+        let inputEls = EditPurchaseApp.form.getElementsByClassName('input-valid')
+        // console.log(result)
+        let errors = result.errors
+        // console.log(inputEls)
+
+        Array.from(inputEls).forEach(inputValid => {
+          errors.forEach((err) => {
+            let parentEl = inputValid.parentElement
+            let invalidMsg = parentEl.classList.contains('input-group') ? 
+            parentEl.parentElement.getElementsByClassName('invalid-message')[0] : 
+            parentEl.getElementsByClassName('invalid-message')[0]
+            // let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+            // console.log(invalidMsg)
+            if (inputValid.name === err.param) {
+              console.log(err)
+              invalidMsg.textContent = err.msg
+              invalidMsg.classList.remove('d-none')
+            }
+          })
+          
+        })
+
+
+      } else if (response.status === 400 || response.status === 404) { // CLIENT ERROR
+        EditPurchaseApp.loadingSpinner.classList.add('d-none')
+        let failureMessageAlert = document.getElementById('failure-message')
+        failureMessageAlert.classList.remove('d-none')
+        failureMessageAlert.textContent = result.message
+
+        setTimeout(() => {
+          failureMessageAlert.classList.add('d-none')
+        }, "4000");
+      } else if (response.status === 201 || response.status === 200) { // SUCCESS RESPONSE
+        EditPurchaseApp.loadingSpinner.classList.add('d-none')
+        let successMessageAlert = document.getElementById('success-message')
+        successMessageAlert.textContent = result.message
+        successMessageAlert.classList.remove('d-none')
+
+        setTimeout(() => {
+          successMessageAlert.classList.add('d-none')
+          EditPurchaseApp.submitUpdatePurchaseBtn.disabled = true
+          // Simulate an HTTP redirect:
+          window.location.replace(`${apiUrl}/purchases`);
+        }, "4000");
+      }
+  }
+
+  // Clear invalid message
+  EditPurchaseApp.clearInputValids = () => {
+    let inputEls = EditPurchaseApp.form.getElementsByClassName('input-valid')
+
+    Array.from(inputEls).forEach(inputValid => {
+      let invalidMsg = inputValid.closest('.valid-required').getElementsByClassName('invalid-message')[0]
+      // console.log(invalidMsg)
+      if (!invalidMsg.classList.contains('d-none')) {
+        invalidMsg.classList.add('d-none')
+      }
+    })
+  }
+
+  EditPurchaseApp.onLoad()
+  
+
+</script>

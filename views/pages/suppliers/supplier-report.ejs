@@ -1,0 +1,353 @@
+<!-- titulo -->
+<div class="app-page-title">
+  <div class="page-title-wrapper">
+    <div class="page-title-heading">
+      <div>
+        <h3 id="providerNameSearch" class="mb-1 mt-0"></h3>
+        <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Card stats -->
+<div class="row g-6 mb-5">
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col">
+                      <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total</span>
+                      <span id="totalDueAmount" class="h3 font-bold mb-0"></span>
+                  </div>
+                  <div class="col-auto">
+                      <div class="icon icon-shape bg-tertiary text-white text-lg rounded-circle">
+                          <i class="bi bi-truck"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="mt-2 mb-0 text-sm">
+                  <span class="badge badge-pill bg-soft-success text-success me-2">
+                      <i class="bi bi-arrow-up me-1"></i>13%
+                  </span>
+                  <span class="text-nowrap text-xs text-muted">Since last month</span>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col">
+                      <span class="h6 font-semibold text-muted text-sm d-block mb-2">Saldo</span>
+                      <span id="totalBalance" class="h3 font-bold mb-0"></span>
+                  </div>
+                  <div class="col-auto">
+                      <div class="icon icon-shape bg-primary text-white text-lg rounded-circle">
+                          <i class="bi bi-people"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="mt-2 mb-0 text-sm">
+                  <span class="badge badge-pill bg-soft-success text-success me-2">
+                      <i class="bi bi-arrow-up me-1"></i>30%
+                  </span>
+                  <span class="text-nowrap text-xs text-muted">Since last month</span>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col">
+                      <span class="h6 font-semibold text-muted text-sm d-block mb-2">Notas pendientes</span>
+                      <span id="notesToPayCount" class="h3 font-bold mb-0"></span>
+                  </div>
+                  <div class="col-auto">
+                      <div class="icon icon-shape bg-info text-white text-lg rounded-circle">
+                          <i class="bi bi-clock-history"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="mt-2 mb-0 text-sm">
+                  <span class="badge badge-pill bg-soft-danger text-danger me-2">
+                      <i class="bi bi-arrow-down me-1"></i>-5%
+                  </span>
+                  <span class="text-nowrap text-xs text-muted">Since last month</span>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-xl-3 col-sm-6 col-12">
+      <div class="card shadow border-0">
+          <div class="card-body">
+              <div class="row">
+                  <div class="col">
+                      <span class="h6 font-semibold text-muted text-sm d-block mb-2">Promedio de compra</span>
+                      <span id="averagePurchaseAmount" class="h3 font-bold mb-0"></span>
+                  </div>
+                  <div class="col-auto">
+                      <div class="icon icon-shape bg-warning text-white text-lg rounded-circle">
+                          <i class="bi bi-minecart-loaded"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="mt-2 mb-0 text-sm">
+                  <span id="yearPurchasesCount" class="badge badge-pill bg-soft-success text-dark me-2">
+                      <!-- <i class="bi bi-arrow-up me-1"></i>10% -->
+                  </span>
+                  <span class="text-nowrap text-xs text-muted">En este año</span>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- TABLES -->
+<div class="row row-cols-1 row-cols-md-2 g-4 mt-5">
+  <div class="col text-start">
+    <div class="card">
+      <!-- TABLE -->
+      <div class="table-responsive card-body mb-1">
+        <!-- <div id="buttons-wrapper" class="mb-2"></div> -->
+        <table id="purchasesProviderTable" class="display hover" width="100%" style="font-size: 12px;"></table>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/scripts'); %> 
+
+
+<script>
+  
+  const nodeEnv = '<%= process.env.NODE_ENV %>'
+  console.log(nodeEnv)
+  let apiUrl = '<%= process.env.API_URL %>'
+
+  let reportData = '<%- jsonResponse %>'
+  // console.log(purchasesProviderData)
+  // purchasesProviderData = purchasesProviderData.replace(/\s+/g," ")
+
+  let jsonReportData = JSON.parse(reportData)
+  console.log(jsonReportData)
+  // console.log(jsonPurchases.purchasesData)
+  // if (jsonProviders.providersData.length > 0) {
+  //   loadProvidersData()
+  // }
+
+  var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
+  const PurchasesProviderApp = {}
+
+  PurchasesProviderApp.onLoad = () => {
+
+
+    // RESUME CARD VARIABLES
+    PurchasesProviderApp.providerNameSearch = document.getElementById('providerNameSearch')
+    PurchasesProviderApp.totalDueAmount = document.getElementById('totalDueAmount')
+    PurchasesProviderApp.totalBalance = document.getElementById('totalBalance')
+    PurchasesProviderApp.notesToPayCount = document.getElementById('notesToPayCount')
+    PurchasesProviderApp.averagePurchaseAmount = document.getElementById('averagePurchaseAmount')
+    PurchasesProviderApp.yearPurchasesCount = document.getElementById('yearPurchasesCount')
+
+
+    PurchasesProviderApp.loadingSpinner = document.getElementById('loading-spinner')
+    PurchasesProviderApp.removeButton = document.getElementById('deleteRow')
+    PurchasesProviderApp.deleteButton = document.querySelector('button.remove-provider')
+
+    const params = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop),
+    });
+    // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+
+    // SET INITIAL VALUES
+    PurchasesProviderApp.providerNameSearch.textContent = params.providerName;
+    PurchasesProviderApp.totalDueAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN'}).format(jsonReportData.pendingResume.totalDueAmount)
+    PurchasesProviderApp.totalBalance.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN'}).format(jsonReportData.pendingResume.totalBalance)
+    PurchasesProviderApp.notesToPayCount.textContent = jsonReportData.pendingResume.notesToPayCount
+    PurchasesProviderApp.averagePurchaseAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN'}).format(jsonReportData.averageResume.averagePurchaseAmount)
+    PurchasesProviderApp.yearPurchasesCount.textContent = jsonReportData.averageResume.yearPurchasesCount
+
+    PurchasesProviderApp.getDataTable()
+
+
+    PurchasesProviderApp.providerToRemove = undefined
+    PurchasesProviderApp.rowDataTableToRemove = undefined
+    PurchasesProviderApp.providersTable = undefined
+
+  }
+
+  PurchasesProviderApp.getDataTable = () => {
+    let providersTable = $('#purchasesProviderTable').DataTable({
+          fixedHeader: true,
+          paging: false,
+          scrollY: '400px',
+          data: jsonReportData.lastPurchases.purchases,
+          stripeClasses: [ 'strip1', 'strip2' ],
+          // lengthChange: false,
+          // responsive: true,
+          columns: [
+            { title: 'ID', className: 'noVis', visible: false, data: 'ID' },
+            { title: 'No Nota', className: 'noVis', data: 'No Nota' },
+            { title: 'Proveedor', data: 'Proveedor' },
+            { title: 'Monto Total', data: 'Monto Total' },
+            { title: 'Monto Pagado', className: 'noVis', visible: false, data: 'Monto Pagado' },
+            { title: 'Fecha Recibido', data: 'Fecha Recibido', className: 'fw-bold' }, //5
+            { title: 'Fecha a Pagar', visible: false, data: 'Fecha a Pagar' },
+            { title: 'Estado', data: 'Estado' },
+            { title: 'Forma de pago', visible: false, data: 'Forma de pago' },
+            { title: 'Cuenta de retiro', visible: false, data: 'Cuenta de retiro' },
+            { title: 'Tipo', visible: false, data: 'Tipo' },
+            { title: 'Folio', visible: false, data: 'Folio' },
+            { title: 'Detalles', visible: false, data: 'Detalles' }, // 11
+            { title: 'Creado', visible: false, data: 'Creado' },
+          ],
+          columnDefs: [
+            { className: "fw-bold", "targets": 1, width: '10%', render: function (data) {
+                return `#${data}`
+              }
+            },
+            { targets: 2, width: '25%', className: 'text-start'},
+            { targets: [3, 4, 5], width: "15%"},
+            { targets: 5,
+              render: function ( data, type, row, meta ) {
+                // return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium'}).format(Date.parse(new Date(data)))
+                // return data
+                if (data.length > 0) {
+                  return type === 'sort' || type === 'display' || type === 'filter' ? (moment(new Date(data)).format("DD MMM. YYYY")) : new Date(data)
+                } else return "n/a"
+              },
+              // createdRow: function(row, data, dataIndex) {
+
+              // }
+            },
+          ],
+          order: [[5, 'desc']],
+          select: {
+            style: 'multiple',
+            selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5)'
+          },
+          // dom: 'Bfrtip',
+          buttons: [
+            // {
+            //   extend: 'colvis',
+            //   text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+            //   // titleAttr: 'Show/Hide',
+            //   columns: ':not(.noVis)',
+            //   collectionLayout: 'fixed columns',
+            //   collectionTitle: 'Seleccionar columnas a ver'
+            // },
+            { 
+              extend: 'pdfHtml5',
+              orientation: 'landscape',
+              pageSize: 'LEGAL',
+              messageTop: 'Este documento es informativo.',
+              messageBottom: datetimeExportText,
+              text: '<i class="bi bi-filetype-pdf"></i>', 
+              className: 'btn btn-dark',
+              title: 'Lista de proveedores',
+              exportOptions: {
+                columns: ':visible',
+                modifier: {
+                  selected: true
+                }
+              },
+            },
+            { extend: 'copy', 
+              text: '<i class="bi bi-clipboard-check"></i>', 
+              className: 'btn btn-dark',
+              title: 'Lista de proveedores',
+              exportOptions: {
+                columns: ':visible',
+                modifier: {
+                  selected: true
+                }
+              },
+            }
+            // { 
+            //   extend: 'csv', 
+            //   text: '<i class="bi bi-filetype-csv"></i>', 
+            //   className: 'btn btn-dark',
+            //   columns: ':visible',
+            // },
+          ],
+          // "lengthMenu": [ 30, 50, 100 ],
+          // "pageLength": 10,
+          "language": {
+            "buttons": {
+              copyTitle: 'Datos copiados al portapapeles',
+              copySuccess: {
+                  _: "%d productos copiados al portapapeles",
+              // colvis: 'Ver/ocultar columnas'
+              },
+            },
+            "decimal":        "",
+            "emptyTable":     "No se encontraron datos",
+            "info":           "Mostrando _START_ a _END_ de _TOTAL_ proveedores",
+            "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+            "infoFiltered":   "(Busqueda de _MAX_ proveedores en total)",
+            "infoPostFix":    "",
+            "thousands":      ",",
+            "lengthMenu":     "Mostrar _MENU_ proveedores",
+            "loadingRecords": "Cargando...",
+            "processing":     "",
+            "search":         "Buscar:",
+            "zeroRecords":    "No se encontraron proveedores",
+            // "paginate": {
+            //     "first":      "Primero",
+            //     "last":       "Ultimo",
+            //     "next":       "Siguiente",
+            //     "previous":   "Atrás"
+            // },
+            "aria": {
+                "sortAscending":  ": activate to sort column ascending",
+                "sortDescending": ": activate to sort column descending"
+            },
+          },
+          // createdRow: function( row, data, dataIndex ) {
+          //   let isFactura = data[6]
+          //   console.log(data[6])
+          //   console.log(dataIndex)
+          //   if (isFactura == true) {
+          //     $(row.querySelector).css('color', '#E2B6FF')
+          //   } else {
+          //     $(row[0]).css('color', '#e6b8af');
+          //   }
+          // },
+      });
+  }
+
+  PurchasesProviderApp.onLoad()
+
+</script>

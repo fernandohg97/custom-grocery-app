@@ -1,6 +1,239 @@
-body {
+
+html, body {
   font: 14px "Poppins", Helvetica, Arial, sans-serif !important;
   margin:0; 
   padding:0; 
-  box-sizing:border-box; 
+  box-sizing:border-box;
 }
+
+hr.hr-1 {
+  border: 0;
+  border-top: 1px dotted #8c8c8c;
+  border-bottom: 1px dotted #fff;
+}
+
+/* TABLE */
+table {
+	color: #000000;
+}
+
+/** style SCHECKBOX TABLE TODAY PURCHASES */
+table.dataTable tr.selected td.select-checkbox:after,
+table.dataTable tr.selected th.select-checkbox:after {
+  content: "\2714";
+  font-size: 16px !important;
+  margin-top: -22px !important;
+  margin-left: -4px !important;
+  text-align: center !important;
+  /*text-shadow: 1px 1px #B0BED9, -1px -1px #B0BED9, 1px -1px #B0BED9, -1px 1px #B0BED9;*/
+}
+
+/** STYLE LENGTH MENU DATATABLES IN ALL **/
+.dataTables_length, .dataTables_length select {
+	font-size: 11px;
+}
+
+/* REMOVE UNDERLINE ON SIDEBAR MENU */
+.app-sidebar .scrollbar-sidebar a {
+	text-decoration: none;
+}
+
+.app-page-title {
+  margin-bottom: 1em;
+  padding-bottom: 0;
+	margin-top: -4em !important;
+}
+
+/* UP WIDTH OFFCANVAS DETAILS */
+.offcanvas.offcanvas-end {
+	width: 800px !important;
+	z-index: 100000 !important;
+}
+
+.logo-src {
+	background: none !important;
+}
+
+h4 {
+  color: #000000;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+}
+
+.form-label {
+  color: #343a40 !important;
+  font-weight: 500;
+}
+
+input[type="text"], input[type="password"], input[type="number"], input[type="email"], select, select option{
+  font-size: 13.5px !important;
+}
+
+.container-lg {
+  position: relative;
+}
+
+/* CUSTOM STYTLE ALERT MESSAGE */
+
+.alert {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%,-25%);
+  border-radius: 5px;
+  box-shadow: 0 0 15px 5px #ccc;
+  padding: 30px;
+  font-weight: 500;
+	z-index: 1000;
+	background-color: rgb(255,255,255, 0.7);
+}
+
+.alert-success {
+  background-color: #a8f0c6 !important;
+  border-left: 5px solid #178344 !important;
+}
+.alert-danger {
+  background-color: #f7a7a3 !important;
+  border-left: 5px solid #8f130c !important
+}
+
+/* CUSTOM CIRCLE DOT STATUS TABLE - ACCOUNTS TO PAY */
+.dot {
+  height: 12px;
+  width: 12px;
+	text-align: center;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-pending {
+  background-color: #323232;
+}
+
+.dot-partial {
+	background-color: blue;
+}
+
+/* CUSTOM CIRCLE DOT STATUS TABLE - PAYMENTS STATUS - PAGO MASIVO - PAGO CONTRA RECIBO */
+.dot-payment-indicator-yes {
+  background-color: #198754;
+}
+.dot-payment-indicator-no {
+  background-color: #dc3545;
+}
+
+/* SPINNER LOADER */
+.loading-spinner {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+	z-index: 1000;
+  top: 0;
+  left: 0;
+  background-color: rgb(255,255,255, 0.7)
+}
+
+/* ACCOUNTS TO PAY VIEW ---------------------------------- */
+.btn-new-contra-recibo {
+	background-color: #0d6efd !important;
+}
+
+/* .btn-add-payment-multiple {
+	background-color: #0d6efd !important;
+} */
+
+
+/* CUSTOM STYLE CARD MONEY ACCOUNTS */
+/* .card {
+  box-shadow: 2px 2px 5px rgb(0, 0, 0);
+  border-radius: 30px;
+  background: #000000;
+} */
+
+/* DATATABLE GLOBAL STYLES */
+/* .dataTables_filter {
+	float: left !important;
+} */
+
+/* CONFIRM MODAL STYLE */
+/* .modal-confirm {		
+	width: 400px;
+}
+.modal-confirm .modal-content {
+	padding: 20px;
+	border-radius: 5px;
+	border: none;
+	text-align: center;
+	font-size: 14px;
+}
+.modal-confirm .modal-header {
+	border-bottom: none;   
+	position: relative;
+}
+.modal-confirm h4 {
+	text-align: center;
+	font-size: 26px;
+	margin: 10px 0 -10px;
+}
+.modal-confirm .close {
+	position: absolute;
+	top: -5px;
+	right: -2px;
+}
+.modal-confirm .modal-footer {
+	border: none;
+	text-align: center;		
+	border-radius: 5px;
+	font-size: 13px;
+	padding: 10px 15px 25px;
+}
+
+
+.modal-confirm i {
+	color: #f15e5e;
+	font-size: 46px;
+	display: inline-block;
+	margin-top: 5px;
+}
+.modal-confirm .btn, .modal-confirm .btn:active {
+	color: #fff;
+	border-radius: 4px;
+	text-decoration: none;
+	transition: all 0.4s;
+	line-height: normal;
+	min-width: 120px;
+	border: none;
+	min-height: 40px;
+	border-radius: 3px;
+	margin: 0 5px;
+}
+
+.modal-confirm .remove-provider:hover, .modal-confirm .remove-provider:focus {
+	background: #f15e5e;
+} */
+/* .modal-confirm .icon-box {
+	width: 80px;
+	height: 80px;
+	margin: 0 auto;
+	border-radius: 50%;
+	z-index: 9;
+	text-align: center;
+	border: 3px solid;
+} */
+/* .modal-confirm .btn-secondary {
+	background: #c1c1c1;
+} */
+/* .modal-confirm .cancel-changes:hover, .modal-confirm .cancel-changes:focus {
+	background: #a8a8a8;
+} */
+/* .modal-confirm .btn-danger {
+	background: #f15e5e;
+} */
+.modal-backdrop
+{
+    opacity: 0 !important;
+}
+/* .trigger-btn {
+	display: inline-block;
+	margin: 100px auto;
+} */

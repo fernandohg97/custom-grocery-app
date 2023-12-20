@@ -13,6 +13,48 @@ class Product {
   static deleteProductUrl = 'https://api.hikeup.com/api/v1/products/delete'
   static taxesUrl = 'https://api.hikeup.com/api/v1/taxes/get_all'
 
+  static async allProducts (req, res, next) {
+    // Options for this request
+    const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
+
+    try {
+      // Call API to get all products
+      const data = await axios.get(`${Product.getAllUrl}?page_size=${res.locals.resultsPerPage}&Skip_count=${res.locals.skipCount}&Sorting=last_modified`, opts)
+      // const data = await axios.get(`${Product.getAllUrl}?page_size=${100000}&Skip_count=${0}&Sorting=last_modified`, opts)
+
+      const products = data.data
+      const totalCount = products.totalCount
+      const numberOfPages = Math.ceil(totalCount / res.locals.resultsPerPage)
+
+      // return res.render('pages/products/all-products', {
+      //   products: products.items,
+      //   totalCount,
+      //   resultsPerPage: res.locals.resultsPerPage,
+      //   currentPage: res.locals.currentPage,
+      //   numPages: numberOfPages
+      // })
+      // TODO: in progress
+
+      let jsonResponse = JSON.stringify({
+        products: products.items,
+        totalCount,
+        resultsPerPage: res.locals.resultsPerPage,
+        currentPage: res.locals.currentPage,
+        numPages: numberOfPages
+      })
+
+      return res.render('pages/products/all-products', {
+        jsonResponse
+      })
+    } catch (error) {
+      console.log(error)
+      const { response } = error
+      console.log(response)
+      if (response.status === 400) return next(createError(400, 'Peticion incorrecta'))
+      return next(error)
+    }
+  }
+
   static async oneProductBySku (req, res, next) {
     let { searchFilter, pageSize, skipCount } = req.query
 
@@ -193,34 +235,6 @@ class Product {
       // Successfully render product types view
       return res.render('pages/products/product-types', { totalCount, productTypes })
     } catch (error) {
-      return next(error)
-    }
-  }
-
-  static async allProducts (req, res, next) {
-    // Options for this request
-    const opts = { headers: { accept: 'application/json', Authorization: `Bearer ${req.session.accessToken}` } }
-
-    try {
-      // Call API to get all products
-      const data = await axios.get(`${getAllUrl}?page_size=${res.locals.resultsPerPage}&Skip_count=${res.locals.skipCount}&Sorting=last_modified`, opts)
-
-      const products = data.data
-      const totalCount = products.totalCount
-      const numberOfPages = Math.ceil(totalCount / res.locals.resultsPerPage)
-
-      return res.render('pages/products/products', {
-        products: products.items,
-        totalCount,
-        resultsPerPage: res.locals.resultsPerPage,
-        currentPage: res.locals.currentPage,
-        numPages: numberOfPages
-      })
-    } catch (error) {
-      console.log(error)
-      const { response } = error
-      console.log(response)
-      if (response.status === 400) return next(createError(400, 'Peticion incorrecta'))
       return next(error)
     }
   }
