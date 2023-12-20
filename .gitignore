@@ -132,3 +132,6 @@ uploads/receipts/**
 !.gitkeep
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+
+# Local Netlify folder
+.netlify
