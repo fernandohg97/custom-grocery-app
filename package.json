@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "start:local": "set NODE_ENV=local&& nodemon ./bin/www",
     "start:dev": "set NODE_ENV=development&& nodemon ./bin/www",
-    "build": "netlify deploy --prod"
+    "build": "./node_modules/.bin/netlify-lambda build src"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
