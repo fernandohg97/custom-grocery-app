@@ -16,7 +16,7 @@ const PaymentModel = require('../models/payment.model')
 const { defaultAgainstReceiptStatus, defaultPurchaseStatus } = require('../config/default-values')
 
 // const { getDaysPassedFromDate } = require('../middlewares/defaultMonthRange')
-const AgainstReceiptModel = require('../models/AgainstReceipt.model')
+// const AgainstReceiptModel = require('../models/AgainstReceipt.model')
 // const PurchaseModel = require('../models/purchase.model')
 
 class AgainstReceipt {
