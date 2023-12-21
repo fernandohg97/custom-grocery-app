@@ -1,4 +1,11 @@
 [build]
   function = "functions"
-[dev]
-  publish = "dist"
+[[redirects]]
+  force = true
+  from = "/api/*"
+  status = 200
+  to = "/.netlify/functions/api/:splat"
+[[redirects]]
+  from = "/*"
+  status = 200
+  to = "/index.html"

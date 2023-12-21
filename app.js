@@ -16,7 +16,6 @@ const { secretKey } = require('./config/config.vars')
 
 const CURRENT_DIR = path.join(__dirname)
 const MIME_TYPES = ['image/jpeg', 'image/png']
-
 // console.log(CURRENT_DIR)
 // console.log(path.join(CURRENT_DIR, 'uploads/receipts'))
 
@@ -163,5 +162,4 @@ app.use(function (err, req, res, next) {
   //   error: err
   // })
 })
-
 module.exports = app
