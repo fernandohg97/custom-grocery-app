@@ -41,7 +41,7 @@ const SupplierValidation = {
     check('category', 'El departamento es requerido').notEmpty().isIn(defaultValues.defaultCategories),
     check('isInvoice', 'Indicar si factura o no es requerido.').notEmpty().toUpperCase(),
     check('paymentMethodProvider', 'El metodo de pago es requerido.').notEmpty().toUpperCase().isIn(Object.values(defaultValues.defaultPaymentMethods)),
-    check('retirementAccountProvider', 'La cuenta de retiro es requerido.').notEmpty().toUpperCase().isIn(Object.values(defaultValues.defaultMoneyAccounts)),
+    check('retirementAccountProvider', 'La cuenta de retiro es requerido.').notEmpty().toUpperCase().isIn(Object.values(defaultValues.defaultMoneyAccounts).map(acc => acc.name)).withMessage('Selecciona una cuenta de retiro correcta.'),
     check('email', 'El correo es requerido').optional({ checkFalsy: true }).trim().isEmail()
       .custom(async value => {
         await Sheet.loadInfo()
@@ -149,7 +149,7 @@ const SupplierValidation = {
       check('category', 'El departamento es requerido').notEmpty().isIn(defaultValues.defaultCategories),
       check('isInvoice', 'Indicar si factura o no es requerido.').notEmpty().default('FACTURA').toUpperCase(),
       check('paymentMethodProvider', 'El metodo de pago es requerido.').notEmpty().toUpperCase().isIn(Object.values(defaultValues.defaultPaymentMethods)),
-      check('retirementAccountProvider', 'La cuenta de retiro es requerido.').notEmpty().toUpperCase().isIn(Object.values(defaultValues.defaultMoneyAccounts)),
+      check('retirementAccountProvider', 'La cuenta de retiro es requerido.').notEmpty().toUpperCase().isIn(Object.values(defaultValues.defaultMoneyAccounts).map(acc => acc.name)).withMessage('Selecciona una cuenta de retiro correcta.'),
       check('numberOfNotesAllow')
         .if(body('agreement').notEmpty().default(0).equals('CONSIGNACION'))
         .notEmpty().withMessage('Un mínimo de notas es requerido').isInt({ min: 2, max: 10 }).withMessage('El mínimo son 2 y el máximo son 10 notas'),
