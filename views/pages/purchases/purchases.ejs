@@ -187,7 +187,7 @@
               // console.log(row.Estatus)
               return `
               <div class="dropdown">
-                <button type="button" id="dropdownMenuEdit" class="btn btn-light" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
+                <button type="button" id="dropdownMenuEdit" class="btn btn-light btn-sm" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
                 <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
                   ${row.Estatus !== 'LIQUIDADO' ? 
                   `<li><a href="/purchases/add-payment/${Number(row.ID)}" class="text-dark dropdown-item" style="pointer-events: none">
@@ -224,7 +224,7 @@
         order: [[4, 'desc']],
         select: {
           style: 'multiple',
-          selector: 'tr>td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6), tr>td:nth-child(7)'
+          selector: 'tr>td:nth-child(3), td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6), tr>td:nth-child(7)'
         },
         buttons: [
           {

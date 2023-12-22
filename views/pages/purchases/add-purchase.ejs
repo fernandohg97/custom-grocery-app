@@ -43,7 +43,7 @@
       <!-- USUARIO -->
     <div class="col-2 valid-required">
       <label for="userInput" class="form-label name-field-label">Usuario*</label>
-      <input id="user" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
+      <input id="purchaseUser" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
       <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
         Por favor ingresa el nombre del usuario que registra esta compra
       </div>
@@ -95,7 +95,7 @@
      <!-- FORMA DE PAGO -->
      <div id="paymentMethodInput" class="col-md-3 valid-required d-none">
       <label for="paymentMethodInput" class="form-label">Forma de pago</label>
-      <select id="paymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
+      <select id="purchasePaymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
         <option selected disabled value="">Selecciona la forma de pago</option>
         <!-- <option value="Efectivo">Efectivo</option>
         <option value="Tarjeta">Tarjeta</option> -->
@@ -139,8 +139,6 @@
         Por favor la fecha a pagar debe ser mayor a la fecha de visita.
       </div>
     </div>
-
-
     <!-- Detalles -->
     <div class="row">
       <div class="col-sm-12 col-md-6 mt-2">
@@ -148,28 +146,6 @@
         <textarea style="font-size: 14px;" name="purchaseDetails" class="form-control" id="purchaseDetails" rows="4" placeholder="Escribe algo importante sobre esta compra"></textarea>
       </div>
     </div>
-    <!-- AGREGAR DATOS BANCARIOS -->
-    <div class="col-sm-12">
-      <button style="font-size: 13px; margin: 0; padding: 0;" type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#datosBancariosCollapse" aria-expanded="false" aria-controls="datosBancariosCollapse">
-        Agregar datos bancarios
-      </button>
-      <div id="textHelp" style="font-size: 12px;" class="form-text">
-        Es requisito agregar los datos bancarios en caso de que la forma de pago al proveedor sea "transferencia electrónica".
-      </div>
-    </div>
-    <!-- DATOS BANCARIOS -->
-    <!-- <div class="collapse" id="datosBancariosCollapse">
-      <div class="row g-3 pb-3">
-        <h6>Datos bancarios</h6>
-        <div class="col-sm-6">
-          <label for="bankname" class="form-label">Banco*</label>
-          <input id="bankname" name="bankname" type="text" class="form-control input-valid" placeholder="Ingresa nombre del banco">
-          <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
-            Por favor ingresa el nombre del banco.
-          </div>
-        </div>
-      </div>
-    </div> -->
     <!-- BOTONES -->
     <div class="col-12">
       <button id="submitCreatePurchaseBtn" type="submit" class="btn btn-primary">Guardar</button>
@@ -220,11 +196,12 @@
     AddPurchaseApp.noteNumberEl = document.getElementById('noteNumber')
     AddPurchaseApp.selectProviderNames = document.getElementById('providerName');
     AddPurchaseApp.providerName = document.getElementById('providerName')
+    AddPurchaseApp.user = document.getElementById('purchaseUser')
     AddPurchaseApp.type = document.getElementById('type')
     AddPurchaseApp.dateRecord = document.getElementById('dateRecord')
     AddPurchaseApp.totalAmount = document.getElementById('totalAmount')
     AddPurchaseApp.status = document.getElementById('status')
-    AddPurchaseApp.paymentMethod = document.getElementById('paymentMethod')
+    AddPurchaseApp.paymentMethod = document.getElementById('purchasePaymentMethod')
     AddPurchaseApp.retirementAccount = document.getElementById('retirementAccount')
     AddPurchaseApp.dateToPayRecord = document.getElementById('dateToPayRecord')
     AddPurchaseApp.purchaseDetails = document.getElementById('purchaseDetails')
@@ -360,7 +337,7 @@
         let successMessageAlert = document.getElementById('success-message')
         successMessageAlert.textContent = result.message
         successMessageAlert.classList.remove('d-none')
-
+        scrollToTopWhenSubmit()
         setTimeout(() => {
           successMessageAlert.classList.add('d-none')
           AddPurchaseApp.submitCreatePurchaseBtn.disabled = true

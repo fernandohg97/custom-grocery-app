@@ -195,18 +195,18 @@ class Purchase {
         // check if has MASSIVE PAYMENT to set Saldo
         res.locals.purchaseById.Saldo = hasMassivePayment ? 0 : parseFloat(res.locals.purchaseById['Monto Total'].split('$')[1].trim().split(',').join('')) - totalAbonado
         res.locals.purchaseById.EsPagoMasivo = hasMassivePayment
-        // const jsonResponse = JSON.stringify({
-        //   purchaseById: res.locals.purchaseById,
-        //   pagosDeLaNota: pagosDeLaNota
-        // })
-        // return res.render('pages/purchases/edit-purchase', {
-        //   jsonResponse
-        // })
-        // test in postman
-        return res.status(200).json({
+        const jsonResponse = JSON.stringify({
           purchaseById: res.locals.purchaseById,
           pagosDeLaNota: pagosDeLaNota
         })
+        return res.render('pages/purchases/edit-purchase', {
+          jsonResponse
+        })
+        // test in postman
+        // return res.status(200).json({
+        //   purchaseById: res.locals.purchaseById,
+        //   pagosDeLaNota: pagosDeLaNota
+        // })
       } else if (routePath.includes('add-payment')) {
         res.locals.purchaseByNoteNumber.TotalPagado = totalAbonado
         // check if has MASSIVE PAYMENT to set Saldo

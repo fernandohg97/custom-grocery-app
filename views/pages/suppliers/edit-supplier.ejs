@@ -52,8 +52,8 @@
     </div>
     <!-- Correo -->
     <div class="col-md-4">
-      <label for="email" class="form-label">Correo electrónico*</label>
-      <input id="email" type="email" name="email" class="form-control input-valid" placeholder="Correo electrónico">
+      <label for="supplierEmail" class="form-label">Correo electrónico*</label>
+      <input id="supplierEmail" type="email" name="email" class="form-control input-valid" placeholder="Correo electrónico">
       <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
         Por favor ingresa un correo electrónico válido.
       </div>
@@ -243,7 +243,7 @@
     <!-- BOTONES -->
     <div class="col-12">
       <button id="submitUpdateBtn" type="submit" class="btn btn-primary">Actualizar</button>
-      <a role="button" class="btn btn-light" href="/">Cancelar</a>
+      <a role="button" class="btn btn-light" href="/suppliers">Cancelar</a>
     </div>
   </form>
   
@@ -296,7 +296,7 @@
     EditSupplierApp.providerName = document.getElementById('providerName');
     EditSupplierApp.seller = document.getElementById('seller');
     EditSupplierApp.phone = document.getElementById('phone');
-    EditSupplierApp.email = document.getElementById('email')
+    EditSupplierApp.email = document.getElementById('supplierEmail')
     EditSupplierApp.category = document.getElementById('category')
     EditSupplierApp.agreement = document.getElementById('agreement')
     EditSupplierApp.paymentMethodProvider = document.getElementById('paymentMethodProvider')
@@ -404,7 +404,7 @@
       let successMessageAlert = document.getElementById('success-message')
       successMessageAlert.textContent = result.message
       successMessageAlert.classList.remove('d-none')
-
+      scrollToTopWhenSubmit()
       setTimeout(() => {
         successMessageAlert.classList.add('d-none')
         EditSupplierApp.submitUpdateBtn.disabled = true
