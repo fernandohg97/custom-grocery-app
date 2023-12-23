@@ -47,7 +47,7 @@
         <div class="col valid-required">
           <label for="dateRecord" class="form-label fw-bold">Fecha de visita</label>
           <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
-          <input id="dateRecord" type="text" name="dateRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+          <input id="dateRecord" type="text" name="dateRecord" class="form-control input-valid datepicker" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
           <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
             Por favor ingresa una fecha correcta.
           </div>
@@ -66,7 +66,7 @@
         <!-- FECHA A PAGAR -->
         <div id="dateToPayInput" class="col valid-required d-none">
           <label for="dateToPayRecord" class="form-label">Fecha a pagar</label>
-          <input id="dateToPayRecord" name="dateToPayRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+          <input id="dateToPayRecord" name="dateToPayRecord" class="form-control input-valid datepicker" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
           <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
             Por favor la fecha a pagar debe ser mayor a la fecha de visita.
           </div>
@@ -112,37 +112,41 @@
       </form>
     </div>
     <!-- RESUMEN COMPRA-->
-    <div class="col text-center border border-2 border-secondary-subtle p-2 rounded-1" style="--bs-border-opacity: .5;">
-      <h6 class="mt-2 mb-4">Resumen</h6>
-      <div class="row row-cols-1 gy-3">
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Recibido por:</span>
-          <span id="userPurchase" class="fs-6 mb-0"></span>
-        </div>
-        <div class="col">
-          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
-          <span id="purchaseStatus" class="fs-5 mb-0"></span>
-        </div>
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total de la nota</span>
-          <span id="totalPurchaseAmount" class="h3 font-bold mb-0"></span>
-        </div>
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Abonado</span>
-          <span id="totalPurchasePayed" class="h3 font-bold mb-0 text-success"></span>
-        </div>
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Saldo pendiente</span>
-          <span id="totalBalanceToPay" class="h3 font-bold mb-0 text-primary"></span>
-        </div>
-        <div class="col">
-          <p class="h6 font-normal text-body-secondary text-sm d-block mb-2 mt-3">
-            Fecha límite de pago: <strong id="dateToPayLimit">14 oct. 2023</strong><br><br>
-            Quedan <strong class="text-dark fw-bold" id="daysLefToToDateLimit">5</strong>&nbsp;días
-          </p>
+    <div class="col">
+      <!-- <div id="warning-message-purchase-days-exceed-to-pay" class="text-sm fw-medium p-2 mb-2 bg-warning-subtle text-emphasis-warning">Esta nota ya está proxima a ser inhabilitada para pago debido a la cantidad de dias inactiva.</div> -->
+      <div class="text-center border border-2 border-secondary-subtle py-3 px-2 rounded-1" style="--bs-border-opacity: .5;">
+        <h6 class="mt-2 mb-4">Resumen</h6>
+        <div class="row row-cols-1 gy-3">
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Recibido por:</span>
+            <span id="userPurchase" class="fs-6 mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h5 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
+            <span id="purchaseStatus" class="fs-5 mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total de la nota</span>
+            <span id="totalPurchaseAmount" class="h3 font-bold mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Abonado</span>
+            <span id="totalPurchasePayed" class="h3 font-bold mb-0 text-success"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Saldo pendiente</span>
+            <span id="totalBalanceToPay" class="h3 font-bold mb-0 text-primary"></span>
+          </div>
+          <div class="col">
+            <p class="h6 font-normal text-body-secondary text-sm d-block mb-2 mt-3">
+              Fecha límite de pago: <strong id="dateToPayLimit">14 oct. 2023</strong><br><br>
+              Quedan <strong class="text-dark fw-bold" id="daysLefToToDateLimit">5</strong>&nbsp;días
+            </p>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 
 
@@ -264,12 +268,12 @@
       EditPurchaseApp.purchaseStatus.textContent = purchaseById.Estatus
 
       // set date to pay
-      const dateToPayMoment = moment(new Date(purchaseById['Fecha a Pagar'])).format('YYYY-MM-DD')
       EditPurchaseApp.dateToPayInput.classList.remove('d-none')
-      EditPurchaseApp.dateToPayRecord.value = dateToPayMoment
-      EditPurchaseApp.dateToPayLimit.textContent = dateToPayMoment
+      EditPurchaseApp.dateToPayRecord.value = moment(new Date(purchaseById['Fecha a Pagar'])).format('YYYY-MM-DD')
+      const dateToPayLimit = moment(new Date(purchaseById['Fecha a Pagar'])).format('DD MMM. YYYY')
+      EditPurchaseApp.dateToPayLimit.textContent = dateToPayLimit
       // asignar dias faltantes para limite de pago
-      const diffDays = moment(dateToPayMoment).diff(moment().format('YYYY-MM-DD'), 'days')
+      const diffDays = moment(dateToPayLimit).diff(moment().format('YYYY-MM-DD'), 'days')
       EditPurchaseApp.daysLeftToDateLimit.textContent = diffDays
       // asignar total de nota, abonado y saldo pendiente
       EditPurchaseApp.totalPurchaseAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
@@ -312,7 +316,7 @@
       headerCallback: function(thead, data, start, end, display) {
         $(thead).find('th').css('border-bottom', 'none');
       },
-      data: pagosDeLaNota[0],
+      data: pagosDeLaNota,
       stripeClasses: [ 'strip1', 'strip2' ],
       columns: [
           { title: 'Folio', data: 'Folio', orderable: true, searchable: true, width: '15%'},
@@ -476,7 +480,7 @@
         let successMessageAlert = document.getElementById('success-message')
         successMessageAlert.textContent = result.message
         successMessageAlert.classList.remove('d-none')
-
+        scrollToTopWhenSubmit()
         setTimeout(() => {
           successMessageAlert.classList.add('d-none')
           EditPurchaseApp.submitUpdatePurchaseBtn.disabled = true

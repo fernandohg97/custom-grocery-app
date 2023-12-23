@@ -59,10 +59,12 @@
       $('.selectpicker').selectpicker();
 
       $(function () {
-          $('.selectpicker').selectpicker();
+        $('.selectpicker').selectpicker();
       });
     }
-    
+
+    // load config date picker bootstrap
+    $( document ).ready(function() {
       // load date picker
       $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',
@@ -73,8 +75,8 @@
         language: "es",
         daysOfWeekDisabled: "0",
       });
-
-    
+    })
+  
 
     // DEFINE LOCALE MOMENT date
     moment.locale('es', {

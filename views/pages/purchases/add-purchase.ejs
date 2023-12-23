@@ -52,7 +52,7 @@
     <div class="col-md-4 valid-required">
       <label for="dateRecord" class="form-label">Fecha de visita</label>
       <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
-      <input id="dateRecord" type="text" name="dateRecord" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+      <input id="dateRecord" type="text" name="dateRecord" class="form-control input-valid datepicker" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
       <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
         Por favor ingresa una fecha correcta.
       </div>
@@ -170,7 +170,6 @@
 <%- include('../../partials/scripts'); %>
 
 <script>
-  
   const nodeEnv = '<%= process.env.NODE_ENV %>'
   console.log(nodeEnv)
   let apiUrl = '<%= process.env.API_URL %>'
