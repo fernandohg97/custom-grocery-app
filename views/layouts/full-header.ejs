@@ -39,7 +39,7 @@
 
 <!-- MODAL -->
 <!-- ELIMINAR PROVEEDOR REGISTRO  -->
-<div id="myModal" class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+<div id="DeleteSupplierModal" class="modal fade" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" aria-hidden="true" aria-labelledby="DeleteSupplierModal">
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
 			<div class="modal-header flex-column">
@@ -52,7 +52,7 @@
         <form id="delete-supplier-form" action="/suppliers?_method=DELETE" method="post" enctype="application/x-www-form-urlencoded" class="delete-supplier-form">
           <div class="mt-1 w-50 mx-auto valid-required">
             <label for="deleteProviderPassword" class="col-form-label text-sm">🔒Ingresa clave</label>
-            <input type="password" name="passwordConfirm" class="form-control form-control-sm input-valid" id="passwordConfirm">
+            <input type="password" name="passwordConfirm" class="form-control form-control-sm input-valid" id="supplierPasswordConfirm">
             <div id="invalid-message-delete-supplier" class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
               Por favor ingresa la contraseña.
             </div>
@@ -61,7 +61,37 @@
 			</div>
 			<div class="modal-footer justify-content-center mt-2 p-0">
 				<button type="button" class="btn btn-secondary cancel-changes" data-dismiss="modal">Cancelar</button>
-				<button type="button" class="btn btn-danger remove-provider">Eliminar</button>
+				<button type="button" class="btn btn-danger remove-provider" data-dismiss="modal">Eliminar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL -->
+<!-- ELIMINAR COMPRA REGISTRO  -->
+<div id="deletePurchaseModal" class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header flex-column">
+					<i class="bi bi-exclamation-diamond"></i>
+				<h4 class="modal-title w-100 p-0">¿Estás seguro?</h4>	
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="modal-body">
+				<p class="m-0 p-0">¿Quieres eliminar la compra <strong id="purchaseNoteNumberToRemove"></strong>?</p>
+        <form id="delete-purchase-form" action="/purchases?_method=DELETE" method="post" enctype="application/x-www-form-urlencoded" class="delete-purchase-form">
+          <div class="mt-1 w-50 mx-auto valid-required">
+            <label for="deletePurchasePassword" class="col-form-label text-sm">🔒Ingresa clave</label>
+            <input type="password" name="passwordConfirm" class="form-control form-control-sm input-valid" id="purchasePasswordConfirm">
+            <div id="invalid-message-delete-purchase" class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+              Por favor ingresa la contraseña.
+            </div>
+          </div>
+        </form>
+			</div>
+			<div class="modal-footer justify-content-center mt-2 p-0">
+				<button type="button" class="btn btn-secondary cancel-changes" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-danger remove-purchase" data-dismiss="modal">Eliminar</button>
 			</div>
 		</div>
 	</div>
@@ -565,13 +595,24 @@
   FullContainerApp.onLoad = () => {
     // global vars on MODALS
     FullContainerApp.currentDateAgainstReceipt = document.getElementById('currentdate-against-receipt')
+    // // LOGIC WHEN MODAL IS HIDDEN REGARDLESS WITH A BUTTON OR OUTSIDE THE MODAL
+    //   $(document).ready(function() {
+    //     let deleteSupplierModal = document.getElementById('deleteSupplierModal')
+    //     deleteSupplierModal.addEventListener('hidden.bs.modal', event => {
+    //       // do something...
+    //       console.log('hola')
+    //     })
+    //   })
     // call initial functions
     FullContainerApp.setInitialValues()
   }
 
   FullContainerApp.setInitialValues = () => {
     FullContainerApp.currentDateAgainstReceipt.textContent = moment().format('DD MMM. YYYY')
+
   }
+
+
 
   // call on load function
   FullContainerApp.onLoad()

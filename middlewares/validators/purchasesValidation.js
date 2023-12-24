@@ -102,6 +102,24 @@ const PurchaseValidation = {
       console.log('ups')
       return next()
     }
+  ],
+  validateDeletePurchase: [
+    check('passwordConfirm')
+      .custom(value => {
+        console.log(value)
+        if (value !== defaultValues.defaultConfirmationPassword.deletePassword) {
+          throw new Error('La contraseña es incorrecta')
+        }
+        return true
+      }),
+    // .trim().notEmpty(),
+    (req, res, next) => {
+      console.log('Validating request body')
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() })
+      console.log('ups')
+      return next()
+    }
   ]
 }
 

@@ -52,11 +52,6 @@
     AllProvidersApp.loadingSpinner = document.getElementById('loading-spinner')
     AllProvidersApp.loadingSpinnerMsg = document.getElementById('spinner-message')
 
-    // $(document).ready(function(){
-    //   AllProvidersApp.deleteForm = document.getElementById('delete-supplier-form');
-
-    // })
-
     AllProvidersApp.removeButton = document.getElementById('deleteRow')
 
     AllProvidersApp.providerToRemove = undefined
@@ -222,7 +217,7 @@
             { "targets": 18, "width": "5%", className: "text-center",
               render: function (data, type, row, meta) {
                 return `
-                <a href="#myModal" class="trigger-btn btn btn-sm btn-danger delete-button" data-toggle="modal"><i class="bi bi-trash3"></i></a>
+                <a href="#DeleteSupplierModal" class="trigger-btn btn btn-sm btn-danger delete-button" data-toggle="modal"><i class="bi bi-trash3"></i></a>
                 `
                 // return `<a href='/suppliers/remove/${Number(row.ID)}' role="button" class="btn btn-sm btn-danger remove-provider"><i class="bi bi-trash3"></i></a>`
             } 
@@ -231,7 +226,7 @@
           order: [[1, 'asc']],
           select: {
             style: 'multiple',
-            selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6), tr>td:nth-child(7)'
+            selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5)'
           },
           // dom: 'Bfrtip',
           buttons: [
@@ -358,21 +353,11 @@
     $(document).ready(function(){
       
       AllProvidersApp.deleteForm = document.getElementById('delete-supplier-form')
-      AllProvidersApp.passwordConfirm = document.getElementById('passwordConfirm')
+      AllProvidersApp.supplierPasswordConfirm = document.getElementById('supplierPasswordConfirm')
       AllProvidersApp.invalidMsgDeleteSupplier = document.getElementById('invalid-message-delete-supplier')
-      // LOGIC WHEN MODAL IS HIDDEN REGARDLESS WITH A BUTTON OR OUTSIDE THE MODAL
-      // $(document).ready(function() {
-      //   $('#myModal').on('hidden.bs.modal', function() {
-      //     console.log("I was called");
-      //     alert('hola')
-      //   });
-      // })
 
       // LOGIC WHEN DELETE BUTTON OF MODAL IS CLICKED
-      $('#myModal').on('click', 'button.remove-provider', async () => {
-        // $('#myModal').hide()
-        // $('.modal-backdrop').remove();
-
+      $('#DeleteSupplierModal').on('click', 'button.remove-provider', async () => {
         // SHOW SPINNER
         AllProvidersApp.loadingSpinner.classList.remove('d-none')
         // AllProvidersApp.loadingSpinnerMsg.textContent = 'Eliminando proveedor...'
@@ -397,17 +382,17 @@
 
         // check for error response
         if (response.status >= 500) { // SERVER ERROR
-          $('#myModal').hide()
+          $('#DeleteSupplierModal').hide()
           $('.modal-backdrop').remove();
           AllProvidersApp.loadingSpinner.classList.add('d-none')
           let failureMessageAlert = document.getElementById('failure-message')
           failureMessageAlert.classList.remove('d-none')
           failureMessageAlert.textContent = result.message
-
+          scrollToTopWhenSubmit()
           setTimeout(() => {
             failureMessageAlert.classList.add('d-none')
           }, "4000");
-          AllProvidersApp.passwordConfirm.value = ''
+          AllProvidersApp.supplierPasswordConfirm.value = ''
 
         } else if (response.status === 422) { // VALIDATION ERROR
           AllProvidersApp.loadingSpinner.classList.add('d-none')
@@ -429,17 +414,17 @@
               }
             })
           })
-          AllProvidersApp.passwordConfirm.value = ''
+          AllProvidersApp.supplierPasswordConfirm.value = ''
 
         } else if (response.status >= 400 && response.status <= 404) { // DOESNT FIND DATA
-          $('#myModal').hide()
+          $('#DeleteSupplierModal').hide()
           $('.modal-backdrop').remove();
           AllProvidersApp.loadingSpinner.classList.add('d-none')
 
           let failureMessageAlert = document.getElementById('failure-message')
           failureMessageAlert.classList.remove('d-none')
           failureMessageAlert.textContent = result.message
-
+          scrollToTopWhenSubmit()
           return setTimeout(() => {
             failureMessageAlert.classList.add('d-none')
           }, "4000");
@@ -447,7 +432,7 @@
 
         } else if (response.status === 201 || response.status === 200) { // DELETE SUCCESS
           // remove modal
-          $('#myModal').hide()
+          $('#DeleteSupplierModal').hide()
           $('.modal-backdrop').remove();
           // hide spinner
           AllProvidersApp.loadingSpinner.classList.add('d-none')
@@ -459,26 +444,13 @@
           .row( $(AllProvidersApp.rowDataTableToRemove).parents('tr'))
           .remove()
           .draw();
+          scrollToTopWhenSubmit()
           setTimeout(() => {
             successMessageAlert.classList.add('d-none')
           }, "4000");
-          AllProvidersApp.passwordConfirm.value = ''
+          AllProvidersApp.supplierPasswordConfirm.value = ''
 
         }
-        // let successMessageAlert = document.getElementById('success-message')
-        // successMessageAlert.textContent = 'Proveedor eliminado correctamente!'
-        // successMessageAlert.classList.remove('d-none')
-
-        // setTimeout(() => {
-        //   successMessageAlert.classList.add('d-none')
-        //   hideConfirmationDeleteModal()
-        // }, "3000");
-       
-        //remove (hide) row from datatable
-        // providersTable
-        // .row( $(AllProvidersApp.rowDataTableToRemove).parents('tr'))
-        // .remove()
-        // .draw();
       } );
     })
              
@@ -538,6 +510,13 @@
     // }, "4000")
 
   }
+        // LOGIC WHEN MODAL IS HIDDEN REGARDLESS WITH A BUTTON OR OUTSIDE THE MODAL
+        $(document).ready(function() {
+        $('#DeleteSupplierModal').on('hidden.bs.modal', function() {
+          console.log("I was called");
+          alert('hola')
+        });
+      })
     AllProvidersApp.onLoad()
 </script>
 

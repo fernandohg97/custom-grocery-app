@@ -32,7 +32,7 @@ purchaseRouter.put('/:id', validation.validateUpdatePurchase, purchaseCtrl.updat
 // TODO:
 purchaseRouter.get('/today', purchaseCtrl.getTodayPurchases, paymentCtrl.getTodayPayments)
 
-// purchaseRouter.post('/', validateNewPurchase, getProvidersMaxIdNumber, purchaseCtrl.newPurchase)
+purchaseRouter.delete('/:id', validation.validateDeletePurchase, purchaseCtrl.removePurchase) // eliminar una compra en estado PENDIENTE DE PAGO
 
 // purchaseRouter.get('/update-product-data', getAllPurchaseProductPageParams, purchaseCtrl.updateProductData)
 // purchaseRouter.get('/sheets/update-product-data', purchaseCtrl.updateProducts)

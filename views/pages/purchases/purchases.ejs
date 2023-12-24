@@ -1,3 +1,10 @@
+<%- include('../../partials/spinner'); %>
+
+<!-- success message -->
+<div id="success-message" class="alert alert-success d-none text-center w-75 fs-6" role="alert">Compra exitosa</div>
+<!-- failure message -->
+<div id="failure-message" class="alert alert-danger d-none text-center w-75 fs-6" role="alert"></div>
+
 <!-- titulo -->
 <div class="app-page-title">
   <div class="page-title-wrapper">
@@ -73,11 +80,20 @@
   var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
 
   const AllPurchasesApp = {}
-
+  
   AllPurchasesApp.onLoad = () => {
-    AllPurchasesApp.getDataTable()
+    // REQUEST SERVER APP VARS
+    AllPurchasesApp.defaultPurchaseStatus = JSON.parse('<%- defaultPurchaseStatus %>')
+    AllPurchasesApp.loadingSpinner = document.getElementById('loading-spinner')
+    AllPurchasesApp.loadingSpinnerMsg = document.getElementById('spinner-message')
+    AllPurchasesApp.purchaseToRemove = undefined
+    AllPurchasesApp.rowDataTableToRemove = undefined
 
+    // store payments of note number selected in table
     AllPurchasesApp.paymentsByNoteNumber = []
+
+    // call initial functions
+    AllPurchasesApp.getDataTable()
   }
 
   AllPurchasesApp.fetchPaymentsByProvider = async (noteNumber) => {
@@ -185,28 +201,31 @@
           { targets: 10, width: "5%", className: "text-center",
             render: function (data, type, row, meta) {
               // console.log(row.Estatus)
+              // return '<a href="#deleteSupplierModal" class="trigger-btn btn btn-sm btn-danger delete-compra" data-toggle="modal"><i class="bi bi-trash3"></i></a>'
+
               return `
               <div class="dropdown">
                 <button type="button" id="dropdownMenuEdit" class="btn btn-light btn-sm" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
                 <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
-                  ${row.Estatus !== 'LIQUIDADO' ? 
-                  `<li><a href="/purchases/add-payment/${Number(row.ID)}" class="text-dark dropdown-item" style="pointer-events: none">
-                    Abonar&nbsp;<i class="bi bi-cash"></i>
+                  ${row.Estatus === AllPurchasesApp.defaultPurchaseStatus.PENDIENTE_DE_PAGO ? 
+                  `<li>
+                    <a href="#deletePurchaseModal" class="trigger-btn dropdown-item text-dark delete-purchase-modal-button" data-toggle="modal">
+                      Eliminar&nbsp;<i class="bi bi-trash3"></i>
                     </a>
                   </li>
                   <li>
                     <a href="/purchases/edit/${Number(row.ID)}" class="text-dark dropdown-item">
                       Editar&nbsp;<i class="bi bi-pencil"></i>
                     </a>
-                  </li>
-                  <li>
-                    <a href="#myModal" class="trigger-btn dropdown-item text-dark delete-purchase-button" data-toggle="modal">
-                      Eliminar&nbsp;<i class="bi bi-trash3"></i>
-                    </a>
-                  </li>` :
+                  </li>` : row.Estatus === AllPurchasesApp.defaultPurchaseStatus.PAGO_PARCIAL ?
                   `<li>
-                    <a href="#myModal" class="trigger-btn dropdown-item text-dark delete-purchase-button" data-toggle="modal">
-                      Eliminar&nbsp;<i class="bi bi-trash3"></i>
+                    <a href="/purchases/edit/${Number(row.ID)}" class="text-dark dropdown-item">
+                      Editar&nbsp;<i class="bi bi-pencil"></i>
+                    </a>
+                  </li>` : 
+                  `<li>
+                    <a href="#" class="text-dark dropdown-item">
+                      Ver&nbsp;<i class="bi bi-eye"></i>
                     </a>
                   </li>`
                 }
@@ -340,88 +359,224 @@
         }
       });
 
+
+      // REMOVE ROW PURCHASE FROM TABLE
+      $('#purchasesTable tbody div.dropdown ul li').on('click', 'a.delete-purchase-modal-button', function () {
+        console.log('delete button click')
+        // console.log(this)
+        console.log(purchasesTable.row($(this).parents('tr')))
+        let deletePurchaseData = purchasesTable.row($(this).closest('tr')).data();
+        // console.log(deletePurchaseData);
+
+        AllPurchasesApp.purchaseToRemove = deletePurchaseData
+        AllPurchasesApp.purchaseNoteNumberModal = document.getElementById('purchaseNoteNumberToRemove')
+
+        AllPurchasesApp.purchaseNoteNumberModal.textContent = AllPurchasesApp.purchaseToRemove['No Nota']
+        AllPurchasesApp.rowDataTableToRemove = $(this)
+      });
+
+      // DELETE ROW PERMANENTLY
+    $(document).ready(function(){
+      
+      AllPurchasesApp.deleteForm = document.getElementById('delete-purchase-form')
+      AllPurchasesApp.purchasePasswordConfirm = document.getElementById('purchasePasswordConfirm')
+      AllPurchasesApp.invalidMsgDeletePurchase = document.getElementById('invalid-message-delete-purchase')
+      console.log(AllPurchasesApp.purchaseToRemove)
+      // LOGIC WHEN DELETE BUTTON OF MODAL IS CLICKED
+      $('#deletePurchaseModal').on('click', 'button.remove-purchase', async () => {
+        // SHOW SPINNER
+        AllPurchasesApp.loadingSpinner.classList.remove('d-none')
+        // AllProvidersApp.loadingSpinnerMsg.textContent = 'Eliminando proveedor...'
+
+        const fd = new FormData(AllPurchasesApp.deleteForm)
+        const urlEncoded = new URLSearchParams(fd).toString()
+        console.log(urlEncoded);
+
+        try {
+          // CALL SERVER TO DELETE DATA
+          const response = await fetch(`${apiUrl}/purchases/${Number(AllPurchasesApp.purchaseToRemove.ID)}`, {
+            method: 'DELETE',
+            body: urlEncoded,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          })
+          const result = await response.json()
+          // check for error response
+          if (response.status >= 500) { // SERVER ERROR
+            $('#deletePurchaseModal').hide()
+            $('.modal-backdrop').remove();
+            AllPurchasesApp.loadingSpinner.classList.add('d-none')
+            let failureMessageAlert = document.getElementById('failure-message')
+            failureMessageAlert.classList.remove('d-none')
+            failureMessageAlert.textContent = result.message
+            scrollToTopWhenSubmit()
+            setTimeout(() => {
+              failureMessageAlert.classList.add('d-none')
+            }, "4000");
+            AllPurchasesApp.purchasePasswordConfirm.value = ''
+
+          } else if (response.status === 422) { // VALIDATION ERROR
+            AllPurchasesApp.loadingSpinner.classList.add('d-none')
+            let inputEls = AllPurchasesApp.deleteForm.getElementsByClassName('input-valid')
+            // console.log(result)
+            let errors = result.errors
+            // console.log(inputEls)
+
+            Array.from(inputEls).forEach(inputValid => {
+              errors.forEach((err) => {
+                console.log(err)
+                let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+                console.log(invalidMsg)
+                
+                if (inputValid.name === err.param) {
+                  console.log(invalidMsg)
+                  invalidMsg.textContent = err.msg
+                  invalidMsg.classList.remove('d-none')
+                }
+              })
+            })
+            AllPurchasesApp.purchasePasswordConfirm.value = ''
+
+          } else if (response.status >= 400 && response.status <= 404) { // DOESNT FIND DATA
+            $('#deletePurchaseModal').hide()
+            $('.modal-backdrop').remove();
+            AllPurchasesApp.loadingSpinner.classList.add('d-none')
+
+            let failureMessageAlert = document.getElementById('failure-message')
+            failureMessageAlert.classList.remove('d-none')
+            failureMessageAlert.textContent = result.message
+            scrollToTopWhenSubmit()
+            return setTimeout(() => {
+              failureMessageAlert.classList.add('d-none')
+            }, "4000");
+            AllPurchasesApp.purchasePasswordConfirm.value = ''
+
+          } else if (response.status === 201 || response.status === 200) { // DELETE SUCCESS
+            // remove modal
+            $('#deletePurchaseModal').hide()
+            $('.modal-backdrop').remove();
+            // hide spinner
+            AllPurchasesApp.loadingSpinner.classList.add('d-none')
+            let successMessageAlert = document.getElementById('success-message')
+            successMessageAlert.textContent = result.message
+            successMessageAlert.classList.remove('d-none')
+            // remove (hide) row from datatable
+            purchasesTable
+            .row( $(AllPurchasesApp.rowDataTableToRemove).parents('tr'))
+            .remove()
+            .draw();
+            // scrollToTopWhenSubmit()
+            setTimeout(() => {
+              successMessageAlert.classList.add('d-none')
+            }, "4000");
+            AllPurchasesApp.purchasePasswordConfirm.value = ''
+
+          }
+
+        } catch (error) {
+          console.log(error)
+          // error test
+          $('#deletePurchaseModal').hide()
+          $('.modal-backdrop').remove();
+          AllPurchasesApp.loadingSpinner.classList.add('d-none')
+          let failureMessageAlert = document.getElementById('failure-message')
+          failureMessageAlert.classList.remove('d-none')
+          failureMessageAlert.textContent = result.message
+          scrollToTopWhenSubmit()
+          setTimeout(() => {
+            failureMessageAlert.classList.add('d-none')
+          }, "4000");
+          AllPurchasesApp.purchasePasswordConfirm.value = ''
+        }
+
+        // console.log(result)
+        // console.log(response)
+      } );
+    })
+
       // SHOW OFF CANVAS PURCHASE RESUME DETAILS
       $('#purchasesTable tbody').on('click', 'tr td:nth-child(1)', async function () {
-          var data = purchasesTable.row( this ).data();
-          console.log(data)
-          AllPurchasesApp.paymentsByNoteNumber = await AllPurchasesApp.fetchPaymentsByProvider(data['No Nota'])
-          console.log(AllPurchasesApp.paymentsByNoteNumber)
-          // GUARD STATEMENT
-          // if (!res) return
-          const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPayments')
+        var data = purchasesTable.row( this ).data();
+        console.log(data)
+        AllPurchasesApp.paymentsByNoteNumber = await AllPurchasesApp.fetchPaymentsByProvider(data['No Nota'])
+        console.log(AllPurchasesApp.paymentsByNoteNumber)
+        // GUARD STATEMENT
+        // if (!res) return
+        const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPayments')
 
-          // Assign initial values to offcanvas
-          AllPurchasesApp.offCanvasPaymentsTitle = document.getElementById('offCanvasPaymentsTitle')
-          AllPurchasesApp.offCanvasPaymentsNote = document.getElementById('offCanvasPaymentsNote')
-          AllPurchasesApp.offCanvasTotalPurchaseAmount = document.getElementById('totalPurchaseAmount')
-          AllPurchasesApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
+        // Assign initial values to offcanvas
+        AllPurchasesApp.offCanvasPaymentsTitle = document.getElementById('offCanvasPaymentsTitle')
+        AllPurchasesApp.offCanvasPaymentsNote = document.getElementById('offCanvasPaymentsNote')
+        AllPurchasesApp.offCanvasTotalPurchaseAmount = document.getElementById('totalPurchaseAmount')
+        AllPurchasesApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
 
-          // Assign values
-          AllPurchasesApp.offCanvasPaymentsTitle.textContent = data.Proveedor
-          AllPurchasesApp.offCanvasPaymentsNote.textContent = `#${data['No Nota']} | Registrado por: ${data.Usuario || 'n/a'}`
-          AllPurchasesApp.offCanvasTotalPurchaseAmount.textContent = data['Monto Total']
-          AllPurchasesApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'n/a'
-          
-          // Get elements from off canvas table
-          let table = document.getElementById("paymentsResumeTable");
-          let paymentsNotFoundMsg = document.getElementById('paymentsNotFoundMessage')
-          let providerPaymentsTotalQuantity = document.getElementById('providerPaymentsTotalQuantity')
+        // Assign values
+        AllPurchasesApp.offCanvasPaymentsTitle.textContent = data.Proveedor
+        AllPurchasesApp.offCanvasPaymentsNote.textContent = `#${data['No Nota']} | Registrado por: ${data.Usuario || 'n/a'}`
+        AllPurchasesApp.offCanvasTotalPurchaseAmount.textContent = data['Monto Total']
+        AllPurchasesApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'n/a'
+        
+        // Get elements from off canvas table
+        let table = document.getElementById("paymentsResumeTable");
+        let paymentsNotFoundMsg = document.getElementById('paymentsNotFoundMessage')
+        let providerPaymentsTotalQuantity = document.getElementById('providerPaymentsTotalQuantity')
 
-          // GUARD STATEMENT
-          if (AllPurchasesApp.paymentsByNoteNumber instanceof Error) {
-            table.classList.add('d-none')
-            paymentsNotFoundMsg.classList.remove('d-none')
-          } else {
-            console.log('pagos dentro')
-            // Assign payments data to table in offcanvas
-            paymentsNotFoundMsg.classList.add('d-none')
-            table.classList.remove('d-none')
+        // GUARD STATEMENT
+        if (AllPurchasesApp.paymentsByNoteNumber instanceof Error) {
+          table.classList.add('d-none')
+          paymentsNotFoundMsg.classList.remove('d-none')
+        } else {
+          console.log('pagos dentro')
+          // Assign payments data to table in offcanvas
+          paymentsNotFoundMsg.classList.add('d-none')
+          table.classList.remove('d-none')
 
-            let paymentResumeRows = document.getElementById('paymentResumeRows')
-            let templateBox = document.getElementById('rowTemplate')
-            let template = templateBox.content
+          let paymentResumeRows = document.getElementById('paymentResumeRows')
+          let templateBox = document.getElementById('rowTemplate')
+          let template = templateBox.content
 
-            // let quantityNotesEl = document.getElementById('quantityNotes');
-            // let totalBalanceToPayEl = document.getElementById('totalBalanceToPay');
-            // let providerToPaySelected = document.getElementById('providerToPaySelected')
+          // let quantityNotesEl = document.getElementById('quantityNotes');
+          // let totalBalanceToPayEl = document.getElementById('totalBalanceToPay');
+          // let providerToPaySelected = document.getElementById('providerToPaySelected')
 
-            // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
-            paymentResumeRows.innerHTML = ''
-            // $('#payment-invoice-tbody tr').remove()
-            // data.each(element => console.log(element));
-            // let getTotalAmountToPay = data.map(row => {
-            //   let totalAmount = row[6].split('$')[1].trim().split(',').join('');
-            //   totalAmount = totalAmount === '-' ? parseFloat('0.00') : parseFloat(totalAmount);
-            //   return totalAmount
-            // }).reduce((a, b) => parseFloat(a + b), 0);
-            // console.log(getTotalAmountToPay)
-            if (AllPurchasesApp.paymentsByNoteNumber.payments.length > 0) {
-              AllPurchasesApp.paymentsByNoteNumber.payments.filter(payment => {
-                // Get the table element in which you want to add row
-                console.log(payment)
-                // Create a row using the inserRow() method and
-                // specify the index where you want to add the row
-                let tr = template.cloneNode(true)
-                let folioCol = tr.querySelector('.folio')
-                let montoCol = tr.querySelector('.monto')
-                let fechacol = tr.querySelector('.fecha')
-                let formaDePagoCol = tr.querySelector('.formaDePago')
-                let cuentaCol = tr.querySelector('.cuenta')
-                let usuarioCol = tr.querySelector('.usuario')
+          // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
+          paymentResumeRows.innerHTML = ''
+          // $('#payment-invoice-tbody tr').remove()
+          // data.each(element => console.log(element));
+          // let getTotalAmountToPay = data.map(row => {
+          //   let totalAmount = row[6].split('$')[1].trim().split(',').join('');
+          //   totalAmount = totalAmount === '-' ? parseFloat('0.00') : parseFloat(totalAmount);
+          //   return totalAmount
+          // }).reduce((a, b) => parseFloat(a + b), 0);
+          // console.log(getTotalAmountToPay)
+          if (AllPurchasesApp.paymentsByNoteNumber.payments.length > 0) {
+            AllPurchasesApp.paymentsByNoteNumber.payments.filter(payment => {
+              // Get the table element in which you want to add row
+              console.log(payment)
+              // Create a row using the inserRow() method and
+              // specify the index where you want to add the row
+              let tr = template.cloneNode(true)
+              let folioCol = tr.querySelector('.folio')
+              let montoCol = tr.querySelector('.monto')
+              let fechacol = tr.querySelector('.fecha')
+              let formaDePagoCol = tr.querySelector('.formaDePago')
+              let cuentaCol = tr.querySelector('.cuenta')
+              let usuarioCol = tr.querySelector('.usuario')
 
-                folioCol.textContent = payment.Folio
-                montoCol.textContent = payment.Monto
-                fechacol.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(payment.FechaDePago))
-                formaDePagoCol.textContent = payment.FormaDePago
-                cuentaCol.textContent = payment.CuentaDeDinero
-                usuarioCol.textContent = payment.Usuario
+              folioCol.textContent = payment.Folio
+              montoCol.textContent = payment.Monto
+              fechacol.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(payment.FechaDePago))
+              formaDePagoCol.textContent = payment.FormaDePago
+              cuentaCol.textContent = payment.CuentaDeDinero
+              usuarioCol.textContent = payment.Usuario
 
-                paymentResumeRows.appendChild(tr)
-              })
-            }
-            providerPaymentsTotalQuantity.textContent = `Cant. de pagos realizados: ${AllPurchasesApp.paymentsByNoteNumber.totalCount}`
+              paymentResumeRows.appendChild(tr)
+            })
           }
-          bsOffcanvas.show()
+          providerPaymentsTotalQuantity.textContent = `Cant. de pagos realizados: ${AllPurchasesApp.paymentsByNoteNumber.totalCount}`
+        }
+        bsOffcanvas.show()
       } );
 
       // Custom filtering function which will search data in column four between two values
@@ -469,8 +624,6 @@
       });
     
       purchasesTable.buttons().container().appendTo('#buttons-wrapper-purchases');
-      // document.getElementById('total-purchases').textContent = `${purchasesData.values.length} compras`
-      // loadingSpinner.classList.add('d-none')
   }
 
   AllPurchasesApp.onLoad()

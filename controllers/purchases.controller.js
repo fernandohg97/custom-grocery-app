@@ -10,6 +10,7 @@ const moment = require('moment')
 class Purchase {
   /** GET ALL COMPRAS */
   static async getAllPurchases (req, res, next) {
+    req.app.locals.defaultPurchaseStatus = JSON.stringify(defaultPurchaseStatus)
     try {
       await Sheet.loadInfo()
 
@@ -525,6 +526,46 @@ class Purchase {
       // Save row data
       await rows[purchaseIndex].save()
       return res.status(201).json({ message: `😉 Compra #${noteNumber} de ${providerName.toUpperCase()} actualizada exitosamente!` })
+    } catch (error) {
+      console.log(`Hubo un error: ${error}`)
+      const { response } = error
+      console.log(response.data)
+      if (response.status === 400) return res.status(400).json({ message: `😕Ups, hubo un error: ${response.data.error.message}` })
+      return next(error)
+    }
+  }
+
+  /**
+   * REMOVE ONE PURCHASE - PENDIENTE DE PAGO
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns
+   */
+  static async removePurchase (req, res, next) {
+    // const data = req.body
+    console.log('remove...')
+    // console.log(req.body)
+    // console.log(req.params)
+    const { id } = req.params
+    // const { passwordConfirm } = req.body
+    // console.log(id)
+    try {
+      await Sheet.loadInfo()
+
+      const comprasSheet = Sheet.sheetsByTitle[WORKSHEETS.comprasSheet.SHEETNAME]
+      const comprasRows = await comprasSheet.getRows()
+      const purchaseIndex = comprasRows.findIndex(r => {
+        return Number(r.toObject().ID) === Number(id)
+      })
+      console.log(purchaseIndex)
+      if (purchaseIndex < 0) return next(createError(404, `Compra con ID: ${id} no encontrado!`))
+
+      // get provider name
+      const purchaseNoteNumber = comprasRows[purchaseIndex].get('No Nota')
+      // delete row data
+      await comprasRows[purchaseIndex].delete()
+      return res.status(201).json({ message: `😉 Compra: ${purchaseNoteNumber} eliminada exitosamente!` })
     } catch (error) {
       console.log(`Hubo un error: ${error}`)
       const { response } = error
