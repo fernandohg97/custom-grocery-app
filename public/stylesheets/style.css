@@ -21,8 +21,8 @@ table {
 table.dataTable tr.selected td.select-checkbox:after,
 table.dataTable tr.selected th.select-checkbox:after {
   content: "\2714";
-  font-size: 16px !important;
-  margin-top: -22px !important;
+  font-size: 14px !important;
+  margin-top: -18px !important;
   margin-left: -4px !important;
   text-align: center !important;
   /*text-shadow: 1px 1px #B0BED9, -1px -1px #B0BED9, 1px -1px #B0BED9, -1px 1px #B0BED9;*/
@@ -106,13 +106,14 @@ input[type="text"], input[type="password"], input[type="number"], input[type="em
   display: inline-block;
 }
 
-.dot-pending {
+/* .dot-pending {
   background-color: #323232;
 }
 
 .dot-partial {
-	background-color: blue;
-}
+	background-color: #0d6efd;
+	opacity: ;
+} */
 
 /* CUSTOM CIRCLE DOT STATUS TABLE - PAYMENTS STATUS - PAGO MASIVO - PAGO CONTRA RECIBO */
 .dot-payment-indicator-yes {
