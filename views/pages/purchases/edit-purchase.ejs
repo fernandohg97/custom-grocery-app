@@ -11,7 +11,7 @@
 
   <div class="row">
     <!-- FORMULARIO -->
-    <div class="col">
+    <div class="col-md-6 col-12">
       <form id="edit-purchase-form" action="/purchases?_method=PUT" method="post" enctype="application/x-www-form-urlencoded" class="edit-purchase-form row row-cols-1 g-3 mt-2 pb-3 purchase-needs-validation">
         <h6 class="mt-1">Datos generales</h6>
         <!-- PROVEEDOR - NO EDITABLE -->
@@ -106,13 +106,13 @@
         </div>
         <!-- BOTONES -->
         <div class="col-12">
-          <button id="submitUpdatePurchaseBtn" type="submit" class="btn btn-primary">Guardar</button>
-          <button type="button" class="btn btn-light" onclick="history.back()">Cancelar</button>
+          <button id="submitUpdatePurchaseBtn" type="submit" class="btn btn-primary btn-sm">Guardar</button>
+          <button type="button" class="btn btn-light btn-sm" onclick="history.back()">Cancelar</button>
         </div>
       </form>
     </div>
     <!-- RESUMEN COMPRA-->
-    <div class="col">
+    <div class="col-md-6 col-12">
       <!-- <div id="warning-message-purchase-days-exceed-to-pay" class="text-sm fw-medium p-2 mb-2 bg-warning-subtle text-emphasis-warning">Esta nota ya está proxima a ser inhabilitada para pago debido a la cantidad de dias inactiva.</div> -->
       <div class="text-center border border-2 border-secondary-subtle py-3 px-2 rounded-1" style="--bs-border-opacity: .5;">
         <h6 class="mt-2 mb-4">Resumen</h6>
