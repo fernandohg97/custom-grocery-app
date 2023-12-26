@@ -26,7 +26,7 @@
         <input style="font-size: 13px;" type="text" class="form-control" id="minCompras" name="minCompras" placeholder="Fecha inicio">
       </div> -->
       <label class="text-secondary m-0 p-0" style="font-size: 12px;">Inicio</label>
-      <div class="input-group input-group-sm date" data-provide="datepicker">
+      <div class="input-group input-group-sm date datepicker" data-provide="datepicker">
         <span class="input-group-addon input-group-text" id="basic-addon1"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="minCompras" aria-label="minCompras" aria-describedby="basic-addon1">
       </div>
     </div>
@@ -36,7 +36,7 @@
         <input style="font-size: 13px;" type="text" class="form-control" id="maxCompras" name="maxCompras" placeholder="Fecha fin">
       </div> -->
       <label class="text-secondary m-0 p-0" style="font-size: 12px;">Fin</label>
-      <div class="input-group input-group-sm date" data-provide="datepicker">
+      <div class="input-group input-group-sm date datepicker" data-provide="datepicker">
         <span class="input-group-addon input-group-text" id="basic-addon2"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="maxCompras" aria-label="maxCompras" aria-describedby="basic-addon2">
       </div>
     </div>
@@ -148,13 +148,13 @@
         data: jsonPurchases.purchasesData,
         stripeClasses: [ 'strip1', 'strip2' ],
         columns: [
-            { title: 'ID', data: 'ID', visible: false, searchable: false, orderable: false },
-            { title: 'No. Nota', data: 'No Nota' },
+            { title: 'ID', data: 'ID', className: 'noVis', visible: false, searchable: false, orderable: false },
+            { title: 'No. Nota', data: 'No Nota', width: '8%' },
             { title: 'Proveedor', data: 'Proveedor'},
             { title: 'Monto Total', data: 'Monto Total'},
             { title: 'Fecha Recibido', data: 'Fecha Recibido' },
             { title: 'Fecha a Pagar', data: 'Fecha a Pagar', orderable: false, searchable: false, visible: false },
-            { title: 'Estatus', data: 'Estatus', orderable: false },
+            { title: 'Estatus', data: 'Estatus', orderable: false, width: '15%' },
             { title: 'Tipo', data: 'Tipo', visible: true },
             { title: 'Usuario', data: 'Usuario', orderable: false, visible: true },
             { title: 'Detalles', data: 'Detalles', visible: false, searchable: false },
@@ -243,7 +243,7 @@
         order: [[4, 'desc']],
         select: {
           style: 'multiple',
-          selector: 'tr>td:nth-child(3), td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6), tr>td:nth-child(7)'
+          selector: 'tr>td:nth-child(2), tr>td:nth-child(3), td:nth-child(4), tr>td:nth-child(5), tr>td:nth-child(6)'
         },
         buttons: [
           {
@@ -272,10 +272,10 @@
             messageBottom: datetimeExportText,
             text: '<i class="bi bi-filetype-pdf"></i>', 
             className: 'btn btn-dark',
-            footer: true,
+            // footer: true,
             title: 'Lista de compras',
             exportOptions: {
-              columns: ':visible',
+              columns: [1, 2, 3, 4, 5, 6, 7, 8],
               modifier: {
                 selected: true
               }
