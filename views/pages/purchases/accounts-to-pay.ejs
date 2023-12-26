@@ -15,9 +15,9 @@
         <div class="page-title-subheading">Este es un demo (en proceso) del nuevo sistema interno de Mercado DOS MIL.</div>
       </div>
     </div>
-    <div class="d-flex justify-content-end float-end">
+    <!-- <div class="d-flex justify-content-end float-end">
       <button id="new-contra-recibo" type="button" class="btn btn-primary btn-sm">+ Nuevo contra recibo</button>
-    </div>
+    </div> -->
   </div>
   
 </div>
@@ -34,12 +34,12 @@
                       <span id="totalDueAmount" class="h3 font-bold mb-0"></span>
                   </div>
               </div>
-              <div id="percentageBalanceProgress" class="mt-2 mb-0">
+              <!-- <div id="percentageBalanceProgress" class="mt-2 mb-0"> -->
                   <!-- <span class="badge badge-pill bg-soft-success text-success me-2">
                       <i class="bi bi-arrow-up me-1"></i>13%
                   </span>
                   <span class="text-nowrap text-xs text-muted">Debes subir!</span> -->
-              </div>
+              <!-- </div> -->
           </div>
       </div>
   </div>
@@ -72,8 +72,8 @@
         <div class="card-body">
           <div class="row">
               <div class="col">
-                  <span class="h6 font-semibold text-muted text-sm d-block mb-2">Total</span>
-                  <span id="total" class="h3 font-bold mb-0">0</span>
+                  <span class="h6 font-semibold text-muted text-sm d-block mb-2">Abonado</span>
+                  <span id="totalPayedBetweenTotalAndBalance" class="h3 font-bold mb-0">0</span>
               </div>
           </div>
       </div>
@@ -95,7 +95,7 @@
         <input style="font-size: 13px;" type="text" class="form-control" id="minCompras" name="minCompras" placeholder="Fecha inicio">
       </div> -->
       <label class="text-secondary m-0 p-0 fw-bold" style="font-size: 12px;">Inicio</label>
-      <div class="input-group input-group-sm date" data-provide="datepicker">
+      <div class="input-group input-group-sm date datepicker" data-provide="datepicker">
         <span class="input-group-addon input-group-text" id="basic-addon1"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="minCuentasPorPagar" aria-label="minCuentasPorPagar" aria-describedby="basic-addon1">
       </div>
     </div>
@@ -105,7 +105,7 @@
         <input style="font-size: 13px;" type="text" class="form-control" id="maxCompras" name="maxCompras" placeholder="Fecha fin">
       </div> -->
       <label class="text-secondary m-0 p-0 fw-bold" style="font-size: 12px;">Fin</label>
-      <div class="input-group input-group-sm date" data-provide="datepicker">
+      <div class="input-group input-group-sm date datepicker" data-provide="datepicker">
         <span class="input-group-addon input-group-text" id="basic-addon2"><i class="bi bi-calendar-event"></i></span><input type="text" class="form-control" id="maxCuentasPorPagar" aria-label="maxCuentasPorPagar" aria-describedby="basic-addon2">
       </div>
     </div>
@@ -117,7 +117,7 @@
       </div>
     </div>
   </div>
-  <table id="accountsToPayTable" class="display compact hover stripe" width="100%" style="font-size: 13px;">
+  <table id="accountsToPayTable" class="display compact hover stripe" width="100%" style="font-size: 12px;">
     <tfoot>
       <tr>
         <th colspan="3" class="text-start">Total:</th>
@@ -235,6 +235,7 @@
     AllAccountsToPayApp.totalDueAmount = document.getElementById('totalDueAmount')
     AllAccountsToPayApp.totalCount = document.getElementById('totalCount')
     AllAccountsToPayApp.totalBalanceAmount = document.getElementById('totalBalanceAmount')
+    AllAccountsToPayApp.totalPayedBetweenTotalAndBalance = document.getElementById('totalPayedBetweenTotalAndBalance')
     AllAccountsToPayApp.percentageBalanceProgressEl = document.getElementById('percentageBalanceProgress')
     AllAccountsToPayApp.paymentsByNoteNumber = []
 
@@ -505,71 +506,74 @@
     }
   }
 
-  // ESTABLECER VALORES INICIALES
+  // ESTABLECER VALORES INICIALES del dashboard
   AllAccountsToPayApp.setInitialValues = () => {
+    const differenceBetweenTotalAndBalance = jsonAccountsToPay.totalAmount - jsonAccountsToPay.totalBalanceAmount
     AllAccountsToPayApp.totalDueAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonAccountsToPay.totalAmount)
     AllAccountsToPayApp.totalCount.textContent = jsonAccountsToPay.totalCount
     AllAccountsToPayApp.totalBalanceAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(jsonAccountsToPay.totalBalanceAmount)
-    let html = undefined
-    if (jsonAccountsToPay.percentageBalanceProgress <= 0.7) { // Urgente subir!
-      let span1 = document.createElement('span')
-      span1.className = 'badge badge-pill bg-soft-danger text-danger me-2'
-      let i = document.createElement('i')
-      i.className = 'bi bi-arrow-up me-1'
-      // let p = document.createElement('p')
-      span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
-      let span2 = document.createElement('span')
-      span2.className = 'text-nowrap text-xs text-body-emphasis'
-      span2.textContent = 'Urgente subir!'
-      span1.appendChild(i)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
+    AllAccountsToPayApp.totalPayedBetweenTotalAndBalance.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(differenceBetweenTotalAndBalance)
 
-      // html = `<span class="badge badge-pill bg-soft-danger text-danger me-2">
-      //                 <i class="bi bi-arrow-up me-1"></i>${new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)}
-      //             </span>`
-      // <span class="text-nowrap text-xs text-muted">Debes subir!</span> -->
+    // let html = undefined
+    // if (jsonAccountsToPay.percentageBalanceProgress <= 0.7) { // Urgente subir!
+    //   let span1 = document.createElement('span')
+    //   span1.className = 'badge badge-pill bg-soft-danger text-danger me-2'
+    //   let i = document.createElement('i')
+    //   i.className = 'bi bi-arrow-up me-1'
+    //   // let p = document.createElement('p')
+    //   span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
+    //   let span2 = document.createElement('span')
+    //   span2.className = 'text-nowrap text-xs text-body-emphasis'
+    //   span2.textContent = 'Urgente subir!'
+    //   span1.appendChild(i)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
 
-    } else if (jsonAccountsToPay.percentageBalanceProgress > 0.7 && jsonAccountsToPay.percentageBalanceProgress <= 0.8) { // debes subir
-      let span1 = document.createElement('span')
-      span1.className = 'badge badge-pill bg-soft-warning text-warning-emphasis me-2'
-      let i = document.createElement('i')
-      i.className = 'bi bi-arrow-up me-1'
-      // let p = document.createElement('p')
-      span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
-      let span2 = document.createElement('span')
-      span2.className = 'text-nowrap text-xs text-body-emphasis'
-      span2.textContent = 'Un poco más arriba!'
-      span1.appendChild(i)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
-    } else if (jsonAccountsToPay.percentageBalanceProgress > 0.8 && jsonAccountsToPay.percentageBalanceProgress <= 0.9) { // promedio
-      let span1 = document.createElement('span')
-      span1.className = 'badge badge-pill bg-soft-success text-success me-2'
-      let i = document.createElement('i')
-      i.className = 'bi bi-arrow-up me-1'
-      // let p = document.createElement('p')
-      span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
-      let span2 = document.createElement('span')
-      span2.className = 'text-nowrap text-xs text-body-emphasis'
-      span2.textContent = 'Bien! Estás en el promedio!'
-      span1.appendChild(i)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
-    } else { // muy bien!
-      let span1 = document.createElement('span')
-      span1.className = 'badge badge-pill bg-soft-success text-success me-2'
-      let i = document.createElement('i')
-      i.className = 'bi bi-arrow-up me-1'
-      // let p = document.createElement('p')
-      span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
-      let span2 = document.createElement('span')
-      span2.className = 'text-nowrap text-xs text-body-emphasis'
-      span2.textContent = 'Muy bien!'
-      span1.appendChild(i)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
-      AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
-    }
+    //   // html = `<span class="badge badge-pill bg-soft-danger text-danger me-2">
+    //   //                 <i class="bi bi-arrow-up me-1"></i>${new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)}
+    //   //             </span>`
+    //   // <span class="text-nowrap text-xs text-muted">Debes subir!</span> -->
+
+    // } else if (jsonAccountsToPay.percentageBalanceProgress > 0.7 && jsonAccountsToPay.percentageBalanceProgress <= 0.8) { // debes subir
+    //   let span1 = document.createElement('span')
+    //   span1.className = 'badge badge-pill bg-soft-warning text-warning-emphasis me-2'
+    //   let i = document.createElement('i')
+    //   i.className = 'bi bi-arrow-up me-1'
+    //   // let p = document.createElement('p')
+    //   span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
+    //   let span2 = document.createElement('span')
+    //   span2.className = 'text-nowrap text-xs text-body-emphasis'
+    //   span2.textContent = 'Un poco más arriba!'
+    //   span1.appendChild(i)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
+    // } else if (jsonAccountsToPay.percentageBalanceProgress > 0.8 && jsonAccountsToPay.percentageBalanceProgress <= 0.9) { // promedio
+    //   let span1 = document.createElement('span')
+    //   span1.className = 'badge badge-pill bg-soft-success text-success me-2'
+    //   let i = document.createElement('i')
+    //   i.className = 'bi bi-arrow-up me-1'
+    //   // let p = document.createElement('p')
+    //   span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
+    //   let span2 = document.createElement('span')
+    //   span2.className = 'text-nowrap text-xs text-body-emphasis'
+    //   span2.textContent = 'Bien! Estás en el promedio!'
+    //   span1.appendChild(i)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
+    // } else { // muy bien!
+    //   let span1 = document.createElement('span')
+    //   span1.className = 'badge badge-pill bg-soft-success text-success me-2'
+    //   let i = document.createElement('i')
+    //   i.className = 'bi bi-arrow-up me-1'
+    //   // let p = document.createElement('p')
+    //   span1.textContent = new Intl.NumberFormat('es-MX', { style: 'percent' }).format(jsonAccountsToPay.percentageBalanceProgress)
+    //   let span2 = document.createElement('span')
+    //   span2.className = 'text-nowrap text-xs text-body-emphasis'
+    //   span2.textContent = 'Muy bien!'
+    //   span1.appendChild(i)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span1)
+    //   AllAccountsToPayApp.percentageBalanceProgressEl.appendChild(span2)
+    // }
     // AllAccountsToPayApp.percentageBalanceProgressEl.innerHTML = html
   }
 
@@ -647,9 +651,9 @@
           { className: "fw-bold text-center", targets: 6, width: '5%',
             createdCell: function (td, cellData, rowData, row, col) {
               if (cellData === 'PAGO PARCIAL') {
-                $(td).html('<span class="dot dot-partial"></span>')
+                $(td).html('<span class="dot dot-partial bg-primary" style="--bs-bg-opacity: .7;"></span>')
               } else if (cellData === 'PENDIENTE DE PAGO') {
-                $(td).html('<span class="dot dot-pending"></span>')
+                $(td).html('<span class="dot dot-pending bg-dark" style="--bs-bg-opacity: .7;"></span>')
               }
             }
           },
@@ -674,7 +678,7 @@
             render: function (data, type, row, meta) {
               return `
               <div class="dropdown">
-                <button type="button" id="dropdownMenuEdit" class="btn btn-light" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
+                <button type="button" id="dropdownMenuEdit" class="btn btn-light btn-sm" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
                 <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
                   <li>
                     <a href="/payments/add-payment/${Number(row['No Nota'])}" class="text-dark dropdown-item">
@@ -692,7 +696,7 @@
           //   }
           // },
         ],
-        order: [[4, 'desc']],
+        order: [[2, 'desc']],
         select: {
           style: 'os',
           selector: 'td:first-child'
@@ -722,16 +726,16 @@
           },
           { 
             extend: 'pdfHtml5',
-            orientation: 'landscape',
-            pageSize: 'LEGAL',
+            orientation: 'portarit',
+            pageSize: 'A4',
             messageTop: 'Este documento es informativo.',
             messageBottom: datetimeExportText,
             text: '<i class="bi bi-filetype-pdf"></i>', 
             className: 'btn btn-dark',
-            footer: true,
-            title: 'Lista de cuenta por pagars',
+            // footer: true,
+            title: 'Lista de cuenta por pagar',
             exportOptions: {
-              columns: ':visible',
+              columns: [ 1, 2, 3, 4, 6 ],
               modifier: {
                 selected: true
               }
@@ -742,7 +746,8 @@
             className: 'btn btn-dark',
             title: 'Lista de cuentas por pagar',
             exportOptions: {
-              columns: ':visible',
+              // columns: ':visible',
+              columns: [ 1, 2, 3, 4, 6 ],
               modifier: {
                 selected: true
               }
@@ -1010,7 +1015,7 @@
       });
 
       // SHOW OFF CANVAS ACCOUNT TO PAY RESUME DETAILS
-      $('#accountsToPayTable tbody').on('click', 'tr td:nth-child(3)', async function () {
+      $('#accountsToPayTable tbody').on('click', 'tr td:nth-child(2)', async function () {
           var data = accountsToPayTable.row( this ).data();
           console.log(data)
           AllAccountsToPayApp.paymentsByNoteNumber = await AllAccountsToPayApp.fetchPaymentsByProvider(data['No Nota'])
@@ -1119,8 +1124,8 @@
             new Date( $('#maxCuentasPorPagar').val() ).setUTCHours(23,59,59,999):
             null;
 
-          let splitDate = data[3].split(' ')
-
+          let splitDate = data[4].split(' ')
+          // console.log(data)
           let monthSelected
           for (let prop in months) {
             if (prop.toString().toLowerCase() === splitDate[1].toString().toLowerCase()) {
