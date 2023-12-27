@@ -581,11 +581,11 @@ class Payment {
 
   /**
    * REALIZAR UN PAGO MASIVO -----------------------------------
-   * TODO: in progress
+   * TODO: CREATE PROMISE ALL in case one db action throwe an error: in progress
    */
   static async newMassivePayment (req, res, next) {
     // console.log(req.body)
-    const { resume, accountsToPay, paymentMethod, user } = req.body
+    const { resume, accountsToPay, paymentMethod, user, isMassivePayment, isAgainstReceiptPayment } = req.body
     // const payments = JSON.parse(req.body.payments)
     console.log(resume)
     console.log(accountsToPay)
@@ -594,7 +594,7 @@ class Payment {
 
     // POR DEFECTO - Realizar un pago masivo
     // La columna 'Pago masivo' es true en automatico
-    const isMassivePayment = true
+    // const isMassivePayment = true
     try {
       await Sheet.loadInfo()
 
@@ -608,7 +608,8 @@ class Payment {
         paymentMethod,
         retirementAccount,
         user,
-        isMassivePayment
+        isMassivePayment,
+        isAgainstReceiptPayment
       ))
 
       const massivePaymentFolio = newPayment.toObject().Folio
