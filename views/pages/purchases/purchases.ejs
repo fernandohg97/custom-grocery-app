@@ -155,9 +155,9 @@
             { title: 'Fecha Recibido', data: 'Fecha Recibido' },
             { title: 'Fecha a Pagar', data: 'Fecha a Pagar', orderable: false, searchable: false, visible: false },
             { title: 'Estatus', data: 'Estatus', orderable: false, width: '15%' },
-            { title: 'Tipo', data: 'Tipo', visible: true },
+            { title: 'Tipo', data: 'Tipo', visible: true, orderable: false },
             { title: 'Usuario', data: 'Usuario', orderable: false, visible: true },
-            { title: 'Detalles', data: 'Detalles', visible: false, searchable: false },
+            { title: 'Detalles', data: 'Detalles', visible: false, searchable: false, orderable: false },
             { title: 'Editar', orderable: false, searchable: false }, // 9
             // { title: 'Eliminar', orderable: false, searchable: false }
         ],
@@ -506,16 +506,24 @@
         const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPayments')
 
         // Assign initial values to offcanvas
-        AllPurchasesApp.offCanvasPaymentsTitle = document.getElementById('offCanvasPaymentsTitle')
-        AllPurchasesApp.offCanvasPaymentsNote = document.getElementById('offCanvasPaymentsNote')
-        AllPurchasesApp.offCanvasTotalPurchaseAmount = document.getElementById('totalPurchaseAmount')
+        AllPurchasesApp.offCanvasPurchaseTitle = document.getElementById('offCanvasPurchaseTitle')
+        AllPurchasesApp.offCanvasPurchaseNoteNumber = document.getElementById('offCanvasPurchaseNoteNumber')
+        AllPurchasesApp.offCanvasPurchaseUser = document.getElementById('offCanvasPurchaseUser')
+        AllPurchasesApp.offCanvasPurchaseDateReceived = document.getElementById('offCanvasPurchaseDateReceived')
+        AllPurchasesApp.offCanvasPurchaseType = document.getElementById('offCanvasPurchaseType')
+        AllPurchasesApp.offCanvasPurchaseStatus = document.getElementById('offCanvasPurchaseStatus')
+        AllPurchasesApp.offCanvasPurchaseTotalAmount = document.getElementById('offCanvasPurchaseTotalAmount')
         AllPurchasesApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
-
+        AllPurchasesApp.offCanvasPaymentTypeMessage = document.getElementById('offCanvasPaymentTypeMessage')
         // Assign values
-        AllPurchasesApp.offCanvasPaymentsTitle.textContent = data.Proveedor
-        AllPurchasesApp.offCanvasPaymentsNote.textContent = `#${data['No Nota']} | Registrado por: ${data.Usuario || 'n/a'}`
-        AllPurchasesApp.offCanvasTotalPurchaseAmount.textContent = data['Monto Total']
-        AllPurchasesApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'n/a'
+        AllPurchasesApp.offCanvasPurchaseTitle.textContent = data.Proveedor
+        AllPurchasesApp.offCanvasPurchaseNoteNumber.textContent = `#${data['No Nota']}`
+        AllPurchasesApp.offCanvasPurchaseUser.textContent = data.Usuario || 'Sin registro'
+        AllPurchasesApp.offCanvasPurchaseDateReceived.textContent = data['Fecha Recibido']
+        AllPurchasesApp.offCanvasPurchaseType.textContent = data.Tipo
+        AllPurchasesApp.offCanvasPurchaseStatus.textContent = data.Estatus
+        AllPurchasesApp.offCanvasPurchaseTotalAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(data['Monto Total'].replace(/[\$,]/g, ''))
+        AllPurchasesApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'Sin detalles'
         
         // Get elements from off canvas table
         let table = document.getElementById("paymentsResumeTable");
@@ -528,6 +536,7 @@
           paymentsNotFoundMsg.classList.remove('d-none')
         } else {
           console.log('pagos dentro')
+          AllPurchasesApp.offCanvasPaymentTypeMessage.textContent = AllPurchasesApp.paymentsByNoteNumber.hasMassivePayment === true ? 'Esta nota se liquidó con un pago masivo' : 'Esta nota tiene un pago directo'
           // Assign payments data to table in offcanvas
           paymentsNotFoundMsg.classList.add('d-none')
           table.classList.remove('d-none')
@@ -597,7 +606,8 @@
 
           let monthSelected
           for (let prop in months) {
-            if (prop.toString().toLowerCase() === splitDate[1].toString().toLowerCase()) {
+            const parseMonth = splitDate[1].replace('.', '')
+            if (prop.toString().toLowerCase() === parseMonth.toString().toLowerCase()) {
               monthSelected = months[prop]
               break
             }
