@@ -297,7 +297,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button id="add-massive-payment" type="button" class="btn btn-sm btn-primary add-massive-payment">Aplicar pago masivo</button>
+        <button id="add-massive-payment" type="button" class="btn btn-sm btn-primary add-massive-payment" data-bs-dismiss="modal">Aplicar pago masivo</button>
       </div>
     </div>
   </div>
@@ -306,14 +306,36 @@
 <!-- OFF CANVAS - PURCHASE RESUME NOTE NUMBER PAYMENTS -->
 <div id="offCanvasPayments" class="offcanvas offcanvas-end offcanvas-payments" data-bs-scroll="true" tabindex="-1"  aria-labelledby="offCanvasPayments">
   <div class="offcanvas-header">
-    <h3 class="offcanvas-title" id="offCanvasPaymentsTitle"></h3>
+    <h6 class="offcanvas-title mt-1 text-muted">Resumen de compra</h6>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
-    <div class="page-title-subheading fw-bold mb-1 fs-6" id="offCanvasPaymentsNote"></div>
+    <h4 class="fw-bold text-primary" id="offCanvasPurchaseTitle"></h4>
+    <span id="offCanvasPaymentTypeMessage" class="badge rounded-pill text-bg-secondary text-xs mb-2"></span>
+    <span class="fw-medium text-muted text-sm d-block">No. Nota</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPurchaseNoteNumber"></div>
+    <span class="fw-medium text-muted text-sm d-block">Usuario</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPurchaseUser"></div>
+    <span class="fw-medium text-muted text-sm d-block">Fecha de recibido</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPurchaseDateReceived"></div>
+    <span class="fw-medium text-muted text-sm d-block">Tipo</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPurchaseType"></div>
+
+    <hr class="hr-1">
+
+    <span class="fw-medium text-muted text-sm d-block">Estatus</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPurchaseStatus"></div>
+    <span class="fw-medium text-muted text-sm d-block">Monto total</span>
+    <div class="page-title-subheading fw-semibold fs-6" id="offCanvasPurchaseTotalAmount"></div>
+    <span class="fw-medium text-muted text-sm d-block">Detalles</span>
+    <p class="text-body-secondary fs-6" id="offCanvasPurchaseDetails"></p>
+
+    <hr class="hr-1">
+
+    <!-- <div class="page-title-subheading fw-bold mb-1 fs-6" id="offCanvasPaymentsNote"></div>
     <div class="fs-6 mb-3">Total: <strong id="totalPurchaseAmount"></strong></div>
     <span>Detalles:</span>&nbsp;
-    <p class="text-body-secondary" id="offCanvasPurchaseDetails"></p>
+    <p class="text-body-secondary" id="offCanvasPurchaseDetails"></p> -->
     <div class="table-responsive mt-4">
       <table id="paymentsResumeTable" class="table paymentsResumeTable d-none caption-top" style="font-size: 13px;">
         <caption>Lista de pagos</caption>
@@ -365,7 +387,7 @@
 <!-- OFF CANVAS - ACCOUNT TO PAY RESUME NOTE NUMBER PAYMENTS -->
 <div id="offCanvasAccountToPayPayments" class="offcanvas offcanvas-end offcanvas-account-to-pay-payments p-3" data-bs-scroll="true" tabindex="-1"  aria-labelledby="offCanvasAccountToPayPayments">
   <div class="offcanvas-header">
-    <h6 class="offcanvas-title mt-1 text-muted">Resumen</h6>
+    <h6 class="offcanvas-title mt-1 text-muted">Resumen de cuenta por pagar</h6>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
@@ -608,7 +630,7 @@
   }
 
   FullContainerApp.setInitialValues = () => {
-    FullContainerApp.currentDateAgainstReceipt.textContent = moment().format('DD MMM. YYYY')
+    FullContainerApp.currentDateAgainstReceipt.textContent = moment().format('DD MMM YYYY')
 
   }
 
