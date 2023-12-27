@@ -264,7 +264,7 @@
       AllAccountsToPayApp.newAgainstReceiptBtn.addEventListener('click', AllAccountsToPayApp.confirmNewAgainstReceipt);
       //VARS - CONTRA RECIBO
       AllAccountsToPayApp.ModalSupplierAgainstReceipt
-      AllAccountsToPayApp.ModalQtyAccountsAgainstReceipt
+      AllAccountsToPayApp.ModalQtyAccountsToPayAgainstReceipt
       AllAccountsToPayApp.ModalTotalAmountAgainstReceipt
       AllAccountsToPayApp.ModalPaymentMethodAgainstReceipt
       AllAccountsToPayApp.ModalStatusAgainstReceipt
@@ -354,12 +354,12 @@
       let successMessageAlert = document.getElementById('success-message')
       successMessageAlert.textContent = result.message
       successMessageAlert.classList.remove('d-none')
-
+      scrollToTopWhenSubmit()
       setTimeout(() => {
         successMessageAlert.classList.add('d-none')
         // AllAccountsToPayApp.submitUpdateBtn.disabled = true
         // Simulate an HTTP redirect:
-        // window.location.replace(`${apiUrl}/purchases/payments-done`);
+        window.location.replace(`${apiUrl}/purchases/accounts-to-pay`);
       }, "4000");
     }
   }
@@ -368,85 +368,85 @@
   // TODO: in progress
   AllAccountsToPayApp.confirmNewAgainstReceipt = async () => {
     console.log('creando contra recibo...')
-    // // SHOW SPINNER
-    // AllAccountsToPayApp.loadingSpinnerMsg.textContent = 'Agregando pago masivo...'
-    // AllAccountsToPayApp.loadingSpinner.classList.remove('d-none')
-    // // console.log(AllAccountsToPayApp.accountsToPayMassive)
+    // SHOW SPINNER
+    AllAccountsToPayApp.loadingSpinnerMsg.textContent = 'Generando contra recibo...'
+    AllAccountsToPayApp.loadingSpinner.classList.remove('d-none')
+    // console.log(AllAccountsToPayApp.accountsToPayMassive)
 
-    // // hide modal after submit
-    // AllAccountsToPayApp.ModalAddPaymentMultiple.hide()
-    // const numberOfNotes = AllAccountsToPayApp.ModalQtyAccountsToPayMassive.textContent
-    // const totalAmountToPay = parseFloat(AllAccountsToPayApp.ModalTotalAmountToPayMassive.textContent.replace(/[\$,]/g, ''))
+    // hide modal after submit
+    AllAccountsToPayApp.ModalNewAgainstReceiptModal.hide()
+    const numberOfNotes = AllAccountsToPayApp.ModalQtyAccountsToPayAgainstReceipt.textContent
+    const totalAmountToPay = parseFloat(AllAccountsToPayApp.ModalTotalAmountAgainstReceipt.textContent.replace(/[\$,]/g, ''))
 
-    // // FORM
-    // const fd = new FormData(AllAccountsToPayApp.form)
-    // fd.append('accountsToPay', JSON.stringify(AllAccountsToPayApp.accountsToPayMassive))
-    // fd.append('resume', JSON.stringify({
-    //   totalCount: numberOfNotes,
-    //   totalAmountToPay,
-    //   providerName: AllAccountsToPayApp.ModalSupplierToPayMassive.textContent
-    // }))
+    // FORM
+    const fd = new FormData(AllAccountsToPayApp.form)
+    fd.append('accountsToPay', JSON.stringify(AllAccountsToPayApp.accountsToPayMassive))
+    fd.append('resume', JSON.stringify({
+      totalCount: numberOfNotes,
+      totalAmountToPay,
+      providerName: AllAccountsToPayApp.ModalSupplierToPayMassive.textContent
+    }))
 
-    // const urlEncoded = new URLSearchParams(fd).toString()
-    // console.log(urlEncoded);
+    const urlEncoded = new URLSearchParams(fd).toString()
+    console.log(urlEncoded);
 
 
-    // console.log(`${apiUrl}/payments/add-massive-payment`);
-    // const response = await fetch(`${apiUrl}/payments/add-massive-payment`, {
-    //   method: 'POST',
-    //   body: urlEncoded,
-    //   headers: {
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //   }
-    // })
-    // let result = await response.json()
-    // console.log(response.status)
-    // console.log(result);
-    // if (response.status === 422) {
-    //   AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
-    //   let inputEls = AllAccountsToPayApp.form.getElementsByClassName('input-valid')
-    //   console.log(result)
-    //   let errors = result.errors
-    //   console.log(inputEls)
+    console.log(`${apiUrl}/payments/add-massive-payment`);
+    const response = await fetch(`${apiUrl}/payments/add-massive-payment`, {
+      method: 'POST',
+      body: urlEncoded,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    let result = await response.json()
+    console.log(response.status)
+    console.log(result);
+    if (response.status === 422) {
+      AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+      let inputEls = AllAccountsToPayApp.form.getElementsByClassName('input-valid')
+      console.log(result)
+      let errors = result.errors
+      console.log(inputEls)
 
-    //   Array.from(inputEls).forEach(inputValid => {
-    //     errors.forEach((err) => {
-    //       // console.log(err)
-    //       let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+      Array.from(inputEls).forEach(inputValid => {
+        errors.forEach((err) => {
+          // console.log(err)
+          let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
 
-    //       if (inputValid.name === err.param) {
-    //         console.log(err)
-    //         // console.log(invalidMsg)
-    //         invalidMsg.textContent = err.msg
-    //         invalidMsg.classList.remove('d-none')
-    //       }
-    //     })
+          if (inputValid.name === err.param) {
+            console.log(err)
+            // console.log(invalidMsg)
+            invalidMsg.textContent = err.msg
+            invalidMsg.classList.remove('d-none')
+          }
+        })
         
-    //   })
-    // } else if (response.status === 400 || response.status === 404) {
-    //   AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
-    //   let failureMessageAlert = document.getElementById('failure-message')
-    //   failureMessageAlert.classList.remove('d-none')
-    //   failureMessageAlert.textContent = result.message
+      })
+    } else if (response.status === 400 || response.status === 404) {
+      AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+      let failureMessageAlert = document.getElementById('failure-message')
+      failureMessageAlert.classList.remove('d-none')
+      failureMessageAlert.textContent = result.message
 
-    //   setTimeout(() => {
-    //     failureMessageAlert.classList.add('d-none')
-    //   }, "4000");
-    // }
-    // else if (response.status === 201 || response.status === 200) {
-    //   // TODO: deselect rows table
-    //   AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
-    //   let successMessageAlert = document.getElementById('success-message')
-    //   successMessageAlert.textContent = result.message
-    //   successMessageAlert.classList.remove('d-none')
+      setTimeout(() => {
+        failureMessageAlert.classList.add('d-none')
+      }, "4000");
+    }
+    else if (response.status === 201 || response.status === 200) {
+      // TODO: deselect rows table
+      AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+      let successMessageAlert = document.getElementById('success-message')
+      successMessageAlert.textContent = result.message
+      successMessageAlert.classList.remove('d-none')
 
-    //   setTimeout(() => {
-    //     successMessageAlert.classList.add('d-none')
-    //     // AllAccountsToPayApp.submitUpdateBtn.disabled = true
-    //     // Simulate an HTTP redirect:
-    //     // window.location.replace(`${apiUrl}/purchases/payments-done`);
-    //   }, "4000");
-    // }
+      setTimeout(() => {
+        successMessageAlert.classList.add('d-none')
+        // AllAccountsToPayApp.submitUpdateBtn.disabled = true
+        // Simulate an HTTP redirect:
+        // window.location.replace(`${apiUrl}/purchases/payments-done`);
+      }, "4000");
+    }
   }
 
   // GET PAYMENTS BY NOTE NUMBER -------------------------------------------
@@ -620,12 +620,12 @@
         stripeClasses: [ 'strip1', 'strip2' ],
         columns: [
             { data: null, orderable: false, className: 'select-checkbox', defaultContent: '', width: '5%' },
-            { title: 'No. Nota', data: 'No Nota' },
+            { title: 'No. Nota', data: 'No Nota', searchable: true, orderable: true },
             { title: 'Proveedor', data: 'Proveedor'},
             { title: 'Monto Total', data: 'Monto Total'},
             { title: 'Fecha Recibido', data: 'Fecha Recibido' },
             { title: 'Fecha a Pagar', data: 'Fecha a Pagar', orderable: false, searchable: false, visible: false },
-            { title: 'Estatus', data: 'Estatus', orderable: false }, //5
+            { title: 'Estatus', data: 'Estatus', orderable: false, searchable: true }, //5
             { title: 'Desde hace', data: null, orderable: false, searchable: false },
 
             // { title: 'Tipo', data: 'Tipo', visible: true },
@@ -780,7 +780,7 @@
                 })
                 // const suppliersAreTheSame = accountsToPaySelected.every(account => account.Proveedor === compareSupplier)
                 if (!suppliersAreTheSame) { // in case suppliers are not the same
-                  return alert(new Error(`😕Ups, los proveedores seleccionados deben ser iguales y tener el estatus 'PENDIENTE DE PAGO' para realizar un pago masivo.`))
+                  return alert(new Error(`😕Ups, los proveedores seleccionados deben ser iguales y tener el estatus 'PENDIENTE DE PAGO' para realizar un contra recibo.`))
                 } else { // in case are the same
                   // alert('Todos los proveedores coinciden')
                   AllAccountsToPayApp.accountsToPayAgainstReceipt = accountsToPaySelected
@@ -1125,14 +1125,16 @@
             null;
 
           let splitDate = data[4].split(' ')
-          // console.log(data)
+          // console.log(splitDate)
           let monthSelected
           for (let prop in months) {
-            if (prop.toString().toLowerCase() === splitDate[1].toString().toLowerCase()) {
+            const parseMonth = splitDate[1].replace('.', '')
+            if (prop.toString().toLowerCase() === parseMonth.toString().toLowerCase()) {
               monthSelected = months[prop]
               break
             }
           }
+
           let mon = Number(format_Date(monthSelected)) - 1;
           let date = new Date(Number(splitDate[2]), Number(mon), Number(splitDate[0])).setUTCHours(23, 59, 59, 999)
 
