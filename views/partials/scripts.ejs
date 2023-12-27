@@ -5,7 +5,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
 
@@ -24,12 +23,29 @@
 <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 <script src="https://cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-<!-- <script src="https://momentjs.com/downloads/moment-with-locales.js" charset="UTF-8"></script> -->
+<script src="https://momentjs.com/downloads/moment-with-locales.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer" charset="UTF-8"></script>  
+
 
 <script>
   moment().format()
   console.log(moment().format('DD MMM YYYY'))
+  // DEFINE LOCALE MOMENT date
+  moment.updateLocale('es', {
+    months : [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+    "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ],
+    weekdays : [
+      "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"
+    ],
+    weekdaysShort : ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"]
+  })
 
+  // FORMAT DATE TO MONTH NAME
+    function format_Date(month){
+    return moment().month(month).format("M");
+  }
 </script>
 
 <script>
@@ -38,18 +54,18 @@
     MODALS.ConfirmationDeleteModal = document.getElementById('myModal')
     // MONTHS NAME
     var months = {
-      Jan: 'Enero',
+      Ene: 'Enero',
       Feb: 'Febrero',
       Mar: 'Marzo',
-      Apr: 'Abril',
+      Abr: 'Abril',
       May: 'Mayo',
       Jun: 'Junio',
       Jul: 'Julio',
-      Aug: 'Agosto',
+      Ago: 'Agosto',
       Sep: 'Septiembre',
       Oct: 'Octubre',
       Nov: 'Noviembre',
-      Dec: 'Diciembre'
+      Dic: 'Diciembre'
     }
     var minDate, maxDate, minDateCompras, maxDateCompras, minDateOrders, maxDateOrders;
 
@@ -63,6 +79,18 @@
       });
     }
 
+    $.fn.datepicker.dates['es'] = {
+      days: ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"],
+      daysShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+      daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+      months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+    "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+      monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+      today: "Hoy",
+      clear: "Borrar",
+      format: "yyyy-mm-dd"
+    };
+
     // load config date picker bootstrap
     $( document ).ready(function() {
       // load date picker
@@ -73,22 +101,9 @@
         autoclose: true,
         todayBtn: "linked",
         language: "es",
+        clearBtn: true
       });
     })
-  
-
-    // DEFINE LOCALE MOMENT date
-    moment.locale('es', {
-      months : [
-      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
-      "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-      ]
-    })
-
-    // FORMAT DATE TO MONTH NAME
-    function format_Date(month){
-      return moment().month(month).format("M");
-    }
 
     function hideConfirmationDeleteModal() {
       $('#myModal').modal('hide')
