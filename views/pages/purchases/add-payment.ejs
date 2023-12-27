@@ -10,7 +10,7 @@
 
   <div class="row justify-content-center">
     <!-- FORMULARIO -->
-    <div class="col-6">
+    <div class="col-md-6 col-12">
       <h4 class="mb-2 mt-0 text-primary">Agregar pago - <strong id="providerName" class="text-dark fw-bolder"></strong> - <strong id="noteNumber" class="text-dark fw-bolder"></strong></h4>
 
       <form id="add-payment-form" action="/payments" method="post" enctype="application/x-www-form-urlencoded" class="add-payment-form row row-cols-1 g-3 mt-2 pb-3 payment-needs-validation">
@@ -37,7 +37,7 @@
         <!-- FORMA DE PAGO -->
         <div id="paymentMethodInput" class="col valid-required">
         <label for="paymentMethodInput" class="form-label">Forma de pago</label>
-        <select id="paymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
+        <select id="addPaymentMethod" name="paymentMethod" class="form-select input-valid" aria-label="paymentMethod">
           <option selected disabled value="">Selecciona la forma de pago</option>
           <!-- <option value="Efectivo">Efectivo</option>
           <option value="Tarjeta">Tarjeta</option> -->
@@ -55,7 +55,7 @@
       <!-- CUENTA DE RETIRO -->
       <div id="retirementAccountInput" class="col valid-required">
         <label for="retirementAccountInput" class="form-label">Cuenta de retiro</label>
-        <select id="retirementAccount" name="retirementAccount" class="form-select input-valid" aria-label="payment-retirement-account">
+        <select id="addPaymentRetirementAccount" name="retirementAccount" class="form-select input-valid" aria-label="payment-retirement-account">
         <option selected disabled value="">Selecciona la cuenta de retiro</option>
         <option value="CD01">Fondo fijo - CD01</option>
         <option value="CD02">Caja externa - CD02</option>
@@ -75,7 +75,7 @@
       <!-- USUARIO -->
       <div class="col valid-required">
         <label for="userInput" class="form-label name-field-label fw-bold">Usuario*</label>
-        <input id="user" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
+        <input id="addPaymentUser" name="user" type="text" class="form-control input-valid" placeholder="Ingresa tu nombre">
         <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
           Por favor ingresa tu nombre.
         </div>
@@ -84,7 +84,7 @@
       <div class="col valid-required">
         <label for="paymentDate" class="form-label fw-bold">Fecha de pago</label>
         <!-- <input id="date-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
-        <input id="paymentDate" type="text" name="paymentDate" class="form-control input-valid" placeholder="yyyy-mm-dd" aria-label="payment-date" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+        <input id="addPaymentPaymentDate" type="text" name="paymentDate" class="form-control input-valid datepicker" placeholder="yyyy-mm-dd" aria-label="payment-date" data-date-format="yyyy-mm-dd" data-provide="datepicker">
         <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
           Por favor ingresa una fecha correcta.
         </div>
@@ -118,43 +118,57 @@
 
         <!-- BOTONES -->
         <div class="col-12">
-          <button id="submitAddPaymentBtn" type="submit" class="btn btn-primary">Aplicar pago</button>
-          <a role="button" class="btn btn-light" href="/admin">Cancelar</a>
+          <button id="submitAddPaymentBtn" type="submit" class="btn btn-primary btn-sm">Aplicar pago</button>
+          <button type="button" class="btn btn-light btn-sm" onclick="history.back()">Cancelar</button>
         </div>
       </form>
     </div>
     <!-- RESUMEN COMPRA-->
-    <!-- <div class="col text-center border border-2 border-secondary-subtle p-2 rounded-1" style="--bs-border-opacity: .5;">
-      <h6 class="mt-2 mb-4">Resumen</h6>
-      <div class="row row-cols-1 gy-3">
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Recibido por:</span>
-          <span id="userPurchase" class="fs-6 mb-0"></span>
-        </div>
-        <div class="col">
-          <span class="h5 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
-          <span id="purchaseStatus" class="fs-5 mb-0"></span>
-        </div>
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total de la nota</span>
-          <span id="totalPurchaseAmount" class="h3 font-bold mb-0"></span>
-        </div>
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Abonado</span>
-          <span id="totalPurchasePayed" class="h3 font-bold mb-0 text-success"></span>
-        </div>
-        <div class="col">
-          <span class="h6 font-semibold text-muted text-sm d-block mb-1">Saldo pendiente</span>
-          <span id="totalBalanceToPay" class="h3 font-bold mb-0 text-primary"></span>
-        </div>
-        <div class="col">
-          <p class="h6 font-normal text-body-secondary text-sm d-block mb-2 mt-3">
-            Fecha límite de pago: <strong id="dateToPayLimit">14 oct. 2023</strong><br><br>
-            Quedan <strong class="text-dark fw-bold" id="daysLefToToDateLimit">5</strong>&nbsp;días
-          </p>
+    <div class="col-md-6 col-12">
+      <!-- <div id="warning-message-purchase-days-exceed-to-pay" class="text-sm fw-medium p-2 mb-2 bg-warning-subtle text-emphasis-warning">Esta nota ya está proxima a ser inhabilitada para pago debido a la cantidad de dias inactiva.</div> -->
+      <div class="text-center border border-2 border-secondary-subtle py-3 px-2 rounded-1" style="--bs-border-opacity: .5;">
+        <h6 class="mt-2 mb-4">Resumen</h6>
+        <div class="row row-cols-1 gy-3">
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Recibido por:</span>
+            <span id="addPaymentUserPurchase" class="fs-6 mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Fecha de recibido:</span>
+            <span id="addPaymentDateRecord" class="fs-6 mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h5 font-semibold text-muted text-sm d-block mb-1">Estatus</span>
+            <span id="addPaymentPurchaseStatus" class="fs-5 mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h5 font-semibold text-muted text-sm d-block mb-1">Tipo</span>
+            <span id="addPaymentType" class="fs-5 mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Total de la nota</span>
+            <span id="addPaymentTotalPurchaseAmount" class="h3 font-bold mb-0"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Abonado</span>
+            <span id="addPaymentTotalPurchasePayed" class="h3 font-bold mb-0 text-success"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Saldo pendiente</span>
+            <span id="addPaymentTotalBalanceToPay" class="h3 font-bold mb-0 text-primary"></span>
+          </div>
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-1">Detalles</span>
+            <span id="addPaymentDetails" class="fs-6 fw-light mb-0"></span>
+          </div>
+          <div class="col">
+            <p class="h6 font-normal text-body-secondary text-sm d-block mb-2 mt-3">
+              Fecha límite de pago: <strong id="addPaymentDateToPayLimit"></strong><br><br>
+            </p>
+          </div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 
 </div>
@@ -202,23 +216,25 @@
     // Set FORM VARS
     AddPaymentApp.noteNumberEl = document.getElementById('noteNumber')
     AddPaymentApp.providerName = document.getElementById('providerName')
-    AddPaymentApp.type = document.getElementById('type')
+    // AddPaymentApp.type = document.getElementById('type')
     AddPaymentApp.paymentAmount = document.getElementById('paymentAmount')
-    AddPaymentApp.paymentMethod = document.getElementById('paymentMethod')
-    AddPaymentApp.retirementAccount = document.getElementById('retirementAccount')
-    AddPaymentApp.user = document.getElementById('user')
+    AddPaymentApp.paymentMethod = document.getElementById('addPaymentMethod')
+    AddPaymentApp.retirementAccount = document.getElementById('addPaymentRetirementAccount')
+    AddPaymentApp.user = document.getElementById('addPaymentUser')
     AddPaymentApp.status = document.getElementById('status')
-    AddPaymentApp.paymentDate = document.getElementById('paymentDate')
+    AddPaymentApp.paymentDate = document.getElementById('addPaymentPaymentDate')
 
     
-    // SET OTHER ELEMENT VARS --------------------------------
-    // AddPaymentApp.totalPurchaseAmount = document.getElementById('totalPurchaseAmount')
-    // AddPaymentApp.totalPurchasePayed = document.getElementById('totalPurchasePayed')
-    // AddPaymentApp.totalBalanceToPay = document.getElementById('totalBalanceToPay')
-    // AddPaymentApp.dateToPayLimit = document.getElementById('dateToPayLimit')
-    // AddPaymentApp.daysLeftToDateLimit = document.getElementById('daysLefToToDateLimit')
-    // AddPaymentApp.userPurchase = document.getElementById('userPurchase')
-    // AddPaymentApp.purchaseStatus = document.getElementById('purchaseStatus')
+    // SET RESUMEN ELEMENT VARS --------------------------------
+    AddPaymentApp.addPaymentUserPurchase = document.getElementById('addPaymentUserPurchase')
+    AddPaymentApp.addPaymentPurchaseStatus = document.getElementById('addPaymentPurchaseStatus')
+    AddPaymentApp.addPaymentType = document.getElementById('addPaymentType')
+    AddPaymentApp.addPaymentDateRecord = document.getElementById('addPaymentDateRecord')
+    AddPaymentApp.addPaymentTotalPurchaseAmount = document.getElementById('addPaymentTotalPurchaseAmount')
+    AddPaymentApp.addPaymentTotalPurchasePayed = document.getElementById('addPaymentTotalPurchasePayed')
+    AddPaymentApp.addPaymentTotalBalanceToPay = document.getElementById('addPaymentTotalBalanceToPay')
+    AddPaymentApp.addPaymentDateToPayLimit = document.getElementById('addPaymentDateToPayLimit')
+    AddPaymentApp.addPaymentDetails = document.getElementById('addPaymentDetails')
 
     // form
     AddPaymentApp.form = document.getElementById('add-payment-form')
@@ -257,12 +273,21 @@
 
     AddPaymentApp.noteNumberEl.textContent = '#' + purchaseByNoteNumber['No Nota']
     AddPaymentApp.providerName.textContent = purchaseByNoteNumber.Proveedor
-    AddPaymentApp.type.value = purchaseByNoteNumber.Tipo
+    // AddPaymentApp.type.value = purchaseByNoteNumber.Tipo
     // AddPaymentApp.user.value = purchaseById.Usuario
-    AddPaymentApp.dateRecord.value = moment(new Date(purchaseByNoteNumber['Fecha Recibido'])).format('YYYY-MM-DD')
-    AddPaymentApp.totalAmount.value = purchaseByNoteNumber['Monto Total'].split('$')[1].trim().split(',').join('')
+    // AddPaymentApp.totalAmount.value = purchaseByNoteNumber['Monto Total'].split('$')[1].trim().split(',').join('')
     // AddPaymentApp.status.value = purchaseById.Estatus
-    AddPaymentApp.purchaseDetails.value = purchaseByNoteNumber.Detalles
+
+    // 📄 ASSIGN RESUMEN VALUES --------------------- 
+    AddPaymentApp.addPaymentUserPurchase.textContent = purchaseByNoteNumber.Usuario
+    AddPaymentApp.addPaymentDateRecord.textContent = moment(new Date(purchaseByNoteNumber['Fecha Recibido'])).format('DD MMM YYYY')
+    AddPaymentApp.addPaymentPurchaseStatus.textContent = purchaseByNoteNumber.Estatus
+    AddPaymentApp.addPaymentType.textContent = purchaseByNoteNumber.Tipo
+    AddPaymentApp.addPaymentTotalPurchaseAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(purchaseByNoteNumber['Monto Total'].replace(/[\$,]/g, ''))
+    AddPaymentApp.addPaymentTotalBalanceToPay.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(purchaseByNoteNumber.Saldo)
+    AddPaymentApp.addPaymentTotalPurchasePayed.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(purchaseByNoteNumber.TotalPagado)
+    AddPaymentApp.addPaymentDateToPayLimit.textContent = moment(new Date(purchaseByNoteNumber['Fecha a Pagar'])).format('DD MMM YYYY')
+    AddPaymentApp.addPaymentDetails.textContent = purchaseByNoteNumber.Detalles
 
     // Set provider names to option select field
     // for (value in providerNames) {
@@ -443,7 +468,7 @@
         let failureMessageAlert = document.getElementById('failure-message')
         failureMessageAlert.classList.remove('d-none')
         failureMessageAlert.textContent = result.message
-
+        scrollToTopWhenSubmit()
         setTimeout(() => {
           failureMessageAlert.classList.add('d-none')
         }, "4000");
@@ -452,12 +477,12 @@
         let successMessageAlert = document.getElementById('success-message')
         successMessageAlert.textContent = result.message
         successMessageAlert.classList.remove('d-none')
-
+        scrollToTopWhenSubmit()
         setTimeout(() => {
           successMessageAlert.classList.add('d-none')
           AddPaymentApp.submitAddPaymentBtn.disabled = true
           // Simulate an HTTP redirect:
-          window.location.replace(`${apiUrl}/admin`);
+          window.location.replace(`${apiUrl}/purchases/accounts-to-pay`);
         }, "4000");
       }
   }
