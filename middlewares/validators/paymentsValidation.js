@@ -77,7 +77,9 @@ const PaymentValidation = {
     // USUARIO
     check('user', 'El usuario es requerido').trim().notEmpty().toUpperCase(), // required
     // Indicar si es pago masivo
-    check('isMassivePayment', 'Indicar si es pago masivo o no es requerido').default(false).isBoolean({ loose: true }).toBoolean().notEmpty(), // required
+    check('isMassivePayment', 'Indicar si es pago masivo o no es requerido').default(true).isBoolean({ loose: true }).toBoolean().notEmpty(), // required
+    check('isAgainstReceiptPayment', 'Indicar si es pago de contrarecibo').default(false).isBoolean({ loose: true }).toBoolean().notEmpty(), // required
+
     (req, res, next) => {
       console.log('Validating request body')
       const errors = validationResult(req)
