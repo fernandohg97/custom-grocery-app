@@ -8,12 +8,14 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 const pdfOptions = require('../helpers/pdf-options')
-
+const sendMailAgainstReceipt = require('../middlewares/sendAgaintsReceiptEmail')
+const HtmlContent = require('../middlewares/generateHtmlReceiptContent')
 // models
 const PaymentModel = require('../models/payment.model')
 
 // const { defaultPurchaseStatus, defaultMassiveAgainstReceiptValues } = require('../config/default-values')
-const { defaultAgainstReceiptStatus, defaultPurchaseStatus } = require('../config/default-values')
+const { defaultAgainstReceiptStatus, defaultPurchaseStatus, defaultPaymentMethods, defaultMoneyAccounts } = require('../config/default-values')
+const AgainstReceiptModel = require('../models/againstReceipt.model')
 
 // const { getDaysPassedFromDate } = require('../middlewares/defaultMonthRange')
 // const AgainstReceiptModel = require('../models/AgainstReceipt.model')
@@ -298,6 +300,96 @@ class AgainstReceipt {
 
       // ✅ EXITO EN ACTUALIZAR COMPRA, PAGO Y DETALLE DE PAGO
       return res.status(201).json({ message: `Folio de pago #${paymentFolio} a contra recibo: #${folioRecibo} creado exitosamente!` })
+    } catch (error) {
+      console.log(`Hubo un error: ${error}`)
+      const { response } = error
+      console.log(response.data)
+      if (response.status === 400) return res.status(400).json({ message: `😕Ups, hubo un error: ${response.data.error.message}` })
+      return next(error)
+    }
+  }
+
+  /**
+   * CREAR 1 CONTRARECIBO -----------------------------------
+   * TODO: CREATE PROMISE ALL in case one db action throwe an error: in progress
+   */
+  static async newAgainstReceipt (req, res, next) {
+    console.log(req.body)
+    let { resume, accountsToPay, dateToPay, paymentMethod, status, user, details, email } = req.body
+    // const payments = JSON.parse(req.body.payments)
+
+    const retirementAccount = paymentMethod === defaultPaymentMethods.EFECTIVO ? defaultMoneyAccounts.FONDO_FIJO.code : defaultMoneyAccounts.BANAMEX_EMPRESA.code
+    resume = JSON.parse(resume)
+    accountsToPay = JSON.parse(accountsToPay)
+    // console.log(resume.providerName)
+    // console.log(accountsToPay.length)
+    // console.log(paymentMethod)
+
+    // console.log(accountsToPay[0]['No Nota'])
+    // console.log(accountsToPay[0]['Monto Total'])
+    // console.log(retirementAccount)
+    // POR DEFECTO - Realizar un pago masivo
+    // La columna 'Pago masivo' es true en automatico
+    // const isMassivePayment = true
+    try {
+      await Sheet.loadInfo()
+
+      const contraRecibosSheet = Sheet.sheetsByTitle[WORKSHEETS.contraRecibosSheet.SHEETNAME]
+      const detalleContraRecibosSheet = Sheet.sheetsByTitle[WORKSHEETS.detallesContraRecibosSheet.SHEETNAME]
+
+      // create payment
+      const newAgainstReceipt = await contraRecibosSheet.addRow(AgainstReceiptModel.newAgainstReceiptModel(
+        resume.providerName,
+        resume.totalCount,
+        resume.totalAmountToPay,
+        dateToPay,
+        paymentMethod,
+        retirementAccount,
+        status,
+        user,
+        details
+      ))
+
+      console.log(newAgainstReceipt)
+      const againstReceiptFolio = newAgainstReceipt.toObject().Folio
+      console.log(againstReceiptFolio)
+
+      // GUARD STATEMENT -------
+      if (!againstReceiptFolio) return next(createError(400, 'Ups, no se pudo crear el contra recibo'))
+
+      // ITERATE TO ALL ACCOUNTS TO PAY ------------
+      for (let index = 0; index < accountsToPay.length; index++) {
+        const noteNumber = accountsToPay[index]['No Nota']
+        const providerName = accountsToPay[index].Proveedor
+        const totalAmount = Number(accountsToPay[index]['Monto Total'].replace(/[\$,]/g, ''))
+        const dateReceived = accountsToPay[index]['Fecha Recibido']
+        const noteDetails = accountsToPay[index].Detalles
+
+        const newAgainstReceiptDetail = await detalleContraRecibosSheet.addRow(AgainstReceiptModel.newAgainstReceiptDetailModel(
+          againstReceiptFolio,
+          noteNumber,
+          providerName,
+          totalAmount,
+          dateReceived,
+          noteDetails
+        ))
+
+        console.log(newAgainstReceiptDetail)
+        // GUARD STATEMENT
+        if (!newAgainstReceiptDetail) return next(createError(400, 'Ups, no se pudo crear el detalle de contra recibo'))
+      }
+
+      // 📩 ENVIAR CORREO A PROVEEDOR DE CONTRARECIBO
+      const mailResponse = await sendMailAgainstReceipt(
+        '📄CONTRARECIBO de MERCADO DOS MIL',
+        HtmlContent.generateMailHtmlContent(resume.providerName, resume.totalCount, resume.totalAmountToPay, dateToPay, accountsToPay, details),
+        'Envio de contrarecibo de Mercado DOS MIL',
+        'compras@mercadodosmil.com, dhern220506@gmail.com')
+      // console.log(mailResponse)
+      // ✅ EXITO EN ACTUALIZAR COMPRA, PAGO Y DETALLE DE PAGO
+      return res
+        .status(201)
+        .json({ message: `Contra recibo con folio #${againstReceiptFolio} a ${Number(resume.totalCount)} notas de ${resume.providerName.toUpperCase()} generado y enviado exitosamente!` })
     } catch (error) {
       console.log(`Hubo un error: ${error}`)
       const { response } = error

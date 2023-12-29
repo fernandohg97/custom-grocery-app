@@ -113,17 +113,27 @@
             <div class="row row-cols-1 gy-2 justify-content-center text-center">
               <div class="col">
                 <span class="h4 font-semibold text-muted text-sm d-block">Proveedor</span>
-                <span id="supplierAgainstReceipt" class="font-bold text-primary fs-3"></span>
+                <span id="ModalSupplierAgainstReceipt" class="font-bold text-primary fs-3"></span>
               </div>
               <div class="col">
                 <span class="h4 font-semibold text-muted text-sm d-block">Cant. de notas</span>
-                <span id="qtyAccountsAgainstReceipt" class="font-bold fs-3"></span>
+                <span id="ModalQtyAccountsToPayAgainstReceipt" class="font-bold fs-3"></span>
               </div>
               <div class="col">
                 <span class="h4 font-semibold text-muted text-sm d-block">Total a pagar</span>
-                <span id="totalAmountAgainstReceipt" class="h3 font-bold"></span>
+                <span id="ModalTotalAmountAgainstReceipt" class="h3 font-bold"></span>
               </div>
-                <!-- <span id="paymentMethodToPayMassive" class="h3 font-bold text-success"></span> -->
+              <!-- FECHA A PAGAR -->
+              <div id="dateToPayInput" class="col-lg-6 valid-required mt-2">
+                <label for="dateToPayRecordAgainstReceipt" class="form-label">Fecha a pagar</label>
+                <!-- <input id="date-to-pay-record" type="date" class="form-control input-valid" placeholder="Fecha" aria-label="date-record"> -->
+                <input id="dateToPayRecordAgainstReceipt" name="dateToPay" class="form-control input-valid datepicker" placeholder="yyyy-mm-dd" aria-label="date-record" data-date-format="yyyy-mm-dd" data-provide="datepicker">
+                <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
+                  Por favor ingresa la fecha a pagar de este contra recibo.
+                </div>
+              </div>
+              <!-- Force next columns to break to new line -->
+              <div class="w-100"></div>
               <!-- FORMA DE PAGO -->
               <div id="paymentMethodInput" class="col-lg-6 valid-required mt-2">
                 <label for="paymentMethodInput" class="form-label h4 font-semibold text-muted text-sm">Forma de pago</label>
@@ -144,15 +154,15 @@
               <div id="statusInput" class="col-lg-6 valid-required mt-2">
                 <label for="statusInput" class="form-label h4 font-semibold text-muted text-sm">Estatus</label>
                 <!-- <span class="h4 font-semibold text-muted text-sm d-block">Tu forma de pago</span> -->
-                <select id="statusAgainstReceipt" name="status" class="form-select form-select-sm input-valid" disabled aria-label="status">
+                <select id="statusAgainstReceipt" class="form-select form-select-sm input-valid" disabled aria-label="status">
                   <!-- <option disabled value="">Selecciona la forma de pago</option> -->
                   <option selected value="BORRADOR">BORRADOR</option>
                   <option value="EN CORRECCION">EN CORRECCION</option>
                   <option value="PROGRAMADA">PROGRAMADA</option>
                   <option value="ENVIADO AL PROVEEDOR">ENVIADO AL PROVEEDOR</option>
                   <!-- <option value="PAGADO">PAGADO</option> -->
-
                 </select>
+                <input type="hidden" name="status" value="BORRADOR"/>
                 <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
                   Por favor selecciona una forma de pago disponible.
                 </div>
@@ -172,10 +182,17 @@
               <!-- ENVIAR A CORREO -->
               <div id="emailInput" class="col-lg-6 valid-required">
                 <label for="emailInput" class="form-label h4 font-semibold text-muted text-sm">Correo*</label>
-                <input id="email" name="email" type="email" class="form-control form-control-sm input-valid" placeholder="Ingresa correo de proveedor">
+                <input id="emailAgainstReceipt" name="email" type="email" class="form-control form-control-sm input-valid" placeholder="Ingresa correo de proveedor">
                 <div class="invalid-message d-none mt-1" style="font-size: 13px; color: red;">
                   Por favor ingresa un correo válido.
                 </div>
+              </div>
+              <!-- Force next columns to break to new line -->
+              <div class="w-100"></div>
+              <!-- DETALLES -->
+              <div class="col-lg-6">
+                <label for="againstReceiptDetails" class="form-label">Detalles</label>
+                <textarea style="font-size: 13px;" name="details" class="form-control form-control-sm" id="againstReceiptDetails" rows="3" placeholder="Escribe algo importante sobre este contra recibo"></textarea>
               </div>
             </div>
           </form>

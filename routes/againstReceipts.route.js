@@ -19,13 +19,13 @@ againstReceiptRouter.get('/invoice/:folio', againstReceiptCtrl.showPDFAgainstRec
 againstReceiptRouter.get('/add-payment/:folio', againstReceiptCtrl.getAgainstReceiptToPay) // Obtener contrarecibo por folio para pagar
 
 // POST endpoints
-againstReceiptRouter.post('/', validation.validateNewReceiptPayment, againstReceiptCtrl.payOneAgainstReceipt) // pagar un contrarecibo
+againstReceiptRouter.post('/', againstReceiptCtrl.newAgainstReceipt) // crear contrarecibo
+againstReceiptRouter.post('/add-receipt-payment', validation.validateNewReceiptPayment, againstReceiptCtrl.payOneAgainstReceipt) // pagar un contrarecibo
 
 // againstReceiptRouter.get('/invoice/download', async (req, res, next) => {
 //   res.download(`invoices/${res.locals.filename}`, res.locals.filename)
 // }) // Ver contrarecibo archivo PDF por Folio
 
-// againstReceiptRouter.post('/', validation.validateNewAgainstReceipt, againstReceiptCtrl.newAgainstReceipt) // crear contrarecibo
 // againstReceiptRouter.put('/:folio', validation.validateUpdateAgainstReceipt, againstReceiptCtrl.updateAgainstReceipt) // editar 1 contrarecibo por folio
 
 module.exports = againstReceiptRouter

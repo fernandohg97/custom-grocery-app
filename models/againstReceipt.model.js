@@ -1,14 +1,14 @@
 'use strict'
 const { customAlphabet } = require('nanoid')
 // AUTOMATIC CUSTOM ID GENERATOR FUNCTIONS
-// const folio = customAlphabet('0123456789', 10)
+const folio = customAlphabet('0123456789', 10)
 const againstReceiptId = customAlphabet('0123456789', 5)
 // const againstReceiptDetailId = customAlphabet('0123456789', 5)
 const moment = require('moment')
 
 // MODELS
 module.exports = {
-  newAgainstReceiptModel: (FolioCR, Proveedor, CantNotas, Total, FechaAPagar, FormaDePago, CuentaDeDinero, Estatus, Autorizado, Usuario, Detalles, ID = againstReceiptId()) => {
+  newAgainstReceiptModel: (Proveedor, CantNotas, Total, FechaAPagar, FormaDePago, CuentaDeDinero, Estatus, Usuario, Detalles, Autorizado = 'NO', ID = againstReceiptId(), FolioCR = folio()) => {
     return {
       ID: ID,
       Folio: `CR${FolioCR}`,

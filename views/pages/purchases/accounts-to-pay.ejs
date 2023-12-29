@@ -252,7 +252,8 @@
       AllAccountsToPayApp.addMassivePaymentBtn = document.getElementById('add-massive-payment')
       AllAccountsToPayApp.addMassivePaymentBtn.addEventListener('click', AllAccountsToPayApp.confirmAddMassivePayment);
       // form vars
-      AllAccountsToPayApp.form = document.getElementById('new-massive-payment-form')
+      AllAccountsToPayApp.MassivePaymentForm = document.getElementById('new-massive-payment-form')
+      AllAccountsToPayApp.AgainstReceiptForm = document.getElementById('new-against-receipt-form')
       // VARS - PAGO MASIVO
       AllAccountsToPayApp.ModalSupplierToPayMassive
       AllAccountsToPayApp.ModalQtyAccountsToPayMassive
@@ -263,13 +264,15 @@
       AllAccountsToPayApp.newAgainstReceiptBtn = document.getElementById('new-against-receipt')
       AllAccountsToPayApp.newAgainstReceiptBtn.addEventListener('click', AllAccountsToPayApp.confirmNewAgainstReceipt);
       //VARS - CONTRA RECIBO
-      AllAccountsToPayApp.ModalSupplierAgainstReceipt
-      AllAccountsToPayApp.ModalQtyAccountsToPayAgainstReceipt
-      AllAccountsToPayApp.ModalTotalAmountAgainstReceipt
-      AllAccountsToPayApp.ModalPaymentMethodAgainstReceipt
-      AllAccountsToPayApp.ModalStatusAgainstReceipt
-      AllAccountsToPayApp.ModalUserAgainstReceipt
-      AllAccountsToPayApp.ModalEmailAgainstReceipt
+      AllAccountsToPayApp.ModalSupplierAgainstReceipt = document.getElementById('ModalSupplierAgainstReceipt')
+      AllAccountsToPayApp.ModalQtyAccountsToPayAgainstReceipt = document.getElementById('ModalQtyAccountsToPayAgainstReceipt')
+      AllAccountsToPayApp.ModalTotalAmountAgainstReceipt = document.getElementById('ModalTotalAmountAgainstReceipt')
+      AllAccountsToPayApp.ModalDateToPayAgainstReceipt = document.getElementById('dateToPayRecordAgainstReceipt')
+
+      AllAccountsToPayApp.ModalPaymentMethodAgainstReceipt = document.getElementById('paymentMethodAgainstReceipt')
+      AllAccountsToPayApp.ModalStatusAgainstReceipt = document.getElementById('statusAgainstReceipt')
+      AllAccountsToPayApp.ModalUserAgainstReceipt = document.getElementById('userAgainstReceipt')
+      AllAccountsToPayApp.ModalEmailAgainstReceipt = document.getElementById('emailAgainstReceipt')
 
     })
 
@@ -294,7 +297,7 @@
     const totalAmountToPay = parseFloat(AllAccountsToPayApp.ModalTotalAmountToPayMassive.textContent.replace(/[\$,]/g, ''))
 
     // FORM
-    const fd = new FormData(AllAccountsToPayApp.form)
+    const fd = new FormData(AllAccountsToPayApp.MassivePaymentForm)
     fd.append('accountsToPay', JSON.stringify(AllAccountsToPayApp.accountsToPayMassive))
     fd.append('resume', JSON.stringify({
       totalCount: numberOfNotes,
@@ -317,9 +320,21 @@
     let result = await response.json()
     console.log(response.status)
     console.log(result);
-    if (response.status === 422) {
+    if (response.status >= 500) { // SERVER ERROR
       AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
-      let inputEls = AllAccountsToPayApp.form.getElementsByClassName('input-valid')
+      let failureMessageAlert = document.getElementById('failure-message')
+      failureMessageAlert.classList.remove('d-none')
+      failureMessageAlert.textContent = result.message
+      scrollToTopWhenSubmit()
+
+      setTimeout(() => {
+        failureMessageAlert.classList.add('d-none')
+      }, "4000");
+
+    }
+    else if (response.status === 422) {
+      AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+      let inputEls = AllAccountsToPayApp.MassivePaymentForm.getElementsByClassName('input-valid')
       console.log(result)
       let errors = result.errors
       console.log(inputEls)
@@ -379,74 +394,102 @@
     const totalAmountToPay = parseFloat(AllAccountsToPayApp.ModalTotalAmountAgainstReceipt.textContent.replace(/[\$,]/g, ''))
 
     // FORM
-    const fd = new FormData(AllAccountsToPayApp.form)
-    fd.append('accountsToPay', JSON.stringify(AllAccountsToPayApp.accountsToPayMassive))
+    const fd = new FormData(AllAccountsToPayApp.AgainstReceiptForm)
+    fd.append('accountsToPay', JSON.stringify(AllAccountsToPayApp.accountsToPayAgainstReceipt))
     fd.append('resume', JSON.stringify({
       totalCount: numberOfNotes,
       totalAmountToPay,
-      providerName: AllAccountsToPayApp.ModalSupplierToPayMassive.textContent
+      providerName: AllAccountsToPayApp.ModalSupplierAgainstReceipt.textContent,
     }))
 
     const urlEncoded = new URLSearchParams(fd).toString()
     console.log(urlEncoded);
 
 
-    console.log(`${apiUrl}/payments/add-massive-payment`);
-    const response = await fetch(`${apiUrl}/payments/add-massive-payment`, {
-      method: 'POST',
-      body: urlEncoded,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-    let result = await response.json()
-    console.log(response.status)
-    console.log(result);
-    if (response.status === 422) {
-      AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
-      let inputEls = AllAccountsToPayApp.form.getElementsByClassName('input-valid')
-      console.log(result)
-      let errors = result.errors
-      console.log(inputEls)
-
-      Array.from(inputEls).forEach(inputValid => {
-        errors.forEach((err) => {
-          // console.log(err)
-          let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
-
-          if (inputValid.name === err.param) {
-            console.log(err)
-            // console.log(invalidMsg)
-            invalidMsg.textContent = err.msg
-            invalidMsg.classList.remove('d-none')
-          }
-        })
-        
+    // console.log(`${apiUrl}/against-receipts`);
+    try {
+      const response = await fetch(`${apiUrl}/against-receipts`, {
+        method: 'POST',
+        body: urlEncoded,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       })
-    } else if (response.status === 400 || response.status === 404) {
+
+      // check responses status
+      let result = await response.json()
+      console.log(response.status)
+      console.log(result);
+      if (response.status >= 500) { // SERVER ERROR
+        AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+        let failureMessageAlert = document.getElementById('failure-message')
+        failureMessageAlert.classList.remove('d-none')
+        failureMessageAlert.textContent = result.message
+        scrollToTopWhenSubmit()
+
+        setTimeout(() => {
+          failureMessageAlert.classList.add('d-none')
+        }, "4000");
+
+      }
+      else if (response.status === 422) {
+        AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+        let inputEls = AllAccountsToPayApp.AgainstReceiptForm.getElementsByClassName('input-valid')
+        console.log(result)
+        let errors = result.errors
+        console.log(inputEls)
+
+        Array.from(inputEls).forEach(inputValid => {
+          errors.forEach((err) => {
+            // console.log(err)
+            let invalidMsg = inputValid.parentElement.getElementsByClassName('invalid-message')[0]
+
+            if (inputValid.name === err.param) {
+              console.log(err)
+              // console.log(invalidMsg)
+              invalidMsg.textContent = err.msg
+              invalidMsg.classList.remove('d-none')
+            }
+          })
+          
+        })
+      } else if (response.status === 400 || response.status === 404) {
+        AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+        let failureMessageAlert = document.getElementById('failure-message')
+        failureMessageAlert.classList.remove('d-none')
+        failureMessageAlert.textContent = result.message
+
+        setTimeout(() => {
+          failureMessageAlert.classList.add('d-none')
+        }, "4000");
+      }
+      else if (response.status === 201 || response.status === 200) {
+        // TODO: deselect rows table
+        AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
+        let successMessageAlert = document.getElementById('success-message')
+        successMessageAlert.textContent = result.message
+        successMessageAlert.classList.remove('d-none')
+        scrollToTopWhenSubmit()
+        setTimeout(() => {
+          successMessageAlert.classList.add('d-none')
+          // AllAccountsToPayApp.submitUpdateBtn.disabled = true
+          // Simulate an HTTP redirect:
+          window.location.replace(`${apiUrl}/against-receipts`);
+        }, "4000");
+      }
+    } catch (error) {
       AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
       let failureMessageAlert = document.getElementById('failure-message')
       failureMessageAlert.classList.remove('d-none')
-      failureMessageAlert.textContent = result.message
+      failureMessageAlert.textContent = error.message
+      scrollToTopWhenSubmit()
 
       setTimeout(() => {
         failureMessageAlert.classList.add('d-none')
       }, "4000");
     }
-    else if (response.status === 201 || response.status === 200) {
-      // TODO: deselect rows table
-      AllAccountsToPayApp.loadingSpinner.classList.add('d-none')
-      let successMessageAlert = document.getElementById('success-message')
-      successMessageAlert.textContent = result.message
-      successMessageAlert.classList.remove('d-none')
-
-      setTimeout(() => {
-        successMessageAlert.classList.add('d-none')
-        // AllAccountsToPayApp.submitUpdateBtn.disabled = true
-        // Simulate an HTTP redirect:
-        // window.location.replace(`${apiUrl}/purchases/payments-done`);
-      }, "4000");
-    }
+    // LIMPIAR VALORES DE CAMPOS DEL FORMULARIO
+    AllAccountsToPayApp.AgainstReceiptForm.reset()
   }
 
   // GET PAYMENTS BY NOTE NUMBER -------------------------------------------
@@ -793,14 +836,14 @@
 
                   // SET DATA TO MODAL ACCOUNTS TO PAY AGAINST RECEIPT
                   // Assign initial values to offcanvas
-                  AllAccountsToPayApp.ModalSupplierAgainstReceipt = document.getElementById('supplierAgainstReceipt')
-                  AllAccountsToPayApp.ModalQtyAccountsAgainstReceipt = document.getElementById('qtyAccountsAgainstReceipt')
-                  AllAccountsToPayApp.ModalTotalAmountAgainstReceipt = document.getElementById('totalAmountAgainstReceipt')
+                  // AllAccountsToPayApp.ModalSupplierAgainstReceipt = document.getElementById('supplierAgainstReceipt')
+                  // AllAccountsToPayApp.ModalQtyAccountsAgainstReceipt = document.getElementById('qtyAccountsAgainstReceipt')
+                  // AllAccountsToPayApp.ModalTotalAmountAgainstReceipt = document.getElementById('totalAmountAgainstReceipt')
                   // AllAccountsToPayApp.ModalPaymentMethodToPayMassive = document.getElementById('paymentMethodToPayMassive')
 
                   // Assign values
                   AllAccountsToPayApp.ModalSupplierAgainstReceipt.textContent = AllAccountsToPayApp.accountsToPayAgainstReceipt[0].Proveedor
-                  AllAccountsToPayApp.ModalQtyAccountsAgainstReceipt.textContent = AllAccountsToPayApp.accountsToPayAgainstReceipt.length
+                  AllAccountsToPayApp.ModalQtyAccountsToPayAgainstReceipt.textContent = AllAccountsToPayApp.accountsToPayAgainstReceipt.length
                   AllAccountsToPayApp.ModalTotalAmountAgainstReceipt.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalAmountAccountsToPay)
                   
                   // Get elements from off canvas table
