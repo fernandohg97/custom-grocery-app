@@ -61,6 +61,7 @@ async function sendMailAgainstReceipt (subject, htmlContent, plainContent, provi
     return result
   } catch (error) {
     console.log(error)
+    throw error
   }
 
   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>

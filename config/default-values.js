@@ -23,7 +23,8 @@ module.exports = {
   defaultPurchaseStatus: {
     PENDIENTE_DE_PAGO: 'PENDIENTE DE PAGO',
     PAGO_PARCIAL: 'PAGO PARCIAL',
-    LIQUIDADO: 'LIQUIDADO'
+    LIQUIDADO: 'LIQUIDADO',
+    COMPROMISO_DE_PAGO: 'COMPROMISO DE PAGO'
   },
   defaultPurchaseTypes: {
     MERCANCIA: 'Mercancia',
@@ -127,6 +128,6 @@ module.exports = {
     'Sin asignar'
   ],
   METRIC_GOALS: {
-    minimumBalance: 3500
+    SALDO_MINIMO_CUENTAS_POR_PAGAR: 120000
   }
 }

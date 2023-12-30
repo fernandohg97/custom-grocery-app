@@ -17,6 +17,7 @@ module.exports = {
       const pagosRows = await pagosSheet.getRows()
       const detallePagosRows = await detallePagosSheet.getRows()
 
+      // OBTENER COMPRAS EN ESTATUS = PAGO_PARCIAL
       const comprasPagoParcial = comprasRows.filter(r => {
         return r.toObject().Estatus === defaultPurchaseStatus.PAGO_PARCIAL
       })
@@ -26,7 +27,8 @@ module.exports = {
 
       // console.log(comprasPagoParcial)
 
-      const foliosDePago = comprasPagoParcial.map(compra => {
+      // OBTENER FOLIOS DE PAGO de las compras de pago parcial
+      const foliosDePago = comprasPagoParcial.flatMap(compra => {
         return detallePagosRows.filter(detallePago => {
           // console.log(`no nota compra: ${compra.toObject()['No Nota']} - no nota detalle pago: ${detallePago.toObject()['No Nota']}`)
           // TODO: update prop
@@ -41,21 +43,25 @@ module.exports = {
       })
       // console.log(foliosDePago)
 
-      const pagosParciales = foliosDePago.map(folio => {
+      // Obtener los pagos correspondientes a las compras de pago parcial
+      const pagosParciales = foliosDePago.flatMap(folio => {
         return pagosRows.filter(pago => {
           // console.log(folio)
           // console.log(`folio pago: ${pago.toObject().Folio} - folio detalle pago: ${folio['Folio de pago']}`)
-          return folio[0]['Folio de pago'] === pago.toObject().Folio
+          return folio['Folio de pago'] === pago.toObject().Folio
+          // return folio.map(folioPago => folioPago['Folio de pago'] === pago.toObject().Folio)
         }).map(r => r.toObject())
       })
-
+      // console.log('pagos parciales')
       // console.log(pagosParciales)
+
+      // SUMAR LOS MONTOS DE PAGO DE TODAS LAS COMPRAS DE PAGO PARCIAL
       res.locals.sumPartialPayments = pagosParciales
-        .map(pagoParcial => parseFloat(pagoParcial[0].Monto.split('$')[1].trim().split(',').join('')))
+        .map(pagoParcial => parseFloat(pagoParcial.Monto.split('$')[1].trim().split(',').join('')))
         .reduce((a, b) => {
           return parseFloat(a + b)
         }, 0)
-      // console.log(sumPartialPayments)
+      // console.log(res.locals.sumPartialPayments)
       // console.log(JSON.stringify(data))
       return next()
       // return res.json({ pagosParciales, totalBalance: sumPartialPayments })

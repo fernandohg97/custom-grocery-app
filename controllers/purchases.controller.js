@@ -256,29 +256,35 @@ class Purchase {
 
       const sheet = Sheet.sheetsByTitle[WORKSHEETS.comprasSheet.SHEETNAME]
       const comprasRows = await sheet.getRows()
+      // obtener todas las cuentas por pagar
+      // solamente en estatus: PENDIENTE DE PAGO, PAGO PARCIAL Y COMPROMISO DE PAGO
       const cuentasPorPagar = comprasRows.filter(r => {
         return r.toObject().Estatus === defaultPurchaseStatus.PENDIENTE_DE_PAGO ||
-          r.toObject().Estatus === defaultPurchaseStatus.PAGO_PARCIAL
+          r.toObject().Estatus === defaultPurchaseStatus.PAGO_PARCIAL || r.toObject().Estatus === defaultPurchaseStatus.COMPROMISO_DE_PAGO
       }).map(r => r.toObject())
       // console.log(daysPassed)
       // GUARD STATEMENT
       if (!cuentasPorPagar || !cuentasPorPagar.length) return next(createError(404, 'No se encontraron cuentas por pagar'))
 
       // console.log(cuentasPorPagar)
+      // OBTENER EL MONTO TOTAL DE LAS CUENTAS POR PAGAR
       const totalAmount = cuentasPorPagar
         .map(cuenta => parseFloat(cuenta['Monto Total'].split('$')[1].trim().split(',').join('')))
         .reduce((a, b) => {
           return parseFloat(a + b)
         }, 0)
-
+      // console.log(totalAmount)
+      // MONTO TOTAL - TOTAL ABONADO = SALDO
       const totalBalanceAmount = totalAmount - res.locals.sumPartialPayments
-      const percentageBalanceProgress = totalAmount / METRIC_GOALS.minimumBalance
+      // TODO: fix percentage operation
+      const percentageBalanceProgress = totalAmount / METRIC_GOALS.SALDO_MINIMO_CUENTAS_POR_PAGAR
       // console.log(data[0])
       // console.log(JSON.stringify(data))
       // return res.json({
       //   accountsToPay: cuentasPorPagar,
       //   totalCount: cuentasPorPagar.length,
       //   totalAmount: totalAmount,
+      //   totalPayed: res.locals.sumPartialPayments,
       //   totalBalanceAmount,
       //   percentageBalanceProgress,
       //   creditAccounts: res.locals.creditAccounts
@@ -287,6 +293,7 @@ class Purchase {
         accountsToPay: cuentasPorPagar,
         totalCount: cuentasPorPagar.length,
         totalAmount: totalAmount,
+        totalPayed: res.locals.sumPartialPayments,
         totalBalanceAmount,
         percentageBalanceProgress,
         creditAccounts: res.locals.creditAccounts

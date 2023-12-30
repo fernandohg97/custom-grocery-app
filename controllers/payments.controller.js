@@ -638,7 +638,6 @@ class Payment {
       // ))
       // return res.end()
 
-      // TODO: in progress, Change status to all note numbers of massive payment applied
       // CHANGE PURCHASE STATUS AFTER PAYMENT APPLIED -----------------
       const comprasSheet = Sheet.sheetsByTitle[WORKSHEETS.comprasSheet.SHEETNAME]
       const comprasRows = await comprasSheet.getRows()

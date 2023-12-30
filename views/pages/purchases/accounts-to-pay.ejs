@@ -217,7 +217,7 @@
   accountsToPayData = accountsToPayData.replace(/\s+/g," ")
 
   let jsonAccountsToPay = JSON.parse(accountsToPayData)
-  // console.log(jsonAccountsToPay)
+  console.log(jsonAccountsToPay)
   var datetimeExportText = "Exportado el día: " + new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'medium', hour12: true }).format(new Date())
 
   const AllAccountsToPayApp = {}
@@ -693,10 +693,12 @@
           },
           { className: "fw-bold text-center", targets: 6, width: '5%',
             createdCell: function (td, cellData, rowData, row, col) {
-              if (cellData === 'PAGO PARCIAL') {
-                $(td).html('<span class="dot dot-partial bg-primary" style="--bs-bg-opacity: .7;"></span>')
-              } else if (cellData === 'PENDIENTE DE PAGO') {
-                $(td).html('<span class="dot dot-pending bg-dark" style="--bs-bg-opacity: .7;"></span>')
+              if (cellData === AllAccountsToPayApp.DEFAULT_PURCHASE_STATUS.PAGO_PARCIAL) {
+                $(td).html('<span class="dot dot-partial bg-primary" style="--bs-bg-opacity: .5;"></span>')
+              } else if (cellData === AllAccountsToPayApp.DEFAULT_PURCHASE_STATUS.PENDIENTE_DE_PAGO) {
+                $(td).html('<span class="dot dot-pending bg-dark" style="--bs-bg-opacity: .5;"></span>')
+              } else if (cellData === AllAccountsToPayApp.DEFAULT_PURCHASE_STATUS.COMPROMISO_DE_PAGO) {
+                $(td).html('<span class="dot dot-commitment" style="background-color: #091E71;"></span>')
               }
             }
           },
@@ -723,11 +725,18 @@
               <div class="dropdown">
                 <button type="button" id="dropdownMenuEdit" class="btn btn-light btn-sm" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
                 <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
-                  <li>
+                  ${row.Estatus === AllAccountsToPayApp.DEFAULT_PURCHASE_STATUS.COMPROMISO_DE_PAGO ? 
+                  `<li>
+                    <a href="/against-receipts" class="text-dark dropdown-item">
+                    Ver contra recibo
+                    </a>
+                  </li>` :
+                  `<li>
                     <a href="/payments/add-payment/${Number(row['No Nota'])}" class="text-dark dropdown-item">
                     Abonar&nbsp;<i class="bi bi-cash"></i>
                     </a>
-                  </li>
+                  </li>`
+                }
                 </ul>
               </div> 
               `

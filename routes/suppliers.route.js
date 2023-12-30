@@ -10,6 +10,7 @@ const validation = require('../middlewares/validators/suppliersValidation')
 /* GET all cost and retail price for all products. */
 // supplierRouter.get('/', supplierCtrl.allHikeSuppliers) // Supplier checker
 supplierRouter.get('/', supplierCtrl.allSuppliers) // todos los proveedores
+supplierRouter.get('/:id', supplierCtrl.getSupplierSummaryById) // Obtener JSON de proveedor por ID
 
 // supplierRouter.get('/purchases', getSupplierPurchasesReport.getAveragePurchaseAmount, getSupplierPurchasesReport.getAccountsToPay, supplierCtrl.allPurchasesByProvider) // OBTENER LAS ULTIMAS 10 COMPRAS POR PROVEEDOR
 

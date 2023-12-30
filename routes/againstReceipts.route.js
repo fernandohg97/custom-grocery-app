@@ -2,7 +2,8 @@ const express = require('express')
 const againstReceiptRouter = express.Router()
 const againstReceiptCtrl = require('../controllers/againstReceipts.controller')
 // const purchaseCtrl = require('../controllers/purchases.controller')
-const validation = require('../middlewares/validators/paymentsValidation')
+const validationAgainstReceipt = require('../middlewares/validators/againstReceiptsValidation')
+const validationPayment = require('../middlewares/validators/paymentsValidation')
 
 // const { getAllPurchaseProductPageParams } = require('../middlewares/getPageParams')
 // const getProvidersMaxIdNumber = require('../middlewares/againstreceipts/getMaxIdNumber')
@@ -19,8 +20,8 @@ againstReceiptRouter.get('/invoice/:folio', againstReceiptCtrl.showPDFAgainstRec
 againstReceiptRouter.get('/add-payment/:folio', againstReceiptCtrl.getAgainstReceiptToPay) // Obtener contrarecibo por folio para pagar
 
 // POST endpoints
-againstReceiptRouter.post('/', againstReceiptCtrl.newAgainstReceipt) // crear contrarecibo
-againstReceiptRouter.post('/add-receipt-payment', validation.validateNewReceiptPayment, againstReceiptCtrl.payOneAgainstReceipt) // pagar un contrarecibo
+againstReceiptRouter.post('/', validationAgainstReceipt.validateNewAgainstReceipt, againstReceiptCtrl.newAgainstReceipt) // crear contrarecibo
+againstReceiptRouter.post('/add-receipt-payment', validationPayment.validateNewReceiptPayment, againstReceiptCtrl.payOneAgainstReceipt) // pagar un contrarecibo
 
 // againstReceiptRouter.get('/invoice/download', async (req, res, next) => {
 //   res.download(`invoices/${res.locals.filename}`, res.locals.filename)

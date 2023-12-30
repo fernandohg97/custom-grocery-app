@@ -357,6 +357,11 @@ class AgainstReceipt {
       // GUARD STATEMENT -------
       if (!againstReceiptFolio) return next(createError(400, 'Ups, no se pudo crear el contra recibo'))
 
+      // CHANGE PURCHASE STATUS AFTER PAYMENT APPLIED -----------------
+      const comprasSheet = Sheet.sheetsByTitle[WORKSHEETS.comprasSheet.SHEETNAME]
+      const comprasRows = await comprasSheet.getRows()
+      const comprasIndexes = []
+
       // ITERATE TO ALL ACCOUNTS TO PAY ------------
       for (let index = 0; index < accountsToPay.length; index++) {
         const noteNumber = accountsToPay[index]['No Nota']
@@ -377,15 +382,38 @@ class AgainstReceipt {
         console.log(newAgainstReceiptDetail)
         // GUARD STATEMENT
         if (!newAgainstReceiptDetail) return next(createError(400, 'Ups, no se pudo crear el detalle de contra recibo'))
+
+        // iterate note numbers to update status column -----------------
+        comprasRows.forEach((curr, index) => {
+          if (Number(curr.toObject()['No Nota']) === Number(noteNumber)) {
+            comprasIndexes.push(index)
+          }
+          // return acc
+        })
       }
+
+      console.log(comprasIndexes)
+      // const purchaseIndex = comprasRows.findIndex(r => {
+      //   return Number(r.toObject()['No Nota']) === Number(noteNumber)
+      // })
+
+      // console.log(purchaseIndex)
+      // GUARD STATEMENT -----------
+      if (!comprasIndexes.length || comprasIndexes.length !== Number(resume.totalCount)) return next(createError(404, 'No se obtuvieron los indices de los No. Nota correctamente!'))
+
+      // make updates to purchase status
+      comprasIndexes.forEach(async compraIndex => {
+        comprasRows[compraIndex].set('Estatus', defaultPurchaseStatus.COMPROMISO_DE_PAGO)
+        await comprasRows[compraIndex].save()
+      })
 
       // 📩 ENVIAR CORREO A PROVEEDOR DE CONTRARECIBO
       const mailResponse = await sendMailAgainstReceipt(
         '📄CONTRARECIBO de MERCADO DOS MIL',
         HtmlContent.generateMailHtmlContent(resume.providerName, resume.totalCount, resume.totalAmountToPay, dateToPay, accountsToPay, details),
         'Envio de contrarecibo de Mercado DOS MIL',
-        'compras@mercadodosmil.com, dhern220506@gmail.com')
-      // console.log(mailResponse)
+        `compras@mercadodosmil.com, ${email}`)
+      console.log(mailResponse)
       // ✅ EXITO EN ACTUALIZAR COMPRA, PAGO Y DETALLE DE PAGO
       return res
         .status(201)

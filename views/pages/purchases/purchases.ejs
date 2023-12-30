@@ -178,12 +178,14 @@
           },
           { className: "fw-bold", targets: 6, 
             createdCell: function (td, cellData, rowData, row, col) {
-              if ( cellData == 'LIQUIDADO' ) {
-                $(td).css('color', 'green')
-              } else if (cellData == 'PAGO PARCIAL') {
-                $(td).css('color', 'blue')
-              } else if (cellData == 'PENDIENTE DE PAGO') {
-                $(td).css('color', '#F06610')
+              if ( cellData == AllPurchasesApp.defaultPurchaseStatus.LIQUIDADO ) {
+                $(td).addClass('status-purchase-liquidado')
+              } else if (cellData == AllPurchasesApp.defaultPurchaseStatus.PAGO_PARCIAL) {
+                $(td).addClass('status-purchase-partial-payment')
+              } else if (cellData == AllPurchasesApp.defaultPurchaseStatus.PENDIENTE_DE_PAGO) {
+                $(td).addClass('status-purchase-pending')
+              } else if (cellData == AllPurchasesApp.defaultPurchaseStatus.COMPROMISO_DE_PAGO) {
+                $(td).addClass('status-purchase-compromiso-pago')
               }
             }
           },

@@ -42,6 +42,36 @@ class Supplier {
   }
 
   // OBTENER UN PROVEEDOR POR ID
+  static async getSupplierSummaryById(req, res, next) {
+    const { id } = req.params
+    console.log(id);
+    try {      
+      await Sheet.loadInfo()
+
+      const sheet = Sheet.sheetsByTitle[WORKSHEETS.datosProveedoresSheet.SHEETNAME]
+      const rows = await sheet.getRows()
+      let providerToFind = rows.filter(r => {
+        if (r.toObject().ID === id) return r
+      })
+      if (!providerToFind.length || !providerToFind) return next(createError(404, `Proveedor con ID: ${id} no encontrado!`))
+      console.log(providerToFind)
+      providerToFind = providerToFind[0].toObject()
+
+      return res.status(200).json(providerToFind)
+
+      // return res.end()
+    } catch (error) {
+      console.log(`Hubo un error: ${error}`)
+      if (error.response) {
+        if (error.response.status === 400) return next(createError(400, 'Peticion incorrecta'))
+      }
+      // const { response } = error
+      // console.log(response)
+      return next(error)
+    }
+  }
+
+  // OBTENER UN PROVEEDOR POR ID
   static async getSupplierById(req, res, next) {
     const { id } = req.params
     console.log(id);
