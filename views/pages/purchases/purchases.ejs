@@ -96,7 +96,8 @@
     AllPurchasesApp.getDataTable()
   }
 
-  AllPurchasesApp.fetchPaymentsByProvider = async (noteNumber) => {
+  // OBTENER PAGOS DE compra por no nota
+  AllPurchasesApp.fetchPaymentsByNoteNumber = async (noteNumber) => {
     // AllPurchasesApp.paymentsByNoteNumber = []
     const response = await fetch(`${apiUrl}/purchases/${noteNumber}/with-payments`);
     const result = await response.json();
@@ -497,98 +498,98 @@
       } );
     })
 
-      // SHOW OFF CANVAS PURCHASE RESUME DETAILS
-      $('#purchasesTable tbody').on('click', 'tr td:nth-child(1)', async function () {
-        var data = purchasesTable.row( this ).data();
-        console.log(data)
-        AllPurchasesApp.paymentsByNoteNumber = await AllPurchasesApp.fetchPaymentsByProvider(data['No Nota'])
-        console.log(AllPurchasesApp.paymentsByNoteNumber)
-        // GUARD STATEMENT
-        // if (!res) return
-        const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPayments')
+    // SHOW OFF CANVAS PURCHASE RESUME DETAILS
+    $('#purchasesTable tbody').on('click', 'tr td:nth-child(1)', async function () {
+      var data = purchasesTable.row( this ).data();
+      console.log(data)
+      AllPurchasesApp.paymentsByNoteNumber = await AllPurchasesApp.fetchPaymentsByNoteNumber(data['No Nota'])
+      console.log(AllPurchasesApp.paymentsByNoteNumber)
+      // GUARD STATEMENT
+      // if (!res) return
+      const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasPayments')
 
-        // Assign initial values to offcanvas
-        AllPurchasesApp.offCanvasPurchaseTitle = document.getElementById('offCanvasPurchaseTitle')
-        AllPurchasesApp.offCanvasPurchaseNoteNumber = document.getElementById('offCanvasPurchaseNoteNumber')
-        AllPurchasesApp.offCanvasPurchaseUser = document.getElementById('offCanvasPurchaseUser')
-        AllPurchasesApp.offCanvasPurchaseDateReceived = document.getElementById('offCanvasPurchaseDateReceived')
-        AllPurchasesApp.offCanvasPurchaseType = document.getElementById('offCanvasPurchaseType')
-        AllPurchasesApp.offCanvasPurchaseStatus = document.getElementById('offCanvasPurchaseStatus')
-        AllPurchasesApp.offCanvasPurchaseTotalAmount = document.getElementById('offCanvasPurchaseTotalAmount')
-        AllPurchasesApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
-        AllPurchasesApp.offCanvasPaymentTypeMessage = document.getElementById('offCanvasPaymentTypeMessage')
-        // Assign values
-        AllPurchasesApp.offCanvasPurchaseTitle.textContent = data.Proveedor
-        AllPurchasesApp.offCanvasPurchaseNoteNumber.textContent = `#${data['No Nota']}`
-        AllPurchasesApp.offCanvasPurchaseUser.textContent = data.Usuario || 'Sin registro'
-        AllPurchasesApp.offCanvasPurchaseDateReceived.textContent = data['Fecha Recibido']
-        AllPurchasesApp.offCanvasPurchaseType.textContent = data.Tipo
-        AllPurchasesApp.offCanvasPurchaseStatus.textContent = data.Estatus
-        AllPurchasesApp.offCanvasPurchaseTotalAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(data['Monto Total'].replace(/[\$,]/g, ''))
-        AllPurchasesApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'Sin detalles'
-        
-        // Get elements from off canvas table
-        let table = document.getElementById("paymentsResumeTable");
-        let paymentsNotFoundMsg = document.getElementById('paymentsNotFoundMessage')
-        let providerPaymentsTotalQuantity = document.getElementById('providerPaymentsTotalQuantity')
+      // Assign initial values to offcanvas
+      AllPurchasesApp.offCanvasPurchaseTitle = document.getElementById('offCanvasPurchaseTitle')
+      AllPurchasesApp.offCanvasPurchaseNoteNumber = document.getElementById('offCanvasPurchaseNoteNumber')
+      AllPurchasesApp.offCanvasPurchaseUser = document.getElementById('offCanvasPurchaseUser')
+      AllPurchasesApp.offCanvasPurchaseDateReceived = document.getElementById('offCanvasPurchaseDateReceived')
+      AllPurchasesApp.offCanvasPurchaseType = document.getElementById('offCanvasPurchaseType')
+      AllPurchasesApp.offCanvasPurchaseStatus = document.getElementById('offCanvasPurchaseStatus')
+      AllPurchasesApp.offCanvasPurchaseTotalAmount = document.getElementById('offCanvasPurchaseTotalAmount')
+      AllPurchasesApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
+      AllPurchasesApp.offCanvasPaymentTypeMessage = document.getElementById('offCanvasPaymentTypeMessage')
+      // Assign values
+      AllPurchasesApp.offCanvasPurchaseTitle.textContent = data.Proveedor
+      AllPurchasesApp.offCanvasPurchaseNoteNumber.textContent = `#${data['No Nota']}`
+      AllPurchasesApp.offCanvasPurchaseUser.textContent = data.Usuario || 'Sin registro'
+      AllPurchasesApp.offCanvasPurchaseDateReceived.textContent = data['Fecha Recibido']
+      AllPurchasesApp.offCanvasPurchaseType.textContent = data.Tipo
+      AllPurchasesApp.offCanvasPurchaseStatus.textContent = data.Estatus
+      AllPurchasesApp.offCanvasPurchaseTotalAmount.textContent = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(data['Monto Total'].replace(/[\$,]/g, ''))
+      AllPurchasesApp.offCanvasPurchaseDetails.textContent = data.Detalles || 'Sin detalles'
+      
+      // Get elements from off canvas table
+      let table = document.getElementById("paymentsResumeTable");
+      let paymentsNotFoundMsg = document.getElementById('paymentsNotFoundMessage')
+      let providerPaymentsTotalQuantity = document.getElementById('providerPaymentsTotalQuantity')
 
-        // GUARD STATEMENT
-        if (AllPurchasesApp.paymentsByNoteNumber instanceof Error) {
-          table.classList.add('d-none')
-          paymentsNotFoundMsg.classList.remove('d-none')
-        } else {
-          console.log('pagos dentro')
-          AllPurchasesApp.offCanvasPaymentTypeMessage.textContent = AllPurchasesApp.paymentsByNoteNumber.hasMassivePayment === true ? 'Esta nota se liquidó con un pago masivo' : 'Esta nota tiene un pago directo'
-          // Assign payments data to table in offcanvas
-          paymentsNotFoundMsg.classList.add('d-none')
-          table.classList.remove('d-none')
+      // GUARD STATEMENT
+      if (AllPurchasesApp.paymentsByNoteNumber instanceof Error) {
+        table.classList.add('d-none')
+        paymentsNotFoundMsg.classList.remove('d-none')
+      } else {
+        console.log('pagos dentro')
+        AllPurchasesApp.offCanvasPaymentTypeMessage.textContent = AllPurchasesApp.paymentsByNoteNumber.hasMassivePayment === true ? 'Esta nota se liquidó con un pago masivo' : 'Esta nota tiene un pago directo'
+        // Assign payments data to table in offcanvas
+        paymentsNotFoundMsg.classList.add('d-none')
+        table.classList.remove('d-none')
 
-          let paymentResumeRows = document.getElementById('paymentResumeRows')
-          let templateBox = document.getElementById('rowTemplate')
-          let template = templateBox.content
+        let paymentResumeRows = document.getElementById('paymentResumeRows')
+        let templateBox = document.getElementById('rowTemplate')
+        let template = templateBox.content
 
-          // let quantityNotesEl = document.getElementById('quantityNotes');
-          // let totalBalanceToPayEl = document.getElementById('totalBalanceToPay');
-          // let providerToPaySelected = document.getElementById('providerToPaySelected')
+        // let quantityNotesEl = document.getElementById('quantityNotes');
+        // let totalBalanceToPayEl = document.getElementById('totalBalanceToPay');
+        // let providerToPaySelected = document.getElementById('providerToPaySelected')
 
-          // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
-          paymentResumeRows.innerHTML = ''
-          // $('#payment-invoice-tbody tr').remove()
-          // data.each(element => console.log(element));
-          // let getTotalAmountToPay = data.map(row => {
-          //   let totalAmount = row[6].split('$')[1].trim().split(',').join('');
-          //   totalAmount = totalAmount === '-' ? parseFloat('0.00') : parseFloat(totalAmount);
-          //   return totalAmount
-          // }).reduce((a, b) => parseFloat(a + b), 0);
-          // console.log(getTotalAmountToPay)
-          if (AllPurchasesApp.paymentsByNoteNumber.payments.length > 0) {
-            AllPurchasesApp.paymentsByNoteNumber.payments.filter(payment => {
-              // Get the table element in which you want to add row
-              console.log(payment)
-              // Create a row using the inserRow() method and
-              // specify the index where you want to add the row
-              let tr = template.cloneNode(true)
-              let folioCol = tr.querySelector('.folio')
-              let montoCol = tr.querySelector('.monto')
-              let fechacol = tr.querySelector('.fecha')
-              let formaDePagoCol = tr.querySelector('.formaDePago')
-              let cuentaCol = tr.querySelector('.cuenta')
-              let usuarioCol = tr.querySelector('.usuario')
+        // GUARD STATEMENT --- CHECK IF TABLE HAS ELEMENTS
+        paymentResumeRows.innerHTML = ''
+        // $('#payment-invoice-tbody tr').remove()
+        // data.each(element => console.log(element));
+        // let getTotalAmountToPay = data.map(row => {
+        //   let totalAmount = row[6].split('$')[1].trim().split(',').join('');
+        //   totalAmount = totalAmount === '-' ? parseFloat('0.00') : parseFloat(totalAmount);
+        //   return totalAmount
+        // }).reduce((a, b) => parseFloat(a + b), 0);
+        // console.log(getTotalAmountToPay)
+        if (AllPurchasesApp.paymentsByNoteNumber.payments.length > 0) {
+          AllPurchasesApp.paymentsByNoteNumber.payments.filter(payment => {
+            // Get the table element in which you want to add row
+            console.log(payment)
+            // Create a row using the inserRow() method and
+            // specify the index where you want to add the row
+            let tr = template.cloneNode(true)
+            let folioCol = tr.querySelector('.folio')
+            let montoCol = tr.querySelector('.monto')
+            let fechacol = tr.querySelector('.fecha')
+            let formaDePagoCol = tr.querySelector('.formaDePago')
+            let cuentaCol = tr.querySelector('.cuenta')
+            let usuarioCol = tr.querySelector('.usuario')
 
-              folioCol.textContent = payment.Folio
-              montoCol.textContent = payment.Monto
-              fechacol.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(payment.FechaDePago))
-              formaDePagoCol.textContent = payment.FormaDePago
-              cuentaCol.textContent = payment.CuentaDeDinero
-              usuarioCol.textContent = payment.Usuario
+            folioCol.textContent = payment.Folio
+            montoCol.textContent = payment.Monto
+            fechacol.textContent = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(new Date(payment.FechaDePago))
+            formaDePagoCol.textContent = payment.FormaDePago
+            cuentaCol.textContent = payment.CuentaDeDinero
+            usuarioCol.textContent = payment.Usuario
 
-              paymentResumeRows.appendChild(tr)
-            })
-          }
-          providerPaymentsTotalQuantity.textContent = `Cant. de pagos realizados: ${AllPurchasesApp.paymentsByNoteNumber.totalCount}`
+            paymentResumeRows.appendChild(tr)
+          })
         }
-        bsOffcanvas.show()
-      } );
+        providerPaymentsTotalQuantity.textContent = `Cant. de pagos realizados: ${AllPurchasesApp.paymentsByNoteNumber.totalCount}`
+      }
+      bsOffcanvas.show()
+    } );
 
       // Custom filtering function which will search data in column four between two values
       $.fn.dataTable.ext.search.push(

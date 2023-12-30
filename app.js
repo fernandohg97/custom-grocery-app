@@ -156,7 +156,7 @@ app.use(function (err, req, res, next) {
   // render the error page
   return res.status(err.status || 500).json({
     message: err.message,
-    status: err.status,
+    status: err.status || 500,
     isErr: true
   })
   // return res.render('pages/error', {

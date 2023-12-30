@@ -58,6 +58,14 @@
     AllProvidersApp.rowDataTableToRemove = undefined
     AllProvidersApp.providersTable = undefined
 
+    // variable to store supplier sumarry offcanvas
+    AllProvidersApp.supplierSummary = undefined
+
+
+    // CALL INITIAL FUNCTIONS
+    $(document).ready(function(){
+      AllProvidersApp.setInitialValues()
+    })
     AllProvidersApp.getDataTable()
     
 
@@ -67,265 +75,306 @@
 
   }
 
+  AllProvidersApp.setInitialValues = () => {
+    AllProvidersApp.offCanvasSupplierSummary = new bootstrap.Offcanvas('#offCanvasSupplierSummary')
+
+    // Assign initial values to offcanvas
+    AllProvidersApp.offCanvasSupplierName = document.getElementById('offCanvasSupplierName')
+    AllProvidersApp.offCanvasSupplierSeller = document.getElementById('offCanvasSupplierSeller')
+    AllProvidersApp.offCanvasSupplierPhone = document.getElementById('offCanvasSupplierPhone')
+    AllProvidersApp.offCanvasSupplierAgreement = document.getElementById('offCanvasSupplierAgreement')
+    AllProvidersApp.offCanvasSupplierCategory = document.getElementById('offCanvasSupplierCategory')
+    AllProvidersApp.offCanvasSupplierInvoice = document.getElementById('offCanvasSupplierInvoice')
+    AllProvidersApp.offCanvasSupplierPaymentMethod = document.getElementById('offCanvasSupplierPaymentMethod')
+    AllProvidersApp.offCanvasSupplierRetirementAccount = document.getElementById('offCanvasSupplierRetirementAccount')
+    AllProvidersApp.offCanvasSupplierCreditDays = document.getElementById('offCanvasSupplierCreditDays')
+    AllProvidersApp.offCanvasSupplierNotesToPay = document.getElementById('offCanvasSupplierNotesToPay')
+    AllProvidersApp.offCanvasSupplierEmail = document.getElementById('offCanvasSupplierEmail')
+    AllProvidersApp.offCanvasSupplierBankname = document.getElementById('offCanvasSupplierBankname')
+    AllProvidersApp.offCanvasSupplierRecipient = document.getElementById('offCanvasSupplierRecipient')
+    AllProvidersApp.offCanvasSupplierClabeAccount = document.getElementById('offCanvasSupplierClabeAccount')
+    AllProvidersApp.offCanvasSupplierCardnumber = document.getElementById('offCanvasSupplierCardnumber')
+    AllProvidersApp.offCanvasSupplierDetails = document.getElementById('offCanvasSupplierDetails')
+
+  
+  
+  }
+
+  // OBTENER RESUMEN DE PROVEEDOR POR ID
+  AllProvidersApp.fetchSupplierSummaryById = async (id) => {
+    // AllPurchasesApp.paymentsByNoteNumber = []
+    const response = await fetch(`${apiUrl}/suppliers/${id}`);
+    const result = await response.json();
+    console.log(result)
+    if (response.status === 400 || response.status === 404 || response.status >= 500) {
+      return new Error(result.message)
+    }
+    else if (response.status === 201 || response.status === 200) {
+      console.log(result)
+      return result
+    }
+  }
+
+  // OBTENER TABLA DE PROVEEDORES
   AllProvidersApp.getDataTable = () => {
 
     const providersTable = $('#providersTable').DataTable({
-          headerCallback: function(thead, data, start, end, display) {
-              $(thead).find('th').css('border-bottom', 'none');
-            },
-          fixedHeader: true,
-          paging: true,
-          data: jsonProviders.providersData,
-          // stripeClasses: [ 'strip1', 'strip2' ],
-          responsive: true,
-          columns: [
-            { title: 'ID', className: 'noVis', data: 'ID' },
-            { title: 'Proveedor', className: 'noVis', data: 'Proveedor' },
-            { title: 'Vendedor', visible: false, data: 'Vendedor' },
-            { title: 'Telefono', visible: false, data: 'Telefono' },
-            { title: 'Convenio', className: 'noVis', data: 'Convenio' },
-            { title: 'Categoria', visible: false, data: 'Categoria' }, //5
-            { title: 'Factura', className: 'noVis', visible: false, data: 'Factura' },
-            { title: 'Metodo de pago', data: 'Metodo de pago' },
-            { title: 'Cuenta de retiro', data: 'Cuenta de retiro' },
-            { title: 'Minimo notas', data: 'Notas' },
-            { title: 'Dias a pagar', data: 'Dias a pagar' },
-            { title: 'Correo', visible: false, data: 'Correo' }, // 11
-            { title: 'Banco', visible: false, data: 'Banco' },
-            { title: 'Beneficiario', visible: false, data: 'Beneficiario' },
-            { title: 'CLABE', visible: false, data: 'CLABE' }, // 14
-            { title: 'No. Tarjeta', visible: false, data: 'No Tarjeta' },
-            { title: 'Descripcion', visible: false, data: 'Descripcion' },
-            // { title: 'Creado', visible: false },
-            { title: 'Editar' },
-            { title: 'Eliminar' } // 18
-          ],
-          columnDefs: [
-            { "targets": 0, createdCell: function (td, cellData, rowData, row, col) {
-                if ( rowData.Factura === 'TRUE' ) {
-                  $(td).css('color', 'green')
-                } else if (rowData.Factura === 'FALSE') {
-                  $(td).css('color', 'red')
-                }
-              }
-            },
-            { "targets": [ 2, 3, 9, 10, 7 ], "width": "10%"},
-            { "targets": [ 7, 8, 9, 10 ], className: 'text-center fw-bold'},
-            { "targets": [2, 3, 9, 10], 
-              "render": function (data, type, row, meta) {
-                // console.log(Boolean(data))
-                return Boolean(data) == true ? data : 'n/a'
-              } 
-            },
-            { className: "fw-bold", "targets": 0, "width": "3%" },
-            { "targets": 4, "width": "10%", className: 'fw-bold text-center',
-              "createdCell": function (td, cellData, rowData, row, col) {
-                if ( cellData == 'CREDITO' ) {
-                  $(td).css('color', '#2E5EAA')
-                } else if (cellData == 'CONSIGNACION') {
-                  $(td).css('color', '#2dbb54')
-                } else if (cellData == 'CONTADO') {
-                  $(td).css('color', 'black')
-                }
-              } 
-            },
-            { "targets": 1, "width": "20%", createdCell: function (td) {
-                $(td).css('font-size', '13px')
-              } 
-            },
-            { className: "fw-bold", "targets": 6,
-              "createdCell": function (td, cellData, rowData, row, col) {
-                if ( cellData == true ) {
-                  $(td).css('color', 'green')
-                } else if (cellData == false) {
-                  $(td).css('color', 'red')
-                }
-              },
-              "render": function (data) {
-                return data == true ? 'SI' : 'NO'
-              },
-              "width": "5%"
-            },
-            { "targets": [3, 12, 13, 14, 15], "searchable": false },
-            { "targets": 7, "width": "15%", className: 'text-center',
-              "createdCell": function(td, cellData, rowData, row, col) {
-                if ( cellData == 'EFECTIVO' ) {
-                  $(td).css('color', '#0e7c61')
-                } else if (cellData == 'TRANSFERENCIA ELECTRONICA') {
-                  $(td).css('color', '#0095c2')
-                } else if (cellData == 'TARJETA DE CREDITO') {
-                  $(td).css('color', '#6551a1')
-                } else if (cellData == 'TARJETA DE DEBITO') {
-                  $(td).css('color', '#399db4')
-                } else if (cellData == 'CHEQUE') {
-                  $(td).css('color', '#434343')
-                }
-              }, render: function (data, type, row, meta) {
-                return data.length > 0 ? data : 'n/a'
-              }
-            },
-            { "targets": 8,
-              "createdCell": function(td, cellData, rowData, row, col) {
-                $(td).css('font-size', '13px')
-                if ( cellData == 'FONDO FIJO' ) {
-                  $(td).html(`<span class="badge" style="background-color: #434343; color: white;">${cellData}</span>`)
-                } else if (cellData == 'CAJA EXTERNA') {
-                  $(td).html(`<span class="badge" style="background-color: #b7b7b7;">${cellData}</span>`)
-                } else if (cellData == 'BANAMEX EMPRESA') {
-                  $(td).html(`<span class="badge" style="background-color: #6d9eeb;">${cellData}</span>`)
-                } else if (cellData == 'DELTA') {
-                  $(td).html(`<span class="badge" style="background-color: #e06666;">${cellData}</span>`)
-                } else if (cellData == 'CREDITO NU') {
-                  $(td).html(`<span class="badge" style="background-color: #b4a7d6;">${cellData}</span>`)
-                } else if (cellData == 'CREDITO COSTCO') {
-                  $(td).html(`<span class="badge" style="background-color: #6fa8dc;">${cellData}</span>`)
-                } else if (cellData == 'KUESKI') {
-                  $(td).html(`<span class="badge" style="background-color: #76a5af;">${cellData}</span>`)
-                } else if (cellData == 'OTRO') {
-                  $(td).html(`<span class="badge text-bg-light">${cellData}</span>`)
-                } else if (cellData == 'POR DEFINIR') {
-                  $(td).html(`<span class="badge" style="background-color: #434343;">${cellData}</span>`)
-                }
-              }
-            },
-            { "targets": 11, render: function (data, type, row, meta) {
-                return data.length > 0 ? data : 'n/a'
-              }
-            },
-            { "targets": 16, "render": $.fn.dataTable.render.ellipsis( 10, true ) },
-            { "targets": 17, "width": "5%", className: 'text-center', 
-              render: function(data, type, row, meta) {
-                return `
-              <div class="dropdown">
-                <button type="button" id="dropdownMenuEdit" class="btn btn-light" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
-                <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
-                  <li>
-                    <a href="/suppliers/edit/${Number(row.ID)}" class="text-dark dropdown-item">
-                      Editar
-                    </a>
-                  </li>
-                  <li>
-                    <button type="button" class="text-dark dropdown-item price-list-provider-link" data-provider-id="${row[0]}" data-provider-name="${row[1]}">
-                      Ver historial de precios
-                    </button>
-                  </li>
-                </ul>
-              </div> 
-              `
-              }
-            },
-            { "targets": 18, "width": "5%", className: "text-center",
-              render: function (data, type, row, meta) {
-                return `
-                <a href="#DeleteSupplierModal" class="trigger-btn btn btn-sm btn-danger delete-button" data-toggle="modal"><i class="bi bi-trash3"></i></a>
-                `
-                // return `<a href='/suppliers/remove/${Number(row.ID)}' role="button" class="btn btn-sm btn-danger remove-provider"><i class="bi bi-trash3"></i></a>`
-            } 
-          },
-          ],
-          order: [[1, 'asc']],
-          select: {
-            style: 'multiple',
-            selector: 'tr>td:nth-child(1), tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5)'
-          },
-          // dom: 'Bfrtip',
-          buttons: [
-            {
-              extend: 'selectAll',
-              text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
-              className: 'btn btn-sm btn-dark'
-            },
-            {
-              extend: 'selectNone',
-              text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
-              className: 'btn btn-sm btn-dark'
-            },
-            {
-              extend: 'colvis',
-              text: '<span style="font-size: 12px;">Ver/ocultar</span>',
-              // titleAttr: 'Show/Hide',
-              columns: ':not(.noVis)',
-              collectionLayout: 'fixed columns',
-              collectionTitle: 'Seleccionar columnas a ver'
-            },
-            { 
-              extend: 'pdfHtml5',
-              orientation: 'landscape',
-              pageSize: 'LEGAL',
-              messageTop: 'Este documento es informativo.',
-              messageBottom: datetimeExportText,
-              text: '<i class="bi bi-filetype-pdf"></i>', 
-              className: 'btn btn-dark',
-              title: 'Lista de proveedores',
-              exportOptions: {
-                columns: ':visible',
-                modifier: {
-                  selected: true
-                }
-              },
-            },
-            { extend: 'copy', 
-              text: '<i class="bi bi-clipboard-check"></i>', 
-              className: 'btn btn-dark',
-              title: 'Lista de proveedores',
-              exportOptions: {
-                columns: ':visible',
-                modifier: {
-                  selected: true
-                }
-              },
+      headerCallback: function(thead, data, start, end, display) {
+          $(thead).find('th').css('border-bottom', 'none');
+        },
+      fixedHeader: true,
+      paging: true,
+      data: jsonProviders.providersData,
+      // stripeClasses: [ 'strip1', 'strip2' ],
+      responsive: true,
+      columns: [
+        { title: 'ID', className: 'noVis', data: 'ID' },
+        { title: 'Proveedor', className: 'noVis', data: 'Proveedor' },
+        { title: 'Vendedor', visible: false, data: 'Vendedor' },
+        { title: 'Telefono', visible: false, data: 'Telefono' },
+        { title: 'Convenio', className: 'noVis', data: 'Convenio' },
+        { title: 'Categoria', visible: false, data: 'Categoria' }, //5
+        { title: 'Factura', className: 'noVis', visible: false, data: 'Factura' },
+        { title: 'Metodo de pago', data: 'Metodo de pago' },
+        { title: 'Cuenta de retiro', data: 'Cuenta de retiro' },
+        { title: 'Minimo notas', data: 'Notas' },
+        { title: 'Dias a pagar', data: 'Dias a pagar' },
+        { title: 'Correo', visible: false, data: 'Correo' }, // 11
+        { title: 'Banco', visible: false, data: 'Banco' },
+        { title: 'Beneficiario', visible: false, data: 'Beneficiario' },
+        { title: 'CLABE', visible: false, data: 'CLABE' }, // 14
+        { title: 'No. Tarjeta', visible: false, data: 'No Tarjeta' },
+        { title: 'Descripcion', visible: false, data: 'Descripcion' },
+        // { title: 'Creado', visible: false },
+        { title: 'Editar' },
+        { title: 'Eliminar' } // 18
+      ],
+      columnDefs: [
+        { "targets": 0, createdCell: function (td, cellData, rowData, row, col) {
+            if ( rowData.Factura === 'TRUE' ) {
+              $(td).css('color', 'green')
+            } else if (rowData.Factura === 'FALSE') {
+              $(td).css('color', 'red')
             }
-            // { 
-            //   extend: 'csv', 
-            //   text: '<i class="bi bi-filetype-csv"></i>', 
-            //   className: 'btn btn-dark',
-            //   columns: ':visible',
-            // },
-          ],
-          "lengthMenu": [ 30, 50, 100 ],
-          "pageLength": 30,
-          "language": {
-            "buttons": {
-              copyTitle: 'Datos copiados al portapapeles',
-              copySuccess: {
-                  _: "%d productos copiados al portapapeles",
-              colvis: 'Ver/ocultar columnas'
-              },
-            },
-            "decimal":        "",
-            "emptyTable":     "No se encontraron datos",
-            "info":           "Mostrando _START_ a _END_ de _TOTAL_ proveedores",
-            "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
-            "infoFiltered":   "(Busqueda de _MAX_ proveedores en total)",
-            "infoPostFix":    "",
-            "thousands":      ",",
-            "lengthMenu":     "Mostrar _MENU_ proveedores",
-            "loadingRecords": "Cargando...",
-            "processing":     "",
-            "search":         "Buscar:",
-            "zeroRecords":    "No se encontraron proveedores",
-            "paginate": {
-                "first":      "Primero",
-                "last":       "Ultimo",
-                "next":       "Siguiente",
-                "previous":   "Atrás"
-            },
-            "aria": {
-                "sortAscending":  ": activate to sort column ascending",
-                "sortDescending": ": activate to sort column descending"
-            },
+          }
+        },
+        { "targets": [ 2, 3, 9, 10, 7 ], "width": "10%"},
+        { "targets": [ 7, 8, 9, 10 ], className: 'text-center fw-bold'},
+        { "targets": [2, 3, 9, 10], 
+          "render": function (data, type, row, meta) {
+            // console.log(Boolean(data))
+            return Boolean(data) == true ? data : 'n/a'
+          } 
+        },
+        { className: "fw-bold", "targets": 0, "width": "3%" },
+        { "targets": 4, "width": "10%", className: 'fw-bold text-center',
+          "createdCell": function (td, cellData, rowData, row, col) {
+            if ( cellData == 'CREDITO' ) {
+              $(td).css('color', '#2E5EAA')
+            } else if (cellData == 'CONSIGNACION') {
+              $(td).css('color', '#2dbb54')
+            } else if (cellData == 'CONTADO') {
+              $(td).css('color', 'black')
+            }
+          } 
+        },
+        { "targets": 1, "width": "20%", createdCell: function (td) {
+            $(td).css('font-size', '13px')
+          } 
+        },
+        { className: "fw-bold", "targets": 6,
+          "createdCell": function (td, cellData, rowData, row, col) {
+            if ( cellData == true ) {
+              $(td).css('color', 'green')
+            } else if (cellData == false) {
+              $(td).css('color', 'red')
+            }
           },
-          // createdRow: function( row, data, dataIndex ) {
-          //   let isFactura = data[6]
-          //   console.log(data[6])
-          //   console.log(dataIndex)
-          //   if (isFactura == true) {
-          //     $(row.querySelector).css('color', '#E2B6FF')
-          //   } else {
-          //     $(row[0]).css('color', '#e6b8af');
-          //   }
-          // },
-      });
+          "render": function (data) {
+            return data == true ? 'SI' : 'NO'
+          },
+          "width": "5%"
+        },
+        { "targets": [3, 12, 13, 14, 15], "searchable": false },
+        { "targets": 7, "width": "15%", className: 'text-center',
+          "createdCell": function(td, cellData, rowData, row, col) {
+            if ( cellData == 'EFECTIVO' ) {
+              $(td).css('color', '#0e7c61')
+            } else if (cellData == 'TRANSFERENCIA ELECTRONICA') {
+              $(td).css('color', '#0095c2')
+            } else if (cellData == 'TARJETA DE CREDITO') {
+              $(td).css('color', '#6551a1')
+            } else if (cellData == 'TARJETA DE DEBITO') {
+              $(td).css('color', '#399db4')
+            } else if (cellData == 'CHEQUE') {
+              $(td).css('color', '#434343')
+            }
+          }, render: function (data, type, row, meta) {
+            return data.length > 0 ? data : 'n/a'
+          }
+        },
+        { "targets": 8,
+          "createdCell": function(td, cellData, rowData, row, col) {
+            $(td).css('font-size', '13px')
+            if ( cellData == 'FONDO FIJO' ) {
+              $(td).html(`<span class="badge" style="background-color: #434343; color: white;">${cellData}</span>`)
+            } else if (cellData == 'CAJA EXTERNA') {
+              $(td).html(`<span class="badge" style="background-color: #b7b7b7;">${cellData}</span>`)
+            } else if (cellData == 'BANAMEX EMPRESA') {
+              $(td).html(`<span class="badge" style="background-color: #6d9eeb;">${cellData}</span>`)
+            } else if (cellData == 'DELTA') {
+              $(td).html(`<span class="badge" style="background-color: #e06666;">${cellData}</span>`)
+            } else if (cellData == 'CREDITO NU') {
+              $(td).html(`<span class="badge" style="background-color: #b4a7d6;">${cellData}</span>`)
+            } else if (cellData == 'CREDITO COSTCO') {
+              $(td).html(`<span class="badge" style="background-color: #6fa8dc;">${cellData}</span>`)
+            } else if (cellData == 'KUESKI') {
+              $(td).html(`<span class="badge" style="background-color: #76a5af;">${cellData}</span>`)
+            } else if (cellData == 'OTRO') {
+              $(td).html(`<span class="badge text-bg-light">${cellData}</span>`)
+            } else if (cellData == 'POR DEFINIR') {
+              $(td).html(`<span class="badge" style="background-color: #434343;">${cellData}</span>`)
+            }
+          }
+        },
+        { "targets": 11, render: function (data, type, row, meta) {
+            return data.length > 0 ? data : 'n/a'
+          }
+        },
+        { "targets": 16, "render": $.fn.dataTable.render.ellipsis( 10, true ) },
+        { "targets": 17, "width": "5%", className: 'text-center', 
+          render: function(data, type, row, meta) {
+            return `
+          <div class="dropdown">
+            <button type="button" id="dropdownMenuEdit" class="btn btn-light" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
+            <ul style="font-size: 14px;" class="dropdown-menu" aria-labelledby="dropdownMenuEdit">
+              <li>
+                <a href="/suppliers/edit/${Number(row.ID)}" class="text-dark dropdown-item">
+                  Editar
+                </a>
+              </li>
+              <li>
+                <button type="button" class="text-dark dropdown-item price-list-provider-link" data-provider-id="${row[0]}" data-provider-name="${row[1]}">
+                  Ver historial de precios
+                </button>
+              </li>
+            </ul>
+          </div> 
+          `
+          }
+        },
+        { "targets": 18, "width": "5%", className: "text-center",
+          render: function (data, type, row, meta) {
+            return `
+            <a href="#DeleteSupplierModal" class="trigger-btn btn btn-sm btn-danger delete-button" data-toggle="modal"><i class="bi bi-trash3"></i></a>
+            `
+            // return `<a href='/suppliers/remove/${Number(row.ID)}' role="button" class="btn btn-sm btn-danger remove-provider"><i class="bi bi-trash3"></i></a>`
+        } 
+      },
+      ],
+      order: [[1, 'asc']],
+      select: {
+        style: 'multiple',
+        selector: 'tr>td:nth-child(2), tr>td:nth-child(3), tr>td:nth-child(4), tr>td:nth-child(5)'
+      },
+      // dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'selectAll',
+          text: '<i class="bi bi-list-check" style="font-size: 1.2rem"></i>',
+          className: 'btn btn-sm btn-dark'
+        },
+        {
+          extend: 'selectNone',
+          text: '<i class="bi bi-list" style="font-size: 1.2rem"></i>',
+          className: 'btn btn-sm btn-dark'
+        },
+        {
+          extend: 'colvis',
+          text: '<span style="font-size: 12px;">Ver/ocultar</span>',
+          // titleAttr: 'Show/Hide',
+          columns: ':not(.noVis)',
+          collectionLayout: 'fixed columns',
+          collectionTitle: 'Seleccionar columnas a ver'
+        },
+        { 
+          extend: 'pdfHtml5',
+          orientation: 'landscape',
+          pageSize: 'LEGAL',
+          messageTop: 'Este documento es informativo.',
+          messageBottom: datetimeExportText,
+          text: '<i class="bi bi-filetype-pdf"></i>', 
+          className: 'btn btn-dark',
+          title: 'Lista de proveedores',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        },
+        { extend: 'copy', 
+          text: '<i class="bi bi-clipboard-check"></i>', 
+          className: 'btn btn-dark',
+          title: 'Lista de proveedores',
+          exportOptions: {
+            columns: ':visible',
+            modifier: {
+              selected: true
+            }
+          },
+        }
+        // { 
+        //   extend: 'csv', 
+        //   text: '<i class="bi bi-filetype-csv"></i>', 
+        //   className: 'btn btn-dark',
+        //   columns: ':visible',
+        // },
+      ],
+      "lengthMenu": [ 30, 50, 100 ],
+      "pageLength": 30,
+      "language": {
+        "buttons": {
+          copyTitle: 'Datos copiados al portapapeles',
+          copySuccess: {
+              _: "%d productos copiados al portapapeles",
+          colvis: 'Ver/ocultar columnas'
+          },
+        },
+        "decimal":        "",
+        "emptyTable":     "No se encontraron datos",
+        "info":           "Mostrando _START_ a _END_ de _TOTAL_ proveedores",
+        "infoEmpty":      "Mostrando 0 a 0 de 0 entries",
+        "infoFiltered":   "(Busqueda de _MAX_ proveedores en total)",
+        "infoPostFix":    "",
+        "thousands":      ",",
+        "lengthMenu":     "Mostrar _MENU_ proveedores",
+        "loadingRecords": "Cargando...",
+        "processing":     "",
+        "search":         "Buscar:",
+        "zeroRecords":    "No se encontraron proveedores",
+        "paginate": {
+            "first":      "Primero",
+            "last":       "Ultimo",
+            "next":       "Siguiente",
+            "previous":   "Atrás"
+        },
+        "aria": {
+            "sortAscending":  ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        },
+      },
+      // createdRow: function( row, data, dataIndex ) {
+      //   let isFactura = data[6]
+      //   console.log(data[6])
+      //   console.log(dataIndex)
+      //   if (isFactura == true) {
+      //     $(row.querySelector).css('color', '#E2B6FF')
+      //   } else {
+      //     $(row[0]).css('color', '#e6b8af');
+      //   }
+      // },
+    });
     
     // AllProvidersApp.providersTable = $('#providersTable')
     providersTable.buttons().container().appendTo('#buttons-wrapper');
@@ -345,9 +394,6 @@
       // console.log(AllProvidersApp.rowDataTableToRemove)
       // $("#exampleModal").modal('show');
     } );
-
-    // Remove row from table ui
-    console.log(AllProvidersApp.confirmationDeleteModalBtn)
 
     // DELETE ROW PERMANENTLY
     $(document).ready(function(){
@@ -453,6 +499,48 @@
         }
       } );
     })
+
+    // SHOW OFF CANVAS PROVIDER SUMMARY BY ID
+    $('#providersTable tbody').on('click', 'tr td:nth-child(1)', async function () {
+      var data = providersTable.row( this ).data();
+      console.log(data)
+      AllProvidersApp.supplierSummary = await AllProvidersApp.fetchSupplierSummaryById(data.ID)
+      console.log(AllProvidersApp.supplierSummary)
+      // GUARD STATEMENT
+      // if (!res) return
+      // const bsOffcanvas = new bootstrap.Offcanvas('#offCanvasSupplierSummary')
+
+      // // Assign initial values to offcanvas
+      // AllPurchasesApp.offCanvasPurchaseTitle = document.getElementById('offCanvasPurchaseTitle')
+      // AllPurchasesApp.offCanvasPurchaseNoteNumber = document.getElementById('offCanvasPurchaseNoteNumber')
+      // AllPurchasesApp.offCanvasPurchaseUser = document.getElementById('offCanvasPurchaseUser')
+      // AllPurchasesApp.offCanvasPurchaseDateReceived = document.getElementById('offCanvasPurchaseDateReceived')
+      // AllPurchasesApp.offCanvasPurchaseType = document.getElementById('offCanvasPurchaseType')
+      // AllPurchasesApp.offCanvasPurchaseStatus = document.getElementById('offCanvasPurchaseStatus')
+      // AllPurchasesApp.offCanvasPurchaseTotalAmount = document.getElementById('offCanvasPurchaseTotalAmount')
+      // AllPurchasesApp.offCanvasPurchaseDetails = document.getElementById('offCanvasPurchaseDetails')
+      // AllPurchasesApp.offCanvasPaymentTypeMessage = document.getElementById('offCanvasPaymentTypeMessage')
+      // Assign values
+      AllProvidersApp.offCanvasSupplierName.textContent = data.Proveedor
+      AllProvidersApp.offCanvasSupplierSeller.textContent = data.Vendedor
+      AllProvidersApp.offCanvasSupplierPhone.textContent = data.Telefono || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierAgreement.textContent = data.Convenio || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierCategory.textContent = data.Categoria || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierInvoice.textContent = data.Factura === 'TRUE' ? 'Este proveedor SI factura' : 'Este proveedor NO factura' 
+      AllProvidersApp.offCanvasSupplierPaymentMethod.textContent = data['Metodo de pago']
+      AllProvidersApp.offCanvasSupplierRetirementAccount.textContent = data['Cuenta de retiro']
+      AllProvidersApp.offCanvasSupplierCreditDays.textContent = data['Dias a pagar'] || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierNotesToPay.textContent = data.Notas || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierEmail.textContent = data.Correo || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierBankname.textContent = data.Banco || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierRecipient.textContent = data.Beneficiario || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierClabeAccount.textContent = data.CLABE || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierCardnumber.textContent = data['No Tarjeta'] || 'Sin registro'
+      AllProvidersApp.offCanvasSupplierDetails.textContent = data.Descripcion || 'No hay detalles'
+
+      // show off canvas supplier summary
+      AllProvidersApp.offCanvasSupplierSummary.show()
+    } );
              
   }
 
